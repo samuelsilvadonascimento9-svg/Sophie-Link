@@ -1,0 +1,219 @@
+<totvs-page type="list">
+    <totvs-page-header class="pageHeader">
+        <div class="alerta-mural">
+            <edu-alerta-atividades-academicas></edu-alerta-atividades-academicas>
+            <!-- Componente mantido da atualização TOTVS -->
+            <edu-alerta-prox-vencimento></edu-alerta-prox-vencimento>
+        </div>
+    </totvs-page-header>
+
+    <totvs-page-content class="panelMural">
+        <div class="row panelmural">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="dashboard-portlet col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <totvs-widget>
+                        <totvs-widget-body>
+                            <totvs-carousel class="col-xs-12 col-sm-12 col-md-12 col-lg-12" t-slides="controller.slides" t-interval="5000">
+                            </totvs-carousel>
+                        </totvs-widget-body>
+                    </totvs-widget>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO CUSTOMIZADA: RECURSOS ACADÊMICOS EDUCAÇÃO ADVENTISTA -->
+        <div class="row" style="margin-top: 25px; margin-bottom: 10px;" id="recursos-academicos-header">
+            <div class="col-xs-12">
+                <div style="display: flex; align-items: center; gap: 10px; margin: 0 15px 20px 15px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                    <h3 style="margin: 0; color: #1f2937; font-weight: 600; font-size: 20px;">Recursos Acadêmicos</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="recursos-academicos-cards">
+            <!-- CARD - Ambiente Virtual (AVA) -->
+            <div class="col-xs-12 col-sm-6" ng-class="{'col-md-6 col-lg-6': codColigadaAtual == 2 || codColigadaAtual == 3 || codColigadaAtual == 4 || codColigadaAtual == 5, 'col-md-4 col-lg-4': codColigadaAtual != 2 && codColigadaAtual != 3 && codColigadaAtual != 4 && codColigadaAtual != 5}">
+                <a href="https://adventistas.brightspace.com/d2l/login" target="_blank" style="text-decoration: none; display: block;">
+                    <div style="margin: 0 15px 20px 15px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; transition: all 0.3s ease;" onmouseover="this.style.borderColor='#2563eb'; this.style.boxShadow='0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)';"
+                        onmouseout="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                        <div style="height: 6px; background: linear-gradient(to right, #2563eb, #60a5fa);"></div>
+                        <div style="padding: 20px;">
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 44px; height: 44px; background: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0 0 4px 0; color: #111827; font-size: 16px; font-weight: 600;">Ambiente Virtual (AVA)</h4>
+                                        <span style="display: inline-block; padding: 2px 8px; background: #dbeafe; color: #1d4ed8; border-radius: 4px; font-size: 11px; font-weight: 500;">Acesso Online</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="margin: 0 0 16px 56px; color: #4b5563; font-size: 13px; line-height: 1.6;">Acesse videoaulas, materiais didáticos e fóruns disponíveis 24h.</p>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-left: 56px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+                                <span style="color: #1d4ed8; font-size: 13px; font-weight: 500;">Acessar plataforma</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- CARD - Consulta de Diploma -->
+            <div class="col-xs-12 col-sm-6" ng-class="{'col-md-6 col-lg-6': codColigadaAtual == 2 || codColigadaAtual == 3 || codColigadaAtual == 4 || codColigadaAtual == 5, 'col-md-4 col-lg-4': codColigadaAtual != 2 && codColigadaAtual != 3 && codColigadaAtual != 4 && codColigadaAtual != 5}">
+                <a href="{{urlDiplomaAtual}}" target="_blank" style="text-decoration: none; display: block;">
+                    <div style="margin: 0 15px 20px 15px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; transition: all 0.3s ease;" onmouseover="this.style.borderColor='#10b981'; this.style.boxShadow='0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)';"
+                        onmouseout="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                        <div style="height: 6px; background: linear-gradient(to right, #10b981, #34d399);"></div>
+                        <div style="padding: 20px;">
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 44px; height: 44px; background: #10b981; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0 0 4px 0; color: #111827; font-size: 16px; font-weight: 600;">Consulta de Diploma</h4>
+                                        <span style="display: inline-block; padding: 2px 8px; background: #d1fae5; color: #047857; border-radius: 4px; font-size: 11px; font-weight: 500;">Verificação Online</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="margin: 0 0 16px 56px; color: #4b5563; font-size: 13px; line-height: 1.6;">Verifique a autenticidade do seu diploma digital de maneira segura.</p>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-left: 56px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+                                <span style="color: #047857; font-size: 13px; font-weight: 500;">Consultar diploma</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- CARD - Componentes Curriculares (CONDICIONAL) -->
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" ng-if="codColigadaAtual != 2 && codColigadaAtual != 3 && codColigadaAtual != 4 && codColigadaAtual != 5">
+                <a href="https://componentecurricular.unasp.edu.br/auth" target="_blank" style="text-decoration: none; display: block;">
+                    <div style="margin: 0 15px 20px 15px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; transition: all 0.3s ease;" onmouseover="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)';"
+                        onmouseout="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                        <div style="height: 6px; background: linear-gradient(to right, #8b5cf6, #a78bfa);"></div>
+                        <div style="padding: 20px;">
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 44px; height: 44px; background: #8b5cf6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0 0 4px 0; color: #111827; font-size: 16px; font-weight: 600;">Componentes Curriculares</h4>
+                                        <span style="display: inline-block; padding: 2px 8px; background: #ede9fe; color: #6d28d9; border-radius: 4px; font-size: 11px; font-weight: 500;">Grade Curricular</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="margin: 0 0 16px 56px; color: #4b5563; font-size: 13px; line-height: 1.6;">Visualize sua matriz curricular e acompanhe seu progresso acadêmico.</p>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-left: 56px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+                                <span style="color: #6d28d9; font-size: 13px; font-weight: 500;">Acessar componentes</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="row widgetsMural">
+            <edu-widgets-container container-title="{{::'l-widget-title' | i18n : [] : 'js/aluno/mural'}}" id-funcionalidade="controller.idFuncionalidade" class="contentMural">
+            </edu-widgets-container>
+        </div>
+
+        <!-- SCRIPT DE LÓGICA DE CONTEXTO MANTIDO -->
+        <script>
+            (function() {
+                'use strict';
+                if (window.__RECURSOS_ACADEMICOS_INICIADO__) return;
+                window.__RECURSOS_ACADEMICOS_INICIADO__ = true;
+
+                var urlsDiplomaPorColigada = {
+                    1: 'https://unasp.br/diplomas/',
+                    2: 'https://diploma-ies.educadventista.org/FrameHTML/Web/App/Edu/PortalEducacional/js/aluno/diploma',
+                    3: 'https://diploma-ies.educadventista.org/FrameHTML/Web/App/Edu/PortalEducacional/js/aluno/diploma',
+                    4: 'https://diploma-ies.educadventista.org/FrameHTML/Web/App/Edu/PortalEducacional/js/aluno/diploma',
+                    5: 'https://diploma-ies.educadventista.org/FrameHTML/Web/App/Edu/PortalEducacional/js/aluno/diploma',
+                    'default': 'https://diploma-ies.educadventista.org/FrameHTML/Web/App/Edu/PortalEducacional/js/aluno/diploma'
+                };
+
+                var recursoAtual = {
+                    codColigada: null,
+                    codTipoCurso: null
+                };
+
+                function buscarContextoAtual() {
+                    try {
+                        if (typeof angular === 'undefined') return null;
+                        var element = document.querySelector('[ng-controller="PortalEduMuralController as controller"]') || document.querySelector('[ng-app]') || document.body;
+                        var injector = angular.element(element).injector();
+                        if (!injector) return null;
+                        var factory = injector.get('TotvsDesktopContextoCursoFactory');
+                        var contexto = factory.getCursoSelecionado();
+                        if (!contexto || !contexto.cursoSelecionado) return null;
+                        return {
+                            codColigada: contexto.cursoSelecionado.CODCOLIGADA,
+                            codTipoCurso: contexto.cursoSelecionado.CODTIPOCURSO
+                        };
+                    } catch (e) {
+                        return null;
+                    }
+                }
+
+                function configurarRecursos() {
+                    var dados = buscarContextoAtual();
+                    if (!dados) return;
+
+                    var header = document.getElementById('recursos-academicos-header');
+                    var cards = document.getElementById('recursos-academicos-cards');
+
+                    // Lógica de ocultar para UNASP (Coligada 1) e Tipo de Curso 3
+                    if (dados.codColigada == 1 && dados.codTipoCurso == 3) {
+                        if (header) header.style.display = 'none';
+                        if (cards) cards.style.display = 'none';
+                    } else {
+                        if (header) header.style.display = '';
+                        if (cards) cards.style.display = '';
+                    }
+
+                    // Injeção de variáveis no Scope do Angular para os ng-if/ng-class dos cards
+                    try {
+                        var element = document.querySelector('[ng-controller="PortalEduMuralController as controller"]');
+                        if (element) {
+                            var scope = angular.element(element).scope();
+                            if (scope) {
+                                scope.codColigadaAtual = dados.codColigada;
+                                scope.urlDiplomaAtual = urlsDiplomaPorColigada[dados.codColigada] || urlsDiplomaPorColigada['default'];
+                                if (!scope.$$phase) scope.$apply();
+                            }
+                        }
+                    } catch (e) {}
+
+                    recursoAtual = {
+                        codColigada: dados.codColigada,
+                        codTipoCurso: dados.codTipoCurso
+                    };
+                }
+
+                setInterval(function() {
+                    var dados = buscarContextoAtual();
+                    if (dados && (recursoAtual.codColigada !== dados.codColigada || recursoAtual.codTipoCurso !== dados.codTipoCurso)) {
+                        configurarRecursos();
+                    }
+                }, 1000);
+
+                setTimeout(configurarRecursos, 1000);
+            })();
+        </script>
+    </totvs-page-content>
+</totvs-page>

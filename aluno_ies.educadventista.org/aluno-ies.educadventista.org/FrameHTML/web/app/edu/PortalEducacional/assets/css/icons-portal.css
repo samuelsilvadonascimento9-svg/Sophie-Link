@@ -1,0 +1,615 @@
+.ico-a-contrast:before {
+    content: "\e902"
+}
+
+.ico-alert-triangle:before {
+    content: "\e907"
+}
+
+.ico-a-minus:before {
+    content: "\e90c"
+}
+
+.ico-anchor:before {
+    content: "\e90d"
+}
+
+.ico-a-plus:before {
+    content: "\e90f"
+}
+
+.ico-arrow-down:before {
+    content: "\e910"
+}
+
+.ico-arrow-down-left:before {
+    content: "\e911"
+}
+
+.ico-arrow-down-right:before {
+    content: "\e912"
+}
+
+.ico-arrow-left:before {
+    content: "\e913"
+}
+
+.ico-arrow-right:before {
+    content: "\e914"
+}
+
+.ico-arrow-up:before {
+    content: "\e915"
+}
+
+.ico-arrow-up-left:before {
+    content: "\e916"
+}
+
+.ico-arrow-up-right:before {
+    content: "\e917"
+}
+
+.ico-bar-chart:before {
+    content: "\e91a"
+}
+
+.ico-bell:before {
+    content: "\e91e"
+}
+
+.ico-financeiro:before {
+    content: "\e920"
+}
+
+.ico-financeironew:before {
+    content: "\e9a4"
+}
+
+.ico-book:before {
+    content: "\e923"
+}
+
+.ico-bookmark:before {
+    content: "\e924"
+}
+
+.ico-book-mark:before {
+    content: "\e925"
+}
+
+.ico-box:before {
+    content: "\e926"
+}
+
+.ico-bullhorn:before {
+    content: "\e928"
+}
+
+.ico-calendario:before {
+    content: "\e929"
+}
+
+.ico-calendar-ok:before {
+    content: "\e92a"
+}
+
+.ico-check:before {
+    content: "\e92e"
+}
+
+.ico-check-circle:before {
+    content: "\e92f"
+}
+
+.ico-faltas:before {
+    content: "\e930"
+}
+
+.ico-chevron-down:before {
+    content: "\e931"
+}
+
+.ico-chevron-left:before {
+    content: "\e932"
+}
+
+.ico-chevron-right:before {
+    content: "\e933"
+}
+
+.ico-chevron-up:before {
+    content: "\e938"
+}
+
+.ico-class-plan:before {
+    content: "\e93b"
+}
+
+.ico-secretaria:before {
+    content: "\e93c"
+}
+
+.ico-quadro-horario:before {
+    content: "\e93d"
+}
+
+.ico-code-bar:before {
+    content: "\e900"
+}
+
+.ico-copy:before {
+    content: "\e947"
+}
+
+.ico-curricular-activities:before {
+    content: "\e954"
+}
+
+.ico-database:before {
+    content: "\e955"
+}
+
+.ico-download:before {
+    content: "\e958"
+}
+
+.ico-edit:before {
+    content: "\e95b"
+}
+
+.ico-edit-2:before {
+    content: "\e95c"
+}
+
+.ico-edit-3:before {
+    content: "\e95d"
+}
+
+.ico-eraser:before {
+    content: "\e95e"
+}
+
+.ico-external-link:before {
+    content: "\e95f"
+}
+
+.ico-eye:before {
+    content: "\e960"
+}
+
+.ico-facebook:before {
+    content: "\e962"
+}
+
+.ico-file:before {
+    content: "\e965"
+}
+
+.ico-file-clip:before {
+    content: "\e966"
+}
+
+.ico-requerimentos:before {
+    content: "\e967"
+}
+
+.ico-file-download:before {
+    content: "\e968"
+}
+
+.ico-file-letter:before {
+    content: "\e969"
+}
+
+.ico-file-list:before {
+    content: "\e96a"
+}
+
+.ico-file-minus:before {
+    content: "\e96b"
+}
+
+.ico-notas:before {
+    content: "\e96c"
+}
+
+.ico-nota-falta-unificada:before {
+    content: "\e96c"
+}
+
+.ico-file-plus:before {
+    content: "\e96d"
+}
+
+.ico-file-text:before {
+    content: "\e96e"
+}
+
+.ico-file-upload:before {
+    content: "\e96f"
+}
+
+.ico-filter:before {
+    content: "\e971"
+}
+
+.ico-flag:before {
+    content: "\e972"
+}
+
+.ico-folder:before {
+    content: "\e973"
+}
+
+.ico-folder-edit:before {
+    content: "\e974"
+}
+
+.ico-graduation:before {
+    content: "\ea23"
+}
+
+.ico-grade-curricular:before {
+    content: "\e979"
+}
+
+.ico-historico:before {
+    content: "\e97e"
+}
+
+.ico-home:before {
+    content: "\e97f"
+}
+
+.ico-oportunidades:before {
+    content: "\e980"
+}
+
+.ico-image:before {
+    content: "\e981"
+}
+
+.ico-arquivos:before {
+    content: "\e982"
+}
+
+.ico-info:before {
+    content: "\e983"
+}
+
+.ico-instagram:before {
+    content: "\e984"
+}
+
+.ico-layers:before {
+    content: "\e986"
+}
+
+.ico-biblioteca:before {
+    content: "\e988"
+}
+
+.ico-corporerm:before {
+    content: "\e987"
+}
+
+.ico-licence:before {
+    content: "\e989"
+}
+
+.ico-links-uteis:before {
+    content: "\e98b"
+}
+
+.ico-list:before {
+    content: "\e98d"
+}
+
+.ico-lock:before {
+    content: "\e990"
+}
+
+.ico-log-in:before {
+    content: "\e991"
+}
+
+.ico-log-out:before {
+    content: "\e992"
+}
+
+.ico-mensagem:before {
+    content: "\e993"
+}
+
+.ico-maximize:before {
+    content: "\e996"
+}
+
+.ico-maximize-2:before {
+    content: "\e997"
+}
+
+.ico-menu:before {
+    content: "\e998"
+}
+
+.ico-message-circle:before {
+    content: "\e999"
+}
+
+.ico-avaliacoes:before {
+    content: "\e99a"
+}
+
+.ico-relatorios:before {
+    content: "\e96a"
+}
+
+.ico-messages-circle:before {
+    content: "\e99b"
+}
+
+.ico-message-square:before {
+    content: "\e99c"
+}
+
+.ico-minimize:before {
+    content: "\e99f"
+}
+
+.ico-minimize-2:before {
+    content: "\e9a0"
+}
+
+.ico-minus:before {
+    content: "\e9a1"
+}
+
+.ico-minus-circle:before {
+    content: "\e9a2"
+}
+
+.ico-minus-square:before {
+    content: "\e9a3"
+}
+
+.ico-money:before {
+    content: "\e9a4"
+}
+
+.ico-mural:before {
+    content: "\e9a5"
+}
+
+.ico-more-horizontal:before {
+    content: "\e9a7"
+}
+
+.ico-move:before {
+    content: "\e9a9"
+}
+
+.ico-mural-:before {
+    content: "\e9aa"
+}
+
+.ico-new-portal:before {
+    content: "\e9ae"
+}
+
+.ico-atividades-extras:before {
+    content: "\e9af"
+}
+
+.ico-notepad:before {
+    content: "\e9b0"
+}
+
+.ico-ocorrencias:before {
+    content: "\e901"
+}
+
+.ico-package:before {
+    content: "\e9b2"
+}
+
+.ico-paperclip:before {
+    content: "\e9b3"
+}
+
+.ico-performance:before {
+    content: "\e9b7"
+}
+
+.ico-picture:before {
+    content: "\e9bf"
+}
+
+.ico-pie-chart:before {
+    content: "\e9c0"
+}
+
+.ico-pin:before {
+    content: "\e9c1"
+}
+
+.ico-pin-right:before {
+    content: "\e9c2"
+}
+
+.ico-plus:before {
+    content: "\e9c5"
+}
+
+.ico-plus-circle:before {
+    content: "\e9c6"
+}
+
+.ico-plus-square:before {
+    content: "\e9c7"
+}
+
+.ico-printer:before {
+    content: "\e9ca"
+}
+
+.ico-qr-code:before {
+    content: "\e9cb"
+}
+
+.ico-save:before {
+    content: "\e9d3"
+}
+
+.ico-search:before {
+    content: "\e9d6"
+}
+
+.ico-settings:before {
+    content: "\e9d8"
+}
+
+.ico-share:before {
+    content: "\e9d9"
+}
+
+.ico-share-2:before {
+    content: "\e9da"
+}
+
+.ico-square:before {
+    content: "\e9e6"
+}
+
+.ico-star:before {
+    content: "\e9e7"
+}
+
+.ico-star-full:before {
+    content: "\ea20"
+}
+
+.ico-star-half:before {
+    content: "\ea1f"
+}
+
+.ico-student:before {
+    content: "\e9e9"
+}
+
+.ico-tag:before {
+    content: "\e9ee"
+}
+
+.ico-target:before {
+    content: "\e9ef"
+}
+
+.ico-team:before {
+    content: "\e9f0"
+}
+
+.ico-trash-2:before {
+    content: "\e9f7"
+}
+
+.ico-trending-down:before {
+    content: "\e9f8"
+}
+
+.ico-central-aluno:before {
+    content: "\ea23"
+}
+
+.ico-desempenho:before {
+    content: "\e9f9"
+}
+
+.ico-disciplinas-eb:before {
+    content: "\e967"
+}
+
+.ico-university:before {
+    content: "\ea01"
+}
+
+.ico-upload:before {
+    content: "\ea03"
+}
+
+.ico-user:before {
+    content: "\ea05"
+}
+
+.ico-user-check:before {
+    content: "\ea06"
+}
+
+.ico-user-minus:before {
+    content: "\ea07"
+}
+
+.ico-user-plus:before {
+    content: "\ea08"
+}
+
+.ico-users:before {
+    content: "\ea09"
+}
+
+.ico-user-settings:before {
+    content: "\ea0a"
+}
+
+.ico-user-x:before {
+    content: "\ea0b"
+}
+
+.ico-wheelchair:before {
+    content: "\ea15"
+}
+
+.ico-x:before {
+    content: "\ea19"
+}
+
+.ico-x-circle:before {
+    content: "\ea1a"
+}
+
+.ico-x-square:before {
+    content: "\ea1b"
+}
+
+.ico-zoom-in:before {
+    content: "\ea1d"
+}
+
+.ico-zoom-out:before {
+    content: "\ea1e"
+}
+
+.ico-negociacao:before {
+    content: "\ea21"
+}
+
+.ico-negociacao:before {
+    content: "\ea21"
+}
+
+.ico-aceleradora-de-carreiras:before {
+    content: "\ea24"
+}
+
+.ico-payments-recorrencia:before {
+    content: "\e9cf"
+}
+
+.ico-prova-facil:before {
+    content: "\e98d"
+}
+
+.ico-biblioteca:before {
+    content: "\e923"
+}

@@ -1,0 +1,3074 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <script>
+        (function(w, i, g) {
+            w[g] = w[g] || [];
+            if (typeof w[g].push == 'function') w[g].push(i)
+        })
+        (window, 'G-RYJFD2QPW5', 'google_tags_first_party');
+    </script>
+    <script async src="/ohyj/"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('set', 'developer_id.dY2E1Nz', true);
+    </script>
+
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RYJFD2QPW5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-RYJFD2QPW5');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const secaoEmus = document.getElementById('secao-emus');
+            if (!secaoEmus) return; // Se a seção não existir, não faz nada
+
+            // Os símbolos que vão aparecer
+            const notas = ['♪', '♫', '♩', '♬', '♭', '♮', '🫧']; // Adicionei uma bolha de brinde!
+
+            // Controla a frequência para não travar o navegador criando 1000 notas por segundo
+            let ultimaNotaTempo = 0;
+
+            secaoEmus.addEventListener('mousemove', (e) => {
+                const tempoAtual = Date.now();
+                // Só cria uma nota a cada 50 milissegundos (ajuste esse valor se quiser mais ou menos notas)
+                if (tempoAtual - ultimaNotaTempo < 50) return;
+                ultimaNotaTempo = tempoAtual;
+
+                // Cria o elemento da nota
+                const notaEl = document.createElement('span');
+                notaEl.className = 'aquatic-note';
+                notaEl.innerText = notas[Math.floor(Math.random() * notas.length)];
+
+                // Pega a posição do mouse em relação à seção
+                const rect = secaoEmus.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Posiciona a nota exatamente onde o mouse está
+                notaEl.style.left = `${x}px`;
+                notaEl.style.top = `${y}px`;
+
+                // Tamanho aleatório para dar um ar orgânico (entre 15px e 35px)
+                notaEl.style.fontSize = `${Math.random() * 20 + 15}px`;
+
+                // Deslocamento X e Rotação aleatórios usando variáveis CSS
+                const tx = (Math.random() - 0.5) * 80; // Vai de -40px a 40px para os lados
+                const rot = (Math.random() - 0.5) * 120; // Gira um pouco
+                notaEl.style.setProperty('--tx', `${tx}px`);
+                notaEl.style.setProperty('--rot', `${rot}deg`);
+
+                // Adiciona a nota na tela
+                secaoEmus.querySelector('.slide-container').appendChild(notaEl);
+
+                // Limpa a nota do código depois que a animação acaba (1.5 segundos)
+                setTimeout(() => {
+                    notaEl.remove();
+                }, 1500);
+            });
+        });
+    </script>
+
+    <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="8ad5f95b-947e-4cfa-842f-d4a673ba7861" data-blockingmode="auto" type="text/javascript"></script>
+
+    <base href="https://www.uniaene.edu.br/shared/templates/lewis/">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=0">
+
+    <title>UNIAENE</title>
+
+    <!-- Descrição padrão -->
+    <meta name="description" content="O UNIAENE é um Centro Universitário Adventista que forma profissionais comprometidos com a excelência acadêmica, valores cristãos e serviço à comunidade. Desde a educação básica até cursos de graduação, pós e extensão.">
+
+    <!-- Palavras-chave -->
+    <meta name="keywords" content="UNIAENE, centro universitário, adventista, ensino superior, graduação, pós-graduação, cursos livres, teologia, GTI, gestão da tecnologia da informação, ciências contábeis, contábeis, fisioterapia, nutrição, odontologia, odonto, enfermagem, pedagogia, direito, psicologia, nordeste">
+
+    <!-- Autor e direitos -->
+    <meta name="author" content="UNIAENE">
+    <meta name="copyright" content="© 2025 UNIAENE - Todos os direitos reservados.">
+
+    <!-- Robots e indexação -->
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://uniaene.edu.br/">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:site_name" content="UNIAENE">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="UNIAENE — Centro Universitário Adventista de Ensino do Nordeste">
+    <meta property="og:description" content="Formando profissionais com propósito. Conheça nossos cursos e descubra como o UNIAENE transforma vidas pela educação.">
+    <meta property="og:url" content="https://uniaene.edu.br/">
+    <meta property="og:image" content="https://uniaene.edu.br/shared/assets/images/share/share.jpg">
+    <meta property="og:image:alt" content="UNIAENE — Educação com Propósito">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="UNIAENE — Centro Universitário Adventista de Ensino do Nordeste">
+    <meta name="twitter:description" content="Formando profissionais com propósito. Conheça nossos cursos e descubra como o UNIAENE transforma vidas pela educação.">
+    <meta name="twitter:image" content="https://uniaene.edu.br/shared/assets/images/share/share.jpg">
+
+    <!-- Estrutura de dados / Schema -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "CollegeOrUniversity",
+            "name": "UNIAENE — Centro Universitário Adventista de Ensino do Nordeste",
+            "url": "https://uniaene.edu.br",
+            "logo": "https://uniaene.edu.br/shared/assets/images/logo/new/logo-blue-vert.png",
+            "sameAs": [
+                "https://www.instagram.com/uniaene/",
+                "https://www.facebook.com/p/Uniaene-61561171858545/",
+                "https://www.youtube.com/@uniaenelife"
+            ],
+            "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "BR",
+                "addressRegion": "BA",
+                "addressLocality": "Cachoeira",
+                "streetAddress": "Rodovia BR-101, km 197 - Capoeiruçu",
+                "postalCode": "44300-000"
+            },
+            "description": "Centro Universitário Adventista que forma profissionais com propósito, unindo excelência acadêmica, fé e serviço."
+        }
+    </script>
+
+    <!--Favicon-->
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="../../assets/images/favicon/site.webmanifest">
+    <link rel="mask-icon" href="../../assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- CSS -->
+    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/animsition.min.css" rel="stylesheet">
+    <link href="css/owl.carousel.min.css" rel="stylesheet">
+    <link href="css/owl.theme.default.min.css" rel="stylesheet">
+    <link href="css/socicon.css" rel="stylesheet">
+    <link href="css/ionicons.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/jquery.fancybox.min.css" rel="stylesheet">
+    <link href="css/jquery.pagepiling.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link href="../../assets/libs/fontawesome/css/all.min.css" rel="stylesheet">
+
+    <!-- Main CSS -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- Custom CSS-->
+    <link rel="stylesheet" href="../../assets/css/custom.css">
+    <link rel="stylesheet" href="../../assets/css/home.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+
+    <style>
+        .home-piling .slide1 {
+            background: #999;
+        }
+
+        #playVideo {
+            position: relative;
+            /* garante que o z-index funcione */
+            z-index: 10;
+        }
+    </style>
+    <style>
+        .glass-box {
+            background: rgba(255, 255, 255, 0.25);
+            /* leve transparência */
+            backdrop-filter: blur(20px) saturate(180%);
+            /* efeito vidro líquido */
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Ajustes responsivos */
+
+        @media (max-width: 992px) {
+            .glass-box {
+                margin: 2rem auto;
+                padding: 2rem;
+                text-align: center;
+                backdrop-filter: blur(15px) saturate(160%);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .glass-box {
+                padding: 1.5rem;
+                backdrop-filter: blur(12px) saturate(140%);
+            }
+        }
+    </style>
+    <style>
+        /* === LIQUID GLASS === */
+
+        .glass-effect {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            backdrop-filter: blur(10px) saturate(160%) contrast(120%);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            isolation: isolate;
+        }
+
+        /* Refração de luz e movimento */
+
+        .glass-effect::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.3), transparent 60%);
+            mix-blend-mode: overlay;
+            animation: glassMove 12s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes glassMove {
+            from {
+                transform: translate(-10%, -10%) rotate(0deg);
+            }
+            to {
+                transform: translate(10%, 10%) rotate(10deg);
+            }
+        }
+
+        /* Ajuste nas fotos */
+
+        .egresso-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1rem;
+            filter: brightness(1.05) contrast(1.1);
+            transition: transform 0.8s ease;
+        }
+
+        .glass-effect:hover .egresso-photo img {
+            transform: scale(1.05);
+        }
+
+        /* === RESPONSIVIDADE === */
+
+        @media (max-width: 576px) {
+            /* remove margens laterais e padding nos cards */
+            .reviews-carousel-item {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            /* reduz o padding interno do conteúdo */
+            .egresso-text-container {
+                padding: 2rem 1.2rem !important;
+            }
+            /* ajusta o espaçamento do carrossel */
+            .a-reviews-carousel {
+                padding: 0 !important;
+            }
+        }
+    </style>
+
+    <style>
+        /* Animação de pulsar suave */
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 188, 212, 0.5);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 15px 5px rgba(0, 188, 212, 0.3);
+                transform: scale(1.05);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 188, 212, 0.5);
+                transform: scale(1);
+            }
+        }
+
+        /* Aplicação no botão */
+
+        #bannerCta {
+            animation: pulseGlow 2s infinite ease-in-out;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover melhora a intensidade */
+
+        #bannerCta:hover {
+            background-color: #0097A7 !important;
+            box-shadow: 0 0 25px 8px rgba(0, 188, 212, 0.4);
+            transform: scale(1.08);
+        }
+    </style>
+
+
+    <style>
+        #bannerCta {
+            position: fixed !important;
+            bottom: 15vh;
+            left: 590px;
+            right: auto;
+            margin: 0;
+            transform: none !important;
+            width: max-content;
+            z-index: 9999;
+        }
+
+        /* Responsividade do botão CTA */
+
+        @media (max-width: 1400px) {
+            #bannerCta {
+                left: 450px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            #bannerCta {
+                left: 350px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            #bannerCta {
+                left: 50%;
+                transform: translateX(-50%) !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #bannerCta {
+                bottom: 12vh;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #bannerCta {
+                bottom: 10vh;
+            }
+        }
+
+        #bannerCta::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 120%;
+            height: 120%;
+            background: rgba(0, 188, 212, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            animation: pingPulse 2.5s infinite;
+            z-index: -1;
+        }
+
+        @keyframes pingPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0.6);
+                opacity: 0.7;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(1.6);
+                opacity: 0;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+    <style>
+        :root {
+            /* Ajuste aqui se quiser */
+            --card-height: 200px;
+            /* altura total do card */
+            --tip-visible: 60px;
+            /* quanto fica visível no topo (a “pontinha”) */
+            --slide-down: 80px;
+            /* quanto desce no hover */
+        }
+
+        /* Wrapper que controla a posição do card */
+
+        .ribbon-glass {
+            position: fixed;
+            top: 0;
+            left: 65%;
+            /* Começa “escondido”, deixando só a pontinha visível:
+       sobe (altura total - pontinha visível)  */
+            transform: translateX(-50%) translateY(calc(-100% + var(--tip-visible)));
+            transition: transform 0.8s cubic-bezier(.25, .1, .25, 1), box-shadow 0.8s ease;
+            z-index: 9999;
+            will-change: transform;
+            pointer-events: auto;
+            border-radius: 0 0 18px 18px;
+        }
+
+        /* No hover, desce mais um pouco (slide-down) */
+
+        .ribbon-glass:hover {
+            transform: translateX(-50%) translateY(calc(-100% + var(--tip-visible) + var(--slide-down)));
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+        }
+
+        /* Camada interna com visual e pulso (não mexe em translate aqui) */
+
+        .ribbon-inner {
+            height: var(--card-height);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+            overflow: hidden;
+            position: relative;
+            animation: pulseGlow 2.8s infinite ease-in-out;
+            /* alinhamento ao rodapé */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            /* coloca o conteúdo na parte de baixo */
+            align-items: center;
+            /* centraliza horizontalmente */
+            padding-bottom: 16px;
+            /* opcional: dá um respiro entre o link e o fim do card */
+        }
+
+        /* Reflexo líquido */
+
+        .ribbon-inner::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .25), transparent 50%);
+            /* animation: liquidFlow 7s infinite linear; */
+            mix-blend-mode: screen;
+            border-radius: 500px;
+        }
+
+        /* Botão/link */
+
+        .ribbon-link {
+            display: inline-block;
+            padding: 12px 36px;
+            color: rgba(255, 255, 255, .85);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            text-decoration: none;
+            font-family: "Poppins", "Segoe UI", sans-serif;
+            /* background: linear-gradient(135deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .15)); */
+            /* border-radius: 0 0 18px 18px; */
+            /* transition: background .3s ease, transform .3s ease; */
+            /* backdrop-filter: blur(10px); */
+            position: relative;
+            z-index: 2;
+        }
+
+        .ribbon-link:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .3));
+            color: #fff;
+            transform: translateY(1px);
+        }
+
+        /* Pulso suave (não altera translate!) */
+
+        @keyframes pulseGlow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(255, 255, 255, .10);
+            }
+            50% {
+                transform: scale(1.04);
+                box-shadow: 0 6px 26px rgba(255, 255, 255, .25);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(255, 255, 255, .10);
+            }
+        }
+
+        /* Movimento do reflexo líquido */
+
+        @keyframes liquidFlow {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            50% {
+                transform: translate(25%, 25%) rotate(180deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        /* Opcional: esconda em telas pequenas */
+
+        @media (max-width: 992px) {
+            .ribbon-glass {
+                display: none;
+            }
+        }
+
+        /* Texto com glow arco-íris animado */
+
+        .ribbon-inner h2 {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ff004c, #ff6a00, #ffeb00, #00ff6a, #00cfff, #7a00ff, #ff00c8, #ff004c);
+            background-size: 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbowShift 6s linear infinite;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4), 0 0 18px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animação do gradiente */
+
+        @keyframes rainbowShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+
+    <style>
+        @keyframes floatSeal {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Selo padrão (já definido inline) */
+
+        @media (max-width: 991.98px) {
+            /* sm e abaixo */
+            #floatingSeal {
+                width: 100px !important;
+                top: 12% !important;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            /* xs */
+            #floatingSeal {
+                width: 80px !important;
+                top: 12% !important;
+                right: 3% !important;
+            }
+        }
+
+        /* --- EFEITO RASTRO AQUÁTICO MUSICAL --- */
+
+        .aquatic-note {
+            position: absolute;
+            pointer-events: none;
+            /* Garante que as notas não atrapalhem os cliques no botão */
+            z-index: 10;
+            color: rgba(255, 255, 255, 0.9);
+            /* O segredo da água: um brilho suave preto misturado com branco */
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 255, 255, 0.4);
+            animation: bubbleUp 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            /* Animação suave e desacelerada no fim */
+        }
+
+        @keyframes bubbleUp {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0.5) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                /* var(--tx) e var(--rot) são gerados no JS para cada nota ir para um lado diferente */
+                transform: translate(var(--tx), -120px) scale(1.5) rotate(var(--rot));
+            }
+        }
+
+        .btn-light:hover {
+            background-color: #ffae00 !important;
+            border: #fff !important;
+        }
+    </style>
+
+
+
+</head>
+
+<body class="theme-yellow dark-horizontal">
+    <!-- Selo flutuante -->
+    <img id="floatingSeal" src="../../assets/images/home/VertNegtv.png" alt="Selo UNIAENE" style="
+        position: fixed;
+        top: 10%;
+        right: 2%;
+        width: 130px;
+        height: auto;
+        z-index: 9;
+        opacity: 0;
+        transition: opacity 0.8s ease, transform 2s ease-in-out;
+        transform: translateY(0);
+        filter: drop-shadow(20px 1px 20px rgba(0,0,0,0.9));
+        cursor: pointer;
+     ">
+
+
+    <!-- 
+ ░▒▓██████▓▒░▒▓████████▓▒░▒▓█▓▒░      ░▒▓███████▓▒░        ░▒▓██████▓▒░ ░▒▓███████▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░             ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
+░▒▓█▓▒░        ░▒▓█▓▒░   ░▒▓█▓▒░             ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
+░▒▓█▓▒▒▓███▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░       ░▒▓██████▓▒░       ░▒▓████████▓▒░░▒▓██████▓▒░  
+░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░      ░▒▓█▓▒░             ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░      ░▒▓█▓▒░             ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
+ ░▒▓██████▓▒░  ░▒▓█▓▒░   ░▒▓█▓▒░      ░▒▓████████▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░  
+                                                                                      
+                                                                                                   
+   ★ EASTER EGG: Código oculto em Base64 ★
+   ---------------------------------------
+
+        aHR0cHM6Ly9naXRodWIuY29tL3VuaWFlbmUvR1RJLUFuYWxpc2UtZGUtU2lzdGVtYXM=
+
+   ---------------------------------------
+   Dica:    A criptografia usada foi a Base64
+            Você pode usar um serviço online para decodificar ou o atob
+-->
+
+    <div class="animsition">
+        <div class="wrapper">
+            <style>
+                #header {
+                    background-image: url("../../assets/images/home/header-fade.png");
+                    /* caminho da sua imagem */
+                    background-repeat: repeat-x;
+                    /* repete apenas na horizontal */
+                    background-position: top center;
+                    /* começa do topo */
+                    background-size: auto 170px;
+                    /* altura fixa em ~70px */
+                }
+            </style>
+
+            <header id="header" class="header header-fixed">
+                <div class="container-fluid clearfix">
+
+                    <!-- Brand/Logo -->
+                    <div class="brand mt-1" style="height: 120px;">
+                        <a href="https://www.uniaene.edu.br">
+        <img src="https://www.uniaene.edu.br/shared/assets/images/logo/logo-blue.png" alt="Logo"
+            data-logo-dark="https://www.uniaene.edu.br/shared/assets/images/logo/logo-white.png"
+            data-logo-light="https://www.uniaene.edu.br/shared/assets/images/logo/logo-blue.png"
+            class="brand-logo fluid img-fluid mb-4" width="200px" />
+    </a>
+                    </div>
+                    <button class="nav-toggle-btn a-nav-toggle">
+                        <span class="nav-toggle-title text-lowercase menu-size">Menu</span>
+                        <span class="nav-toggle nav-toggle-sm">
+                            <span class="stick stick-1"></span>
+                            <span class="stick stick-2"></span>
+                            <span class="stick stick-3"></span>
+                        </span>
+                    </button>
+
+                    <div class="header-content d-none d-md-block">
+                        <div class="header-contacts">
+                            <div class="header-contact-item">
+                                <a href="https://wa.me/5575991870101" target="_blank" class="mail-link">
+                                    +55 (75) 99187-0101 <i class="fab fa-whatsapp ms-1 text-success fw-bold"></i>
+                                </a>
+                            </div>
+                            <div class="header-contact-divider"></div>
+                            <div class="header-contact-item"><a href="/cdn-cgi/l/email-protection#afccc0c1dbcedbc0efdac1c6cecac1ca81cacbda81cddd" class="mail-link"><span class="__cf_email__" data-cfemail="8fece0e1fbeefbe0cffae1e6eeeae1eaa1eaebfaa1edfd">[email&#160;protected]</span></a></div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <!-- MENU -->
+                <div class="hide-menu a-nav-toggle"></div>
+
+                <div class="menu">
+
+
+                    <div class="menu-logo">
+                        <a href="https://www.uniaene.edu.br">
+            <img class="logo-default mb-5 img-fluid p-5 mb-0 pb-0" src="../../assets/images/logo/new/logo-blue-vert.png" alt="UNIAENE">
+        </a>
+                    </div>
+
+                    <li class="mt-0">
+                        <div class="mt-0">
+                            <a href="https://emec.mec.gov.br/emec/consulta-cadastro/detalhamento/d96957f455f6405d14c6542552b0f6eb/NDUzMQ==" target="_blank" rel="noopener" class="d-block">
+                <img
+                    src="https://www.adventista.edu.br/mec/mec2.jpg"
+                    class="img-fluid rounded-3"
+                    alt="Banner do MEC com QR Code para consulta pública do cadastro institucional no e-MEC"
+                    loading="lazy"
+                    decoding="async" />
+            </a>
+                        </div>
+                    </li>
+
+
+                    <div class="menu-main accordion" id="accordion">
+                        <ul id="accordion">
+                            <!-- UNIAENE -->
+                            <li class="has-submenu">
+                                <a data-text="UNIAENE" data-bs-toggle="collapse" href="#menu-uniaene" role="button" aria-expanded="false" aria-controls="menu-uniaene">
+                    UNIAENE <span class="submenu-arrow"></span>
+                </a>
+                                <div class="collapse" id="menu-uniaene" data-bs-parent="#accordion">
+                                    <ul>
+                                        <li><a href="https://www.uniaene.edu.br/tour">Tour Virtual</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/reitoria">Reitoria</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/filosofia">Filosofia</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/historia">História</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/internato">Internato</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/clinica-escola">Clínica</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/documentos">Documentos</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/editais">Editais</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/portarias">Portarias Institucionais</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/calendario-institucional">Calendário Institucional</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <!-- Quero ser aluno (Ingressar em destaque) -->
+                            <li><a href="https://www.uniaene.edu.br/ingressar">Ingressar</a></li>
+
+                            <!-- Notícias direto -->
+                            <li><a href="https://www.uniaene.edu.br/noticias">Notícias</a></li>
+
+                            <!-- Sou aluno -->
+                            <li class="has-submenu">
+                                <a data-text="Sou Aluno" data-bs-toggle="collapse" href="#menu-student" role="button" aria-expanded="false" aria-controls="menu-student">
+                    Sou Aluno <span class="submenu-arrow"></span>
+                </a>
+                                <div class="collapse" id="menu-student" data-bs-parent="#accordion">
+                                    <ul>
+                                        <li>
+                                            <a href="https://www.isslerweb.com.br/encontreseura" target="_blank">
+                                Encontre seu RA
+                                <i class="fas fa-info-circle text-muted ms-1"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Não lembra do seu RA? Nós te ajudamos com isso."></i>
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://adventistas.brightspace.com/d2l/login" target="_blank">
+                                Brightspace
+                                <i class="fas fa-info-circle text-muted ms-1"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Ambiente Virtual de Aprendizagem"></i>
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://aluno-ies.educadventista.org/FrameHTML/web/app/edu/PortalEducacional/login/" target="_blank">
+                                Portal do Aluno
+                                <i class="fas fa-info-circle text-muted ms-1"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Acesso a notas, boletos, histórico e serviços acadêmicos"></i>
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://7edu-br.educadventista.org/studentportal/Account/Login?ReturnUrl=%2Fstudentportal%2F" target="_blank">
+                                Portal do Aluno - 7Edu
+                                <i class="fas fa-info-circle text-muted ms-1"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Portal da Educação Básica do Colégio UNIAENE"></i>
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://campusvirtual2.eduead.com.br/ead/login/index.php" target="_blank">
+                                Câmpus Virtual (Pós)
+                                <i class="fas fa-info-circle text-muted ms-1"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Ambiente Virtual de Aprendizagem para alunos de Pós-Graduação anterior a 2024"></i>
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://dd.diplomax.cloud/" target="_blank">Diplomas
+                                <i class="fas fa-info-circle text-muted ms-1"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Diplomas digitais a partir de 2024"></i>
+                            </a>
+                                        </li>
+                                        <li><a href="https://biblioteca.sophia.com.br/9198/" target="_blank">Biblioteca Virtual</a></li>
+                                        <li><a href="https://drive.google.com/file/d/1Fv_AQAoWPnxHtPfKqOr9FhkzWiM8X0om/view" target="_blank">Manual do Aluno</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/perguntas-frequentes">Perguntas Frequentes</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <!-- Sou Professor -->
+                            <li class="has-submenu">
+                                <a data-text="Sou Professor" data-bs-toggle="collapse" href="#menu-teacher" role="button" aria-expanded="false" aria-controls="menu-teacher">
+                    Sou Professor <span class="submenu-arrow"></span>
+                </a>
+                                <div class="collapse" id="menu-teacher" data-bs-parent="#accordion">
+                                    <ul>
+                                        <!-- Portal do Professor -->
+                                        <li>
+                                            <a href="https://professor-ies.educadventista.org/FrameHTML/Web/App/Edu/PortalDoProfessor/#/login" target="_blank">
+                                Portal do Professor - Graduação
+                                <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Portal do Professor de Graduação"></i>
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://7edu-br.educadventista.org/teacherportal" target="_blank">
+                                Portal do Professor - Pós-graduação
+                                <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Portal do Professor de Pós-graduação"></i>
+                            </a>
+                                        </li>
+
+                                        <!-- AVA -->
+                                        <li>
+                                            <a href="https://campusvirtual2.eduead.com.br/ead/login/index.php" target="_blank">
+                                Câmpus Virtual
+                                <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Ambiente Virtual de Aprendizagem"></i>
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://adventistas.brightspace.com/" target="_blank">
+                                Brightspace
+                                <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Ambiente Virtual de Aprendizagem Brightspace"></i>
+                            </a>
+                                        </li>
+
+                                        <!-- Serviços -->
+                                        <li>
+                                            <a href="https://adems.sdasystems.org/bra/" target="_blank">
+                                Serviços Módulos 7Edu
+                                <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Serviços Módulos 7Edu"></i>
+                            </a>
+                                        </li>
+
+                                        <!-- Biblioteca -->
+                                        <li>
+                                            <a href="http://biblioteca.iaene.br/" target="_blank">
+                                Biblioteca UNIAENE (Acervo Físico)
+                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://biblioteca.sophia.com.br/9198/" target="_blank">
+                                Biblioteca Digital
+                            </a>
+                                        </li>
+
+                                        <!-- SIGA
+                        <li>
+                            <a href="https://www2.adventista.edu.br/webaluno/" target="_blank">
+                                SIGA - Portal do Aluno
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www2.adventista.edu.br/sigaweb/" target="_blank">
+                                SIGA - Portal do Professor
+                            </a>
+                        </li> -->
+
+                                        <!-- RH -->
+                                        <li>
+                                            <a href="https://rh.adventistas.org/" target="_blank">
+                                RH On-line
+                            </a>
+                                        </li>
+
+                                        <!-- Abaris -->
+                                        <li>
+                                            <a href="https://iatec.abaris.com.br/Account/Login" target="_blank">Abaris</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <!-- Sou Colaborador -->
+                            <li class="has-submenu">
+                                <a data-text="Sou Colaborador" data-bs-toggle="collapse" href="#menu-employee" role="button" aria-expanded="false" aria-controls="menu-teacher">
+                    Sou Colaborador <span class="submenu-arrow"></span>
+                </a>
+                                <div class="collapse" id="menu-employee" data-bs-parent="#accordion">
+                                    <ul>
+
+                                        <!-- SIGA
+                        <li>
+                            <a href="https://www2.adventista.edu.br/webaluno/" target="_blank">
+                                SIGA - Portal do Aluno
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www2.adventista.edu.br/sigaweb/" target="_blank">
+                                SIGA - Portal do Professor
+                            </a>
+                        </li> -->
+
+                                        <!-- RH -->
+                                        <li>
+                                            <a href="https://rh.adventistas.org/" target="_blank">
+                                RH On-line
+                            </a>
+                                        </li>
+
+                                        <!-- Ordens de Serviços -->
+                                        <li>
+                                            <a href="https://os.auvo.com.br/Login" target="_blank">Ordens de Serviços - Gerência</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://compras.auvo.com.br/Login" target="_blank">Ordens de Serviços - Compras</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://suportefadba.auvo.com.br/Login" target="_blank">Ordens de Serviços - TI</a>
+                                        </li>
+
+                                        <!-- Senha Internet -->
+                                        <!-- <li>
+                            <a href="http://www2.adventista.edu.br/captiveportalad" target="_blank">Internet - Cadastro</a>
+                        </li>
+                        <li>
+                            <a href="http://www2.adventista.edu.br/captiveportalad/Usuario/ValidarUsuario" target="_blank">Internet - Verificar Conta</a>
+                        </li>
+                        <li>
+                            <a href="http://www2.adventista.edu.br/captiveportalad/Usuario/ConferirDadosUsuario" target="_blank">Internet - Alterar Senha</a>
+                        </li> -->
+
+                                        <!-- Abaris -->
+                                        <!-- <li>
+                            <a href="https://iatec.abaris.com.br/Account/Login" target="_blank">Abaris</a>
+                        </li> -->
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <!-- Cursos -->
+                            <li class="has-submenu">
+                                <a data-text="Nossos Cursos" data-bs-toggle="collapse" href="#menu-courses" role="button" aria-expanded="false" aria-controls="menu-courses">
+                    Nossos Cursos <span class="submenu-arrow"></span>
+                </a>
+                                <div class="collapse" id="menu-courses" data-bs-parent="#accordion">
+                                    <ul>
+                                        <!-- Colégio UNIAENE -->
+                                        <li><a href="https://uniaene.educacaoadventista.org.br/" target="_blank">Colégio UNIAENE</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/ciencias-contabeis">Ciências Contábeis</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/direito">Direito</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/enfermagem">Enfermagem</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/fisioterapia">Fisioterapia</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/gestao-da-tecnologia-da-informacao">Gestão da TI</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/medicina-veterinaria">Medicina Veterinária</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/nutricao">Nutrição</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/odontologia">Odontologia</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/pedagogia">Pedagogia</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/psicologia">Psicologia</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/curso/teologia">Teologia</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/cursos-livres">Cursos Livres</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/pos-graduacao">Pós-Graduação</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <!-- Núcleos -->
+                            <li class="has-submenu">
+                                <a data-text="Núcleos e Setores" data-bs-toggle="collapse" href="#menu-departments" role="button" aria-expanded="false" aria-controls="menu-departments">
+                    Núcleos e Setores <span class="submenu-arrow"></span>
+                </a>
+                                <div class="collapse" id="menu-departments" data-bs-parent="#accordion">
+                                    <ul>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/nupeg">NUPEG</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/naipe">NAIPE</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/cep">CEP</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/ceua">CEUA</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/naee">NAEE</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/napp">NAPp</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/naic">NAIC</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/biblioteca">Biblioteca</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/filantropia">Filantropia</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/nae">NAE</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/next">NEXT</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/nucleos/assessoria-pedagogica">Assessoria Pedagogica</a></li>
+                                        <li><a href="https://adventista.emnuvens.com.br/index" target="_blank">Portal de Publicações</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <!-- Avaliação e Serviços -->
+                            <li class="has-submenu">
+                                <a data-text="Avaliação e Serviços" data-bs-toggle="collapse" href="#menu-feedback" role="button" aria-expanded="false" aria-controls="menu-feedback">
+                    Avaliação e Serviços <span class="submenu-arrow"></span>
+                </a>
+                                <div class="collapse" id="menu-feedback" data-bs-parent="#accordion">
+                                    <ul>
+                                        <!-- <li><a href="https://www.uniaene.edu.br/pesquisa-satisfacao">Pesquisa de Satisfação</a></li> -->
+                                        <li><a href="https://www.uniaene.edu.br/trabalhe-conosco">Trabalhe Conosco</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/ouvidoria">Ouvidoria</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/perguntas-frequentes">Perguntas Frequentes</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/comissao-propria-de-avaliacao">CPA</a></li>
+                                        <li><a href="https://www.uniaene.edu.br/contato">Contato</a></li>
+
+                                        <!-- ================================ -->
+                                        <!-- Submenu Senha de Acesso à Internet -->
+                                        <!-- ================================ -->
+                                        <li class="has-submenu mt-2">
+                                            <a data-text="Senha de Acesso à Internet" data-bs-toggle="collapse" href="#submenu-internet" aria-expanded="false" aria-controls="submenu-internet">
+                                Senha de Acesso à Internet <i class="fas fa-wifi ms-2"></i>
+                                <span class="submenu-arrow"></span>
+                            </a>
+
+                                            <div class="collapse mt-0" id="submenu-internet">
+                                                <ul>
+                                                    <li><a target="_blank" href="http://www2.adventista.edu.br/captiveportalad">
+                                            Cadastro
+                                        </a></li>
+
+                                                    <li><a target="_blank" href="http://www2.adventista.edu.br/captiveportalad/Usuario/ValidarUsuario">
+                                            Verificar Conta
+                                        </a></li>
+
+                                                    <li><a target="_blank" href="http://www2.adventista.edu.br/captiveportalad/Usuario/ConferirDadosUsuario">
+                                            Alterar Senha
+                                        </a></li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="menu-footer">
+                        <ul class="social social-rounded">
+                            <li>
+                                <a href="https://wa.me/5575991870101" style="border: 0;" target="_blank" class="social-rounded-whatsapp">
+                    <span class="floating-icon">
+                        <img src="../../assets/images/contact/whatsapp.svg" alt="WhatsApp" width="42" height="42"
+                            style="vertical-align: middle;" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            title="Fale conosco pelo WhatsApp">
+                    </span>
+                </a>
+                            </li>
+                            <li><a href="https://www.instagram.com/uniaene/" target="_blank"><i class="socicon-instagram"></i></a></li>
+                            <li><a href="https://www.youtube.com/@uniaenelife" target="_blank"><i class="socicon-youtube"></i></a></li>
+                        </ul>
+                        <div class="menu-copyright">
+                            &copy; 2025 <strong>UNIAENE</strong>. Todos os direitos reservados.
+                        </div>
+                    </div>
+                </div>
+
+                <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+                    });
+                </script>
+            </header>
+
+
+            <ul class="social social-rounded social-rounded-fixed social-rounded-dark">
+                <li>
+                    <a href="https://wa.me/5575991870101" style="border: 0;" target="_blank" class="social-rounded-whatsapp">
+                        <span class="floating-icon">
+                            <img src="../../assets/images/contact/whatsapp.svg" alt="WhatsApp" width="42" height="42"
+                                style="vertical-align: middle;" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                title="Fale conosco pelo WhatsApp">
+                        </span>
+                    </a>
+                </li>
+                <li><a href="https://www.instagram.com/uniaene/" target="_blank"><i class="socicon-instagram"></i></a>
+                </li>
+                <li><a href="https://www.youtube.com/@uniaenelife" target="_blank"><i class="socicon-youtube"></i></a>
+                </li>
+            </ul>
+
+            <!-- <div class="establised">desde 1979</div> -->
+            <div class="copyright-fixed mb-4">&copy; UNIAENE 2025</div>
+
+            <div class="home-piling a-pagepiling full-height">
+
+                <div class="section pp-scrollable slide slide1 slide-dark">
+                    <div class="slide-container">
+                        <div class="video-container a-video" id="videoWrapper"></div>
+
+                        <div class="slide-bg">
+                            <!-- wrapper do elemento principal -->
+                            <div class="banner-wrapper" id="mainWrapper">
+                                <img id="bannerMain" src="" class="img-fluid banner-main">
+                            </div>
+
+                            <!-- background -->
+                            <div id="bannerBackground" class="banner-background inside" style="background-image: url(''); background-size:cover; background-repeat:no-repeat;">
+                            </div>
+                        </div>
+
+                        <div class="slide-video-container slide-container">
+                            <div class="container position-relative">
+                                <div class="row slide-content">
+                                    <div class="col-sm-7" id="heroText">
+                                        <div class="slide-body">
+                                            <!-- wrapper do elemento secundário -->
+                                            <div class="banner-wrapper" id="secondaryWrapper">
+                                                <img id="bannerSecondary" src="" class="img-fluid banner-secondary">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CTA e Play -->
+                                <a id="bannerCta" href="javascript:void(0);" target="_blank" class="btn btn-lg btn-info border rounded d-inline-block mb-3"></a>
+
+                                <button class="btn-play a-video-play d-none d-md-block" id="playVideo">
+                                    <i class="icon ion-ios-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide slide2">
+                    <div class="slide-container">
+                        <div class="slide-bg slide-bg-circle">
+                            <div class="inside" style="background: url('../../assets/images/special/main.jpg'); background-size:cover; background-repeat: no-repeat;"></div>
+                        </div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="solution-num text-texture" style="background-image: url('../../assets/images/special/bg.png');">
+                                        45<small style="font-size: 50%">+1</small> anos
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" style="text-align: right;">
+                                    <h2 class="slide-title font-libre text-light special-details-title mb-0">46 ANOS UNIAENE.</h2>
+                                    <p class="font-libre text-light mt-0 fw-light">
+                                        A celebração dos 45 anos foi um marco inesquecível na história do UNIAENE, um momento de gratidão, conquistas e reencontros que simbolizou a força da nossa missão. E agora, seguimos em frente, comemorando
+                                        <strong
+                                            class="text-decoration-underline">46 anos de compromisso com a educação, a fé e o desenvolvimento humano</strong>. Você continua sendo parte essencial dessa trajetória.
+                                    </p>
+                                    <a href="https://www.uniaene.edu.br/45anos" class="btn btn-outline-light btn-lg rounded-pill">
+                                        Assista toda a programação
+                                    </a>
+                                    <a data-fancybox href="https://vimeo.com/1135733617">
+                                        <div class="flash-video-icon">
+                                            <i class="icon ion-ios-play text-warning"></i>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide slide2" id="secao-emus">
+                    <div class="slide-container" style="position: relative; overflow: hidden;">
+
+                        <div class="slide-bg slide-bg-circle">
+                            <div class="inside" style="background: url('../../assets/images/emus/emus.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+
+                            <div class="dark-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.95) 100%); z-index: 1;"></div>
+                        </div>
+
+                        <div class="container" style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center;">
+                            <div class="row w-100 align-items-center">
+
+                                <div class="col-lg-6">
+                                    <div class="solution-num text-texture" style="background-image: url('../../assets/images/emus/images.jpg'); line-height: 0.85; padding-bottom: 20px; font-size: 8rem;">
+                                        EMUS
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6" style="text-align: right; padding-left: 40px;">
+                                    <h2 class="slide-title font-libre text-light special-details-title mb-3">ESCOLA DE MÚSICA</h2>
+
+                                    <p class="font-libre text-light mt-0 fw-light" style="font-size: 1.15rem; line-height: 1.6; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
+                                        A Escola de Música do UNIAENE é um espaço dedicado ao desenvolvimento artístico e musical, oferecendo formação para estudantes que desejam aprimorar seus talentos e conhecimentos na área da música. Por meio de atividades práticas e ensino especializado,
+                                        a escola incentiva a expressão musical, a disciplina e o crescimento cultural, contribuindo para a formação integral dos alunos e para o fortalecimento da música dentro da comunidade acadêmica.
+                                    </p>
+
+                                    <a href="https://www.uniaene.edu.br/escola-de-musica" class="btn btn-light btn-lg rounded-pill mt-4" style="color: #000; font-weight: 800; padding: 12px 35px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(255,255,255,0.2);">
+                                        CONHEÇA A EMUS
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide slide-banner">
+                    <div class="slide-container p-0">
+                        <div class="banner-carousel owl-carousel owl-theme">
+
+                            <div class="item position-relative">
+                                <!-- se tiver capa, usa como banner -->
+                                <img src="https://uniaene.com.br/storage/news/covers/news-uniaene-run-2025-corrida-de-5km-incentiva-habitos-saudaveis-e-participacao-da-comunidade-1762244008.jpeg" alt="UNIAENE RUN 2025: Corrida de 5km Incentiva Hábitos Saudáveis e Participação da Comunidade"
+                                    class="img-fullscreen">
+
+                                <div class="banner-overlay"></div>
+
+                                <div class="banner-strip">
+                                    <div class="banner-text">
+                                        <h5 class="banner-title fs-3">UNIAENE RUN 2025: Corrida de 5km Incentiva Hábitos Saudáveis e Participação da Comunidade</h5>
+                                        <p class="banner-description">A UNIAENE RUN 2025, realizada em 19 de outubro, reuniu corredores de todas as idades em um percurso de 5 km no campus e arredores do UNIAENE. O evento promoveu integração, saúde e bem-estar, incentivando hábitos
+                                            saudáveis e reforçando o compromisso com a qualidade de vida da comunidade.</p>
+                                        <a href="https://www.uniaene.edu.br/noticia/uniaene-run-2025-corrida-de-5km-incentiva-habitos-saudaveis-e-participacao-da-comunidade" class="btn btn-outline-light btn-sm">
+                                                    Saiba mais
+                                                </a>
+
+                                        <div class="d-block mt-5">
+                                            <!-- Botões personalizados do carousel -->
+                                            <span class="btn btn-link text-light ml-2 a-owl-prev fs-1">‹</span>
+                                            <span class="btn btn-link text-light ml-1 a-owl-next fs-1">›</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item position-relative">
+                                <!-- se tiver capa, usa como banner -->
+                                <img src="https://uniaene.com.br/storage/news/covers/news-tour-centro-oeste-2025-coral-uniaene-vive-experiencia-de-fe-musica-e-comunhao-1762245289.png" alt="Tour Centro-Oeste 2025: Coral UNIAENE Vive Experiência de Fé, Música e Comunhão" class="img-fullscreen">
+
+                                <div class="banner-overlay"></div>
+
+                                <div class="banner-strip">
+                                    <div class="banner-text">
+                                        <h5 class="banner-title fs-3">Tour Centro-Oeste 2025: Coral UNIAENE Vive Experiência de Fé, Música e Comunhão</h5>
+                                        <p class="banner-description">A Tour Centro-Oeste 2025 do Coral UNIAENE levou música, fé e alegria por cidades da Bahia, Goiás e Distrito Federal. Com apresentações inspiradoras, momentos espirituais e visitas a pontos turísticos, o grupo viveu
+                                            uma experiência inesquecível de comunhão, amizade e adoração.</p>
+                                        <a href="https://www.uniaene.edu.br/noticia/tour-centro-oeste-2025-coral-uniaene-vive-experiencia-de-fe-musica-e-comunhao" class="btn btn-outline-light btn-sm">
+                                                    Saiba mais
+                                                </a>
+
+                                        <div class="d-block mt-5">
+                                            <!-- Botões personalizados do carousel -->
+                                            <span class="btn btn-link text-light ml-2 a-owl-prev fs-1">‹</span>
+                                            <span class="btn btn-link text-light ml-1 a-owl-next fs-1">›</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item position-relative">
+                                <!-- se tiver capa, usa como banner -->
+                                <img src="https://uniaene.com.br/storage/news/covers/news-despertar-final-um-chamado-ao-reavivamento-antes-da-volta-de-jesus-1762244301.png" alt="Despertar Final: Um Chamado ao Reavivamento Antes da Volta de Jesus - Semana de Oração" class="img-fullscreen">
+
+                                <div class="banner-overlay"></div>
+
+                                <div class="banner-strip">
+                                    <div class="banner-text">
+                                        <h5 class="banner-title fs-3">Despertar Final: Um Chamado ao Reavivamento Antes da Volta de Jesus - Semana de Oração</h5>
+                                        <p class="banner-description">A série “Despertar Final”, realizada de 26 de setembro a 4 de outubro na Igreja do UNIAENE com o Pr. André Flores, reuniu a comunidade acadêmica em um chamado ao reavivamento espiritual, destacando a preparação
+                                            para a volta de Jesus e fortalecendo a fé dos participantes.</p>
+                                        <a href="https://www.uniaene.edu.br/noticia/despertar-final-um-chamado-ao-reavivamento-antes-da-volta-de-jesus-semana-de-oracao" class="btn btn-outline-light btn-sm">
+                                                    Saiba mais
+                                                </a>
+
+                                        <div class="d-block mt-5">
+                                            <!-- Botões personalizados do carousel -->
+                                            <span class="btn btn-link text-light ml-2 a-owl-prev fs-1">‹</span>
+                                            <span class="btn btn-link text-light ml-1 a-owl-next fs-1">›</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item position-relative">
+                                <!-- se tiver capa, usa como banner -->
+                                <img src="https://uniaene.com.br/storage/news/covers/news-uniaene-inaugura-novo-restaurante-e-celebra-batismo-de-funcionarios-1762243772.jpg" alt="UNIAENE Inaugura Novo Restaurante e Celebra Batismo de Funcionários" class="img-fullscreen">
+
+                                <div class="banner-overlay"></div>
+
+                                <div class="banner-strip">
+                                    <div class="banner-text">
+                                        <h5 class="banner-title fs-3">UNIAENE Inaugura Novo Restaurante e Celebra Batismo de Funcionários</h5>
+                                        <p class="banner-description">O UNIAENE inaugurou seu novo restaurante no dia 17 de outubro, em um evento que reuniu alunos, professores e funcionários. A cerimônia contou com o batismo de dois colaboradores, tornando o momento marcante.</p>
+                                        <a href="https://www.uniaene.edu.br/noticia/uniaene-inaugura-novo-restaurante-e-celebra-batismo-de-funcionarios" class="btn btn-outline-light btn-sm">
+                                                    Saiba mais
+                                                </a>
+
+                                        <div class="d-block mt-5">
+                                            <!-- Botões personalizados do carousel -->
+                                            <span class="btn btn-link text-light ml-2 a-owl-prev fs-1">‹</span>
+                                            <span class="btn btn-link text-light ml-1 a-owl-next fs-1">›</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item position-relative">
+                                <!-- se tiver capa, usa como banner -->
+                                <img src="https://uniaene.com.br/storage/news/covers/news-lidera-2025-congresso-de-missao-urbana-inspira-lideres-e-novas-geracoes-1762242727.jpeg" alt="LIDERA 2025: Congresso de Missão Urbana Inspira Líderes e Novas Gerações" class="img-fullscreen">
+
+                                <div class="banner-overlay"></div>
+
+                                <div class="banner-strip">
+                                    <div class="banner-text">
+                                        <h5 class="banner-title fs-3">LIDERA 2025: Congresso de Missão Urbana Inspira Líderes e Novas Gerações</h5>
+                                        <p class="banner-description">O LIDERA 2025, realizado de 28 a 30 de outubro na Igreja do UNIAENE, reuniu teologandos, pastores e estudantes para refletir sobre Missão, Identidade, Discipulado e Novas Gerações. O congresso fortaleceu líderes
+                                            e promoveu capacitação para uma atuação missionária relevante e transformadora.</p>
+                                        <a href="https://www.uniaene.edu.br/noticia/lidera-2025-congresso-de-missao-urbana-inspira-lideres-e-novas-geracoes" class="btn btn-outline-light btn-sm">
+                                                    Saiba mais
+                                                </a>
+
+                                        <div class="d-block mt-5">
+                                            <!-- Botões personalizados do carousel -->
+                                            <span class="btn btn-link text-light ml-2 a-owl-prev fs-1">‹</span>
+                                            <span class="btn btn-link text-light ml-1 a-owl-next fs-1">›</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide slide3">
+                    <div class="slide-container">
+                        <div class="container">
+                            <div class="slide-bg active">
+                                <div class="inside" style="background-image: url(../../assets/images/courses/background.png); background-size:cover; background-repeat: no-repeat;">
+                                </div>
+                            </div>
+                            <h2 class="slide-title font-libre text-center mb-2 neulis-bold">CONHEÇA + NOSSOS CURSOS</h2>
+                            <div class="slide-descr text-grey text-center mb-1">Ajudar alunos a alcançar excelência e construir um futuro com propósito é nossa missão.</div>
+
+                            <div class="slide-body">
+                                <div class="row no-gutters partner-list justify-content-center mt-4">
+                                    <!-- Administração -->
+                                    <!-- <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/administracao.mp4">
+                                            <a href="#" class="inside">
+                                                <img src="../../assets/images/courses/logo/administracao.png"
+                                                    alt="Administração" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/administracao-hover.png"
+                                                    alt="Administração" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div> -->
+
+                                    <!-- Ciências Contábeis -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses bottom" data-video="../../assets/videos/courses/contabeis.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/contabeis" class="inside">
+                                                <img src="../../assets/images/courses/logo/contabeis.png"
+                                                    alt="Ciências Contábeis" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/contabeis-hover.png"
+                                                    alt="Ciências Contábeis" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Direito -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses tooltip-video-bottom" data-video="../../assets/videos/courses/direito.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/direito" class="inside">
+                                                <img src="../../assets/images/courses/logo/direito.png" alt="Direito" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/direito-hover.png" alt="Direito" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Enfermagem -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses tooltip-video-bottom" data-video="../../assets/videos/courses/enfermagem.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/enfermagem" class="inside">
+                                                <img src="../../assets/images/courses/logo/enfermagem.png" alt="Enfermagem" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/enfermagem-hover.png" alt="Enfermagem" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fisioterapia -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses tooltip-video-bottom" data-video="../../assets/videos/courses/fisioterapia.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/fisioterapia" class="inside">
+                                                <img src="../../assets/images/courses/logo/fisioterapia.png" alt="Fisioterapia" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/fisioterapia-hover.png" alt="Fisioterapia" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Gastronomia -->
+                                    <!-- <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/gastronomia.mp4">
+                                            <a href="#" class="inside">
+                                                <img src="../../assets/images/courses/logo/gastronomia.png" alt="Gastronomia" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/gastronomia-hover.png" alt="Gastronomia" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div> -->
+
+                                    <!-- Gestão da Tecnologia da Informação -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses tooltip-video-bottom" data-video="../../assets/videos/courses/gti.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/gti" class="inside">
+                                                <img src="../../assets/images/courses/logo/gti.png" alt="Gestão da Tecnologia da Informação" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/gti-hover.png" alt="Gestão da Tecnologia da Informação" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Medicina Veterinária -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/veterinaria.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/veterinaria" class="inside">
+                                                <img src="../../assets/images/courses/logo/veterinaria.png" alt="Medicina Veterinária" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/veterinaria-hover.png" alt="Medicina Veterinária" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nutrição -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/nutricao.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/nutricao" class="inside">
+                                                <img src="../../assets/images/courses/logo/nutricao.png" alt="Nutrição" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/nutricao-hover.png" alt="Nutrição" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Odontologia -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/odontologia.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/odontologia" class="inside">
+                                                <img src="../../assets/images/courses/logo/odontologia.png" alt="Odontologia" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/odontologia-hover.png" alt="Odontologia" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pedagogia -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/pedagogia.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/pedagogia" class="inside">
+                                                <img src="../../assets/images/courses/logo/pedagogia.png" alt="Pedagogia" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/pedagogia-hover.png" alt="Pedagogia" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Psicologia -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/psicologia.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/psicologia" class="inside">
+                                                <img src="../../assets/images/courses/logo/psicologia.png" alt="Psicologia" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/psicologia-hover.png" alt="Psicologia" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Teologia -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="tooltip-video-container cards-courses" data-video="../../assets/videos/courses/teologia.mp4">
+                                            <a href="https://www.uniaene.edu.br/curso/veterinaria" class="inside">
+                                                <a href="https://www.uniaene.edu.br/curso/teologia" class="inside">
+                                                    <img src="../../assets/images/courses/logo/teologia.png" alt="Teologia" class="img-courses img-normal" />
+                                                    <img src="../../assets/images/courses/logo/teologia-hover.png" alt="Teologia" class="img-courses img-hover" />
+                                                </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pós-graduação -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="cards-courses" data-video="../../assets/videos/courses/posgraduacao.mp4">
+                                            <a href="https://www.uniaene.edu.br/pos" class="inside">
+                                                <img src="../../assets/images/courses/logo/posgraduacao.png" alt="Pós-graduação" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/posgraduacao-hover.png" alt="Pós-graduação" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cursos Livres -->
+                                    <div class="col partner-item mb-4">
+                                        <div class="cards-courses" data-video="../../assets/videos/courses/cursoslivres.mp4">
+                                            <a href="https://www.uniaene.edu.br/cursos-livres" class="inside">
+                                                <img src="../../assets/images/courses/logo/cursoslivres.png" alt="Cursos Livres" class="img-courses img-normal" />
+                                                <img src="../../assets/images/courses/logo/cursoslivres-hover.png" alt="Cursos Livres" class="img-courses img-hover" />
+                                            </a>
+                                            <div class="tooltip-video"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide slide4 slide-dark">
+                    <div class="slide-container">
+                        <div class="overlay-global"></div>
+                        <div class="slide-bg-list">
+                            <div class="slide-bg active">
+                                <div class="inside" style="background-image: url(../../assets/images/internato/2.png);">
+                                </div>
+                            </div>
+                            <div class="slide-bg">
+                                <div class="inside" style="background-image: url(../../assets/images/internato/rooms.jpg);">
+                                </div>
+                            </div>
+                            <div class="slide-bg">
+                                <div class="inside" style="background-image: url(../../assets/images/internato/food.jpg);"></div>
+                            </div>
+                            <div class="slide-bg">
+                                <div class="inside" style="background-image: url(../../assets/images/internato/rules.jpg);"></div>
+                            </div>
+                            <div class="slide-bg">
+                                <div class="inside" style="background-image: url(../../assets/images/internato/location.jpg);"></div>
+                            </div>
+                            <div class="slide-bg">
+                                <div class="inside" style="background-image: url(../../assets/images/internato/signup.jpg);"></div>
+                            </div>
+                        </div>
+                        <style>
+                        </style>
+
+                        <div class="container internato-content">
+                            <div class="piling-project-list-title internato-title text-center mb-4" style="font-size: 450%;">O MELHOR INTERNATO DO BRASIL</div>
+
+                            <!-- AQUI É ONDE FAZEMOS A MÁGICA -->
+                            <div class="row piling-project-list internato-card mt-4 mb-4">
+
+                                <div class="col-xl-4 col-6 piling-project-item mb-4">
+                                    <div class="cards-internato">
+                                        <h3 class="piling-project-title font-libre font-internato">
+                                            <a href="https://www.uniaene.edu.br/internato" class="a-change-bg">Vida no<br /> Internato</a>
+                                        </h3>
+                                        <div class="piling-project-detail internato-details text-white">Convívio, atividades e apoio espiritual</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-6 piling-project-item mb-4">
+                                    <div class="cards-internato">
+                                        <h3 class="piling-project-title font-libre font-internato">
+                                            <a href="https://www.uniaene.edu.br/internato" class="a-change-bg">Acomodações<br /> Confortáveis</a>
+                                        </h3>
+                                        <div class="piling-project-detail internato-details text-white">Quartos coletivos bem estruturados</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-6 piling-project-item mb-4">
+                                    <div class="cards-internato">
+                                        <h3 class="piling-project-title font-libre font-internato">
+                                            <a href="https://www.uniaene.edu.br/internato" class="a-change-bg">Alimentação<br /> Equilibrada</a>
+                                        </h3>
+                                        <div class="piling-project-detail internato-details text-white">Refeições saudáveis preparadas diariamente</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-6 piling-project-item mb-4">
+                                    <div class="cards-internato">
+                                        <h3 class="piling-project-title font-libre font-internato">
+                                            <a href="https://www.uniaene.edu.br/internato" class="a-change-bg">Rotina e<br /> Regras</a>
+                                        </h3>
+                                        <div class="piling-project-detail internato-details text-white">Ambiente organizado, com horários definidos</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-6 piling-project-item mb-4">
+                                    <div class="cards-internato">
+                                        <h3 class="piling-project-title font-libre font-internato">
+                                            <a href="https://www.uniaene.edu.br/internato" class="a-change-bg">Localização<br /> Privilegiada</a>
+                                        </h3>
+                                        <div class="piling-project-detail internato-details text-white">Dentro do campus, com acesso a todas as áreas</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-6 piling-project-item mb-4">
+                                    <div class="cards-internato">
+                                        <h3 class="piling-project-title font-libre font-internato">
+                                            <a href="https://www.uniaene.edu.br/internato" class="a-change-bg">Inscrição<br /> e Vagas</a>
+                                        </h3>
+                                        <div class="piling-project-detail internato-details text-white">Faça sua inscrição e viva o inesquecível</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide">
+                    <div class="slide-container">
+                        <div class="slide-bg slide-bg-circle">
+                            <div class="inside" style="background: url('../../assets/images/school/bg.png'); background-size:cover; background-repeat: no-repeat;"></div>
+                        </div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <!-- <div class="solution-num text-texture">25</div>  -->
+                                    <!-- <div class="solution-num-title">Years<br /> Experience</div> -->
+                                </div>
+                                <div class="col-lg-6 glass-box p-4">
+                                    <h2 class="slide-title2 font-libre">O CAB agora é <br /> Colégio UNIAENE</h2>
+                                    <p class="text-light mt-3">
+                                        Uma nova etapa começa na nossa história. O antigo <strong>Colégio Adventista da Bahia (CAB)</strong> agora é <strong>Colégio UNIAENE</strong> — um nome que reflete ainda mais a
+                                        <strong>integração com o Centro Universitário Adventista do Nordeste</strong> e reafirma nosso compromisso com uma <strong>educação cristã de excelência</strong>.
+                                        <br><br> A mudança de nome representa continuidade, crescimento e unidade: a mesma missão, os mesmos valores, mas com um olhar renovado para o futuro.
+                                    </p>
+
+                                    <a href="https://uniaene.educacaoadventista.org.br/" target="_blank" class="btn btn-outline-yellow btn-lg mt-4 rounded-pill">
+                                        Conheça mais
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide slide5 slide-dark">
+                    <div class="slide-container" style="padding-top: 80px;">
+                        <div class="slide-bg">
+                            <div class="inside" style="background: url('../../assets/images/testimonials/rodrigosilva.jpg');"></div>
+                        </div>
+
+                        <div class="container-fluid px-0">
+                            <div class="h1 text-center text-light mb-0">
+                                <span class="rounded-icon"><i class="icon-quote"></i></span>
+                            </div>
+                            <div class="h5 text-center mb-0">
+                                histórias inspiradoras
+                            </div>
+                            <div class="text-center mt-4 mb-5 px-4 fw-bold">
+                                <p style="
+                                        color: #000;
+                                        font-size: 1.1rem;
+                                        line-height: 1.7;
+                                        max-width: 85%;
+                                        margin: 0 auto;
+                                        background: rgba(255, 255, 255, 0.1);
+                                        border-radius: 1rem;
+                                        padding: 1.5rem 2rem;
+                                        backdrop-filter: blur(6px);
+                                        box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+                                    ">
+                                    Temos orgulho em ver pessoas que passaram por nossas salas de aula deixando marcas positivas por onde vão. São profissionais e líderes que mantêm viva a essência do UNIAENE: compromisso, propósito e fé em cada passo. Suas trajetórias refletem o que acreditamos
+                                    — que o verdadeiro valor de uma formação está em viver o que se aprende e inspirar outros pelo exemplo.
+                                </p>
+                            </div>
+
+                            <div class="a-reviews-carousel owl-carousel owl-theme">
+
+                                <!-- Rodrigo Silva -->
+                                <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/rodrigosilva.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                No UNIAENE, descobri que estudar não é acumular conhecimento, mas ser transformado por ele. Cada aula me fez crescer como aluno, profissional e ser humano.
+                                            </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Rodrigo Silva</div>
+                                            <div class="fs-5 text-dark">Arqueólogo e Apresentador</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/rodrigosilva.png" alt="Rodrigo Silva">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/familialudtke.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                Nenhum lugar transformou tanto a nossa vida quanto o UNIAENE. As nossas maiores conquistas na educação, música, família e amizades nasceram aqui. </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Família Lüdtke</div>
+                                            <div class="fs-5 text-dark">Daniel e Marla Lüdtke - Cantores (Projeto Família Lüdtke)</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/familialudtke.png" alt="Família Lüdtke">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/vandersonsantos.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                O tempo que passei no UNIAENE foi essencial para o que sou hoje. A formação que recebi uniu excelência acadêmica e princípios sólidos, e isso me acompanha em cada decisão profissional e pessoal. Olhar para trás e perceber o quanto cresci nesse lugar me
+                                                enche de gratidão. Foi no UNIAENE que aprendi que servir também é uma forma de viver o Evangelho. </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Vanderson Santos</div>
+                                            <div class="fs-5 text-dark">Cantor Novo Tempo</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/vandersonsantos.png" alt="Vanderson Santos">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/prdudu.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                Foi no UNIAENE que compreendi que o verdadeiro conhecimento vem acompanhado de propósito e fé. Ali, minha mente se abriu, mas foi o coração que se transformou. </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Pr. Eduardo Batista (Dudu)</div>
+                                            <div class="fs-5 text-dark">Líder Jovem ULB</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/prdudu.png" alt="Pr. Eduardo Batista (Dudu)">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Josanan Alves -->
+                                <!-- <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/josananalves.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                O ambiente é acolhedor, e a proposta educacional realmente transforma vidas!
+                                            </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Josanan Alves</div>
+                                            <div class="fs-5 text-dark">Líder Min. Pessoal DSA</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/josananalves.png" alt="Josanan Alves">
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <!-- Rafael Santos -->
+                                <!-- <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/rafaelsantos.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                Uma instituição que alia fé, conhecimento e inovação.
+                                                Tenho orgulho de fazer parte dessa história.
+                                            </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Rafael Santos</div>
+                                            <div class="fs-5 text-dark">Líder Jovem USB</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/rafaelsantos.png" alt="Rafael Santos">
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <!-- Diego Barros -->
+                                <!-- <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/diegobarros.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                O curso de GTI do UNIAENE me preparou para o mercado com excelência e prática real.
+                                            </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Diego Barros</div>
+                                            <div class="fs-5 text-dark">Presidente Missão Sergipe</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/diegobarros.png" alt="Diego Barros">
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <!-- Éder Ferreira -->
+                                <!-- <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/ederferreira.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                Sou grato pela base sólida que recebi aqui. Hoje posso dizer que sou
+                                                um profissional completo.
+                                            </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Éder Ferreira</div>
+                                            <div class="fs-5 text-dark">Cantor Arautos do Rei</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/ederferreira.png" alt="Éder Ferreira">
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <!-- Gilson Brito -->
+                                <!-- <div class="reviews-carousel-item px-5 mx-5" data-bg="../../assets/images/testimonials/gilsonbrito.jpg">
+                                    <div class="egresso-wrapper glass-effect d-flex flex-column flex-lg-row align-items-stretch">
+                                        <div class="egresso-text-container d-flex flex-column justify-content-center text-light p-5 p-lg-6 flex-lg-fill">
+                                            <div class="reviews-carousel-text font-libre fs-4 mb-4 fw-light text-dark">
+                                                A missão do UNIAENE é clara: formar seres humanos preparados
+                                                para o mundo e para a eternidade.
+                                            </div>
+                                            <div class="reviews-carousel-author fs-3 fw-bold text-dark">Gilson Brito</div>
+                                            <div class="fs-5 text-dark">Orador Voz da Profecia</div>
+                                        </div>
+                                        <div class="egresso-photo flex-lg-fill text-center">
+                                            <img src="https://www.uniaene.edu.br/shared/assets/images/testimonials/gilsonbrito.png" alt="Gilson Brito">
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section pp-scrollable slide slide6">
+                    <div class="slide-container">
+                        <div class="slide-bg">
+                            <div class="inside" style="background: url('../../assets/images/contact/bg.jpg');"></div>
+                        </div>
+                        <div class="slide-bg slide-bg-circle">
+                            <div class="inside" style="background: url('../../assets/images/contact/bg-2.png');"></div>
+                        </div>
+                        <div class="container">
+                            <div class="row slide-content">
+                                <div class="col-sm-6">
+                                    <h2 class="slide-title font-libre h2"><span class="text-primary">Cachoeira -
+                                            BA,</span> BRASIL
+                                    </h2>
+                                    <div class="slide-body">
+                                        <div class="slide-contact-address">Rodovia BR 101, km 197, Capoeiruçu, Cachoeira - BA, CEP: 44300-000
+                                        </div>
+                                        <div class="slide-contact-mail"><a href="/cdn-cgi/l/email-protection#dbb3beb7b7b49bb7beacb2a8a8afaebfb2b4f5b8b4" class="underline"><span class="__cf_email__" data-cfemail="1d7e7273697c69725d6873747c78737833787968337f6f">[email&#160;protected]</span></a></div>
+                                        <div class="slide-contact-phone">
+
+                                            <a href="tel:+5575991870101" class="phone-link" style="cursor: pointer;">
+                                                <a href="https://wa.me/5575991870101" style="border: 0;" target="_blank"
+                                                    class="social-rounded-whatsapp text-decoration-none text-dark">
+                                                    +55 (75) 99187-0101
+                                                    <span class="floating-icon">
+                                                        <img src="../../assets/images/contact/whatsapp.svg" alt="WhatsApp"
+                                                            width="42" height="42"
+                                                            style="vertical-align: middle; margin-left: 8px;"
+                                                            data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                            title="Fale conosco pelo WhatsApp">
+                                                    </span>
+                                                </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <a class="btn btn-primary btn-rounded mr-4" href="https://www.uniaene.edu.br/contato">Como nos encontrar? <i
+                                    class="icon ion-ios-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+        window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+    </script>
+    <script src="js/smoothscroll.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="../../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="js/animsition.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script src="js/jquery.pagepiling.min.js"></script>
+    <script src="js/isotope.pkgd.min.js"></script>
+    <script src="js/jquery.fancybox.min.js"></script>
+    <script src="js/TweenMax.min.js"></script>
+    <script src="js/ScrollMagic.min.js"></script>
+    <script src="js/animation.gsap.min.js"></script>
+    <script src="js/jquery.viewport.js"></script>
+    <script src="js/jquery.countdown.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        Fancybox.bind("[data-fancybox]", {});
+    </script>
+
+    <script>
+        $(document).ready(function() {
+
+            window.addEventListener('load', function() {
+                document.body.classList.add('dark-horizontal');
+                const logo = document.querySelector('.brand-logo');
+                const logoDark = logo.dataset.logoDark;
+                const logoLight = logo.dataset.logoLight;
+                logo.src = logo.dataset.logoDark;
+            });
+
+            // Logo propert
+            const logo = document.querySelector('.brand-logo');
+
+            const logoDark = logo.dataset.logoDark;
+            const logoLight = logo.dataset.logoLight;
+
+            $('.a-pagepiling').pagepiling({
+                scrollingSpeed: 280,
+                menu: '#menu',
+                loopTop: true,
+                loopBottom: true,
+                navigation: {
+                    'position': 'right'
+                },
+                afterLoad: function(anchorLink, index) {
+                    const seal = document.getElementById('floatingSeal');
+
+                    // mostra selo só na primeira seção
+                    if (index === 1) {
+                        seal.style.opacity = '1';
+                        seal.style.animation = 'floatSeal 4s ease-in-out infinite';
+                        seal.style.pointerEvents = 'auto'; // 👈 ativa cliques só na 1ª seção
+                    } else {
+                        seal.style.opacity = '0';
+                        seal.style.animation = 'none';
+                        seal.style.pointerEvents = 'none'; // 👈 desativa cliques nas demais
+                    }
+
+                    if (index == 1 || index == 2 || index == 3 || index == 5 || index == 6) { // Section with dark bacgkrounds
+                        $('body').addClass('dark-horizontal');
+                        logo.src = logo.dataset.logoDark;
+                    } else {
+                        $('body').removeClass('dark-horizontal');
+                        logo.src = logo.dataset.logoLight;
+                    }
+
+                    if (index == 1) {
+                        logo.src = logo.dataset.logoDark;
+                    }
+                },
+                onLeave: function() {
+                    $('.section.active .slide-bg-list .slide-bg').removeClass('active').eq(0).addClass('active')
+                }
+            });
+
+            // Mostra o selo logo ao carregar a página (primeira seção)
+            const seal = document.getElementById('floatingSeal');
+            if (seal) {
+                seal.style.opacity = '1';
+                seal.style.animation = 'floatSeal 4s ease-in-out infinite';
+                seal.style.pointerEvents = 'auto'; // 👈 ativa o clique inicial
+            }
+
+
+            $('.a-pp-prev').on('click', function() {
+                $.fn.pagepiling.moveSectionUp();
+            });
+            $('.a-pp-next').on('click', function() {
+                $.fn.pagepiling.moveSectionDown();
+            });
+
+
+            $('.banner-carousel').owlCarousel({
+                items: 1,
+                loop: true,
+                nav: false,
+                autoplay: true,
+                autoplayTimeout: 4000,
+                autoplayHoverPause: true
+            });
+
+            // Botões manuais
+            $('.a-owl-prev').on('click', function() {
+                $('.banner-carousel').trigger('prev.owl.carousel');
+            });
+            $('.a-owl-next').on('click', function() {
+                $('.banner-carousel').trigger('next.owl.carousel');
+            });
+        });
+
+        let isPlaying = false;
+
+        function resizeFullscreenVideo() {
+            if (!isPlaying) return;
+
+            const iframe = document.querySelector('.fullscreen-video');
+            if (!iframe) return;
+
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            const videoRatio = 16 / 9;
+            const windowRatio = windowWidth / windowHeight;
+
+            let width, height;
+
+            if (windowRatio > videoRatio) {
+                // tela mais larga que o vídeo → cobre pela largura
+                width = windowWidth;
+                height = windowWidth / videoRatio;
+            } else {
+                // tela mais alta que o vídeo → cobre pela altura
+                height = windowHeight;
+                width = windowHeight * videoRatio;
+            }
+
+            iframe.style.width = `${width}px`;
+            iframe.style.height = `${height}px`;
+            iframe.style.top = '50%';
+            iframe.style.left = '50%';
+            iframe.style.transform = 'translate(-50%, -50%)';
+            iframe.style.position = 'absolute';
+        }
+
+
+        document.getElementById('playVideo').addEventListener('click', function() {
+            const container = document.getElementById('videoWrapper');
+            const heroText = document.getElementById('heroText');
+
+            if (!isPlaying) {
+                const iframe = document.createElement('iframe');
+                iframe.setAttribute('src', 'https://www.youtube.com/embed/RIshmy59gC4?autoplay=1&mute=0&controls=0&loop=1&playlist=RIshmy59gC4&rel=0&modestbranding=1');
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('allow', 'autoplay; encrypted-media');
+                iframe.setAttribute('allowfullscreen', '');
+                iframe.classList.add('fullscreen-video');
+
+                container.innerHTML = '';
+                container.appendChild(iframe);
+
+                isPlaying = true;
+                resizeFullscreenVideo();
+
+                // fade-out
+                heroText.classList.remove('fade-in');
+                heroText.classList.add('fade-out');
+
+                this.querySelector('i').classList.replace('ion-ios-play', 'ion-ios-pause');
+            } else {
+                container.innerHTML = '';
+                isPlaying = false;
+
+                // fade-in
+                heroText.classList.remove('fade-out');
+                heroText.classList.add('fade-in');
+
+                this.querySelector('i').classList.replace('ion-ios-pause', 'ion-ios-play');
+            }
+        });
+
+        window.addEventListener('resize', resizeFullscreenVideo);
+
+        document.querySelectorAll('.tooltip-video-container').forEach(container => {
+            const tooltip = container.querySelector('.tooltip-video');
+            const videoSrc = container.dataset.video;
+
+            if (window.innerWidth < 768) {
+                tooltip.remove(); // Remove em telas pequenas
+                return;
+            }
+
+            container.addEventListener('mouseenter', () => {
+                if (!videoSrc || tooltip.querySelector('video')) return;
+
+                const video = document.createElement('video');
+                video.setAttribute('autoplay', '');
+                video.setAttribute('loop', '');
+                video.setAttribute('muted', '');
+                video.setAttribute('playsinline', '');
+                video.classList.add('tooltip-html5-video');
+
+                const source = document.createElement('source');
+                source.setAttribute('src', videoSrc);
+                source.setAttribute('type', 'video/mp4');
+
+                video.appendChild(source);
+                tooltip.appendChild(video);
+
+                tooltip.style.display = 'block';
+                requestAnimationFrame(() => tooltip.style.opacity = '1');
+            });
+
+            container.addEventListener('mouseleave', () => {
+                const video = tooltip.querySelector('video');
+                if (video) {
+                    video.pause();
+                    tooltip.style.opacity = '0';
+                    setTimeout(() => {
+                        tooltip.innerHTML = '';
+                        tooltip.style.display = 'none';
+                    }, 300);
+                }
+            });
+        });
+
+
+        $('.a-reviews-carousel').on('changed.owl.carousel', function(event) {
+            const currentItem = $(event.target)
+                .find('.owl-item')
+                .eq(event.item.index)
+                .find('.reviews-carousel-item');
+
+            const newBg = currentItem.data('bg');
+
+            // Troca o background da .slide-bg .inside
+            $('.slide5 .slide-bg .inside').css('background-image', `url(${newBg})`);
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const efeitosPossiveis = [
+                "animate__fadeInLeft",
+                "animate__fadeInRight",
+                "animate__fadeInUp",
+                "animate__fadeInDown",
+                "animate__zoomIn",
+                "animate__bounceIn"
+            ];
+
+            const efeitosSaida = [
+                "animate__fadeOutLeft",
+                "animate__fadeOutRight",
+                "animate__fadeOutUp",
+                "animate__fadeOutDown",
+                "animate__zoomOut",
+                "animate__bounceOut"
+            ];
+
+            function efeitoAleatorio(lista) {
+                const i = Math.floor(Math.random() * lista.length);
+                return lista[i];
+            }
+
+            function aplicarAnimacao(el, efeito) {
+                el.classList.forEach(c => {
+                    if (c.startsWith("animate__")) el.classList.remove(c);
+                });
+                if (!efeito || efeito.trim() === "") return;
+                void el.offsetWidth;
+                el.classList.add("animate__animated", efeito);
+            }
+
+            // propriedades que vamos limpar entre banners
+            const STYLE_KEYS = [
+                "width", "height", "maxWidth", "maxHeight", "minWidth", "minHeight",
+                "margin", "marginTop", "marginBottom", "marginLeft", "marginRight",
+                "transform", "transformOrigin", "position", "top", "right", "bottom", "left", "objectFit", "display"
+            ];
+
+            function resetStyles(el) {
+                STYLE_KEYS.forEach(k => {
+                    el.style[k] = "";
+                });
+            }
+
+            let banners = [
+                // Banner 1
+                {
+                    mainImg: "../../assets/images/home/banner/01/isaac.png",
+                    backgroundImg: "../../assets/images/home/banner/01/fundo.png",
+                    secondaryImg: "../../assets/images/home/banner/01/texto.png",
+                    mainIn: "animate__fadeInLeft",
+                    mainOut: "animate__fadeOutLeft",
+                    secondaryIn: "random",
+                    secondaryOut: "animate__fadeOutUp",
+                    ctaText: "",
+                    ctaLink: "https://uniaene.com.br/inscricao",
+                    ctaTarget: "_blank",
+
+                    styles: {
+                        base: {
+                            main: {
+                                position: "absolute",
+                                bottom: "0",
+                                right: "0",
+                                width: "100%" // já cobre todos os tamanhos até mudar
+                            },
+                            secondary: {
+                                // estilos fixos
+                            },
+                            background: {
+                                position: "absolute",
+                                top: "0",
+                                left: "0",
+                                width: "100vw",
+                                height: "100vh",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                backgroundRepeat: "no-repeat"
+                            }
+                        },
+
+                        // xs: <576px
+                        xs: {
+                            secondary: {
+                                // ajustes opcionais p/ celular pequeno
+                            }
+                        },
+
+                        // sm: ≥576px
+                        sm: {
+                            secondary: {
+                                // ajustes opcionais p/ celular grande
+                            }
+                        },
+
+                        // md: ≥768px
+                        md: {
+                            secondary: {
+                                // ajustes opcionais p/ tablet
+                            }
+                        },
+
+                        // lg: ≥992px
+                        lg: {
+                            main: {
+                                width: "50%" // só muda aqui
+                            },
+                            secondary: {
+                                marginTop: "7em",
+                                width: "100%"
+                            }
+                        },
+
+                        // xl: ≥1200px
+                        xl: {
+                            secondary: {
+                                marginTop: "9em",
+                                width: "100%"
+                            }
+                        },
+
+                        // xxl: ≥1400px
+                        xxl: {
+                            secondary: {
+                                marginTop: "9em",
+                                marginLeft: "-7em",
+                                width: "100%"
+                            }
+                        }
+                    }
+
+                },
+
+                // Banner 2
+                /*
+                {
+                    mainImg: "../../assets/images/home/banner/03/isaac.png",
+                    backgroundImg: "../../assets/images/home/banner/03/bg.png",
+                    secondaryImg: "../../assets/images/home/banner/03/text.png",
+                    mainIn: "random",
+                    mainOut: "random",
+                    secondaryIn: "random",
+                    secondaryOut: "random",
+                    ctaText: "Matricule-se agora",
+                    ctaLink: "https://portal.apprbs.com.br/uniaene-processoseletivo",
+                    ctaTarget: "_blank",
+                    setLogoDark: false,
+
+                    styles: {
+                        base: {
+                            main: {
+                                position: "absolute",
+                                bottom: "0",
+                                right: "0",
+                                width: "100%" // já cobre todos os tamanhos até mudar
+                            },
+                            secondary: {
+                                position: "absolute",
+                                top: "0",
+                            },
+                            background: {
+                                position: "absolute",
+                                top: "0",
+                                left: "0",
+                                width: "100vw",
+                                height: "100vh",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                backgroundRepeat: "no-repeat"
+                            }
+                        },
+
+                        // xs: <576px
+                        xs: {
+                            main: {
+                                width: "70%"
+                            },
+                            secondary: {
+                                marginTop: "0",
+                                width: "60%"
+                            }
+                        },
+
+                        // sm: ≥576px
+                        sm: {
+                            main: {
+                                width: "70%"
+                            },
+                            secondary: {
+                                marginTop: "2em",
+                                width: "60%"
+                            }
+                        },
+
+                        // md: ≥768px
+                        md: {
+                            main: {
+                                width: "70%"
+                            },
+                            secondary: {
+                                marginTop: "3em",
+                                width: "60%"
+                            }
+                        },
+
+                        // lg: ≥992px
+                        lg: {
+                            main: {
+                                width: "42%" // só muda aqui
+                            },
+                            secondary: {
+                                marginTop: "3em",
+                                marginLeft: "7em",
+                                width: "35%"
+                            }
+                        },
+
+                        // xl: ≥1200px
+                        xl: {
+                            secondary: {
+                                marginTop: "3em",
+                                marginLeft: "3em",
+                                width: "35%"
+                            }
+                        },
+
+                        // xxl: ≥1400px
+                        xxl: {
+                            secondary: {
+                                marginTop: "2em",
+                                marginLeft: "7em",
+                                width: "45%"
+                            }
+                        }
+                    }
+
+                },
+                */
+
+                // Banner 3
+                /*
+                {
+                    mainImg: "../../assets/images/home/banner/02/center.png",
+                    backgroundImg: "../../assets/images/home/banner/02/fundo.png",
+                    secondaryImg: "../../assets/images/home/banner/02/elements.png",
+                    mainIn: "random",
+                    mainOut: "random",
+                    secondaryIn: "random",
+                    secondaryOut: "random",
+                    ctaText: "Indique agora",
+                    ctaLink: "https://www.uniaene.com.br/indique/",
+                    ctaTarget: "_blank",
+
+                    styles: {
+                        // base → sempre aplicado
+                        base: {
+                            main: {
+                                position: "absolute",
+                                top: "28rem",
+                                left: "0",
+                                right: "0",
+                                margin: "0 auto",
+                                width: "100%",
+                                maxWidth: "1200px",
+                            },
+                            secondary: {
+                                // estilos fixos opcionais
+                            }
+                        },
+
+                        // xs: <576px (celulares pequenos)
+                        xs: {
+                            secondary: {
+                                display: "none" // esconde o secondary em telas muito pequenas
+                            }
+                        },
+
+                        // sm: ≥576px (celulares grandes)
+                        sm: {
+                            secondary: {
+                                minWidth: "90vw"
+                            }
+                        },
+
+                        // md: ≥768px (tablets)
+                        md: {
+                            secondary: {
+                                right: "3rem"
+                            }
+                        },
+
+                        // lg: ≥992px (notebooks pequenos)
+                        lg: {
+                            main: {
+                                position: "absolute",
+                                top: "0",
+                                left: "0",
+                            },
+                            secondary: {
+                                position: "absolute",
+                                top: "0",
+                                right: "0",
+                                minWidth: "80%",
+                            }
+                        },
+
+                        // xl: ≥1200px (desktops médios)
+                        xl: {
+                            secondary: {
+                                display: "none"
+                            }
+                        },
+
+                        // xxl: ≥1400px (telas grandes)
+                        xxl: {
+                            secondary: {
+                                top: "-4rem",
+                                left: "-5rem",
+                                width: "100%",
+                                display: "none"
+                            }
+                        }
+                    }
+                },
+                */
+
+                // Banner 5
+                {
+                    mainImg: "../../assets/images/home/banner/05/model.png",
+                    backgroundImg: "../../assets/images/home/banner/05/background.jpg",
+                    secondaryImg: "../../assets/images/home/banner/05/text.png",
+                    mainIn: "animate__fadeInRight",
+                    mainOut: "animate__fadeOutRight",
+                    secondaryIn: "random",
+                    secondaryOut: "animate__fadeOutUp",
+                    ctaText: "Preencher Formulário",
+                    ctaLink: "#",
+                    ctaTarget: "_self",
+                    ctaModal: true, // flag para abrir modal ao invés de navegar
+                    hidePlayButton: true, // oculta o botão de play
+
+                    styles: {
+                        base: {
+                            main: {
+                                position: "absolute",
+                                bottom: "0",
+                                right: "0",
+                                width: "100%"
+                            },
+                            secondary: {
+                                maxWidth: "none" // remove o limite do img-fluid para permitir crescimento
+                            },
+                            background: {
+                                position: "absolute",
+                                top: "0",
+                                left: "0",
+                                width: "100vw",
+                                height: "100vh",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                backgroundRepeat: "no-repeat"
+                            }
+                        },
+
+                        xs: {
+                            main: {
+                                width: "95%"
+                            },
+                            secondary: {
+                                marginTop: "2em",
+                                marginLeft: "0",
+                                width: "100%"
+                            }
+                        },
+
+                        sm: {
+                            main: {
+                                width: "90%"
+                            },
+                            secondary: {
+                                marginTop: "1em",
+                                marginLeft: "-2em",
+                                width: "115%"
+                            }
+                        },
+
+                        md: {
+                            main: {
+                                width: "85%"
+                            },
+                            secondary: {
+                                marginTop: "-20px",
+                                marginLeft: "-5em",
+                                width: "130%"
+                            }
+                        },
+
+                        lg: {
+                            main: {
+                                width: "70%"
+                            },
+                            secondary: {
+                                marginTop: "-60px",
+                                marginLeft: "-10em",
+                                width: "160%"
+                            }
+                        },
+
+                        xl: {
+                            main: {
+                                width: "80%"
+                            },
+                            secondary: {
+                                marginTop: "-120px",
+                                marginLeft: "-15em",
+                                width: "200%"
+                            }
+                        },
+
+                        xxl: {
+                            main: {
+                                width: "85%"
+                            },
+                            secondary: {
+                                marginTop: "-170px",
+                                marginLeft: "-20em",
+                                width: "230%"
+                            }
+                        }
+                    }
+                },
+
+                // Banner 4
+                // {
+                //     mainImg: "", // não usa imagem principal
+                //     backgroundImg: "../../assets/images/home/banner/04/back.jpg",
+                //     secondaryImg: "../../assets/images/home/banner/04/text.png",
+
+                //     mainIn: "animate__fadeInRight",
+                //     mainOut: "animate__fadeOutRight",
+                //     secondaryIn: "animate__fadeInRight",
+                //     secondaryOut: "animate__fadeOutRight",
+
+                //     ctaText: "Inscreva-se",
+                //     ctaLink: "https://eventos.unasp.edu.br/venaiceducacaoadventista-127839-606625/",
+                //     ctaTarget: "_blank",
+
+                //     styles: {
+                //         base: {
+                //             background: {
+                //                 position: "absolute",
+                //                 top: "0",
+                //                 left: "0",
+                //                 width: "100vw",
+                //                 height: "100vh",
+                //                 backgroundSize: "cover",
+                //                 backgroundPosition: "center",
+                //                 backgroundRepeat: "no-repeat"
+                //             },
+
+                //             // Texto
+                //             secondary: {
+                //                 position: "absolute",
+                //                 top: "0",
+                //                 bottom: "0",
+                //                 right: "0",
+                //                 margin: "auto 0",
+
+                //                 height: "100vh",
+                //                 width: "auto",
+
+                //                 objectFit: "contain", // garante proporção
+                //                 maxHeight: "100vh", // nunca ultrapassa vertical
+                //                 maxWidth: "55vw", // texto ocupa até 55% da tela (ajustável)
+                //             }
+                //         },
+
+                //         // xs <576px
+                //         xs: {
+                //             secondary: {
+                //                 position: "absolute",
+                //                 bottom: "0", // 👈 espaçamento a partir do bottom
+                //                 left: "0",
+                //                 right: "0",
+                //                 top: "10vh",
+                //                 margin: "0 auto", // centraliza na horizontal
+
+                //                 width: "auto",
+                //                 height: "auto",
+                //                 maxWidth: "80vw",
+                //                 maxHeight: "100vh",
+                //                 objectFit: "contain"
+                //             }
+                //         },
+
+                //         // sm ≥576px
+                //         sm: {
+                //             secondary: {
+                //                 position: "absolute",
+                //                 bottom: "0", // 👈 espaçamento a partir do bottom
+                //                 left: "0",
+                //                 right: "0",
+                //                 top: "5vh",
+                //                 margin: "0 auto", // centraliza na horizontal
+
+                //                 width: "auto",
+                //                 height: "auto",
+                //                 maxWidth: "80vw",
+                //                 maxHeight: "100vh",
+                //                 objectFit: "contain"
+                //             }
+                //         },
+
+                //         // md ≥768px
+                //         md: {
+                //             secondary: {
+                //                 maxWidth: "80vw",
+                //             }
+                //         },
+
+                //         // lg ≥992px
+                //         lg: {
+                //             secondary: {
+                //                 maxWidth: "40vw",
+                //                 position: "absolute",
+                //                 right: "10vw",
+                //                 left: "auto",
+                //                 margin: "0", // evita centralização herdada
+                //             }
+                //         },
+
+                //         // xl ≥1200px
+                //         xl: {
+                //             secondary: {
+                //                 maxWidth: "50vw",
+                //             }
+                //         },
+
+                //         // xxl ≥1400px
+                //         xxl: {
+                //             secondary: {
+                //                 maxWidth: "45vw",
+                //                 maxHeight: "70vh",
+                //                 position: "absolute",
+                //                 right: "0",
+                //                 left: "auto",
+                //                 margin: "0", // evita centralização herdada
+                //             }
+                //         }
+                //     }
+                // }
+            ];
+
+            // Ordem personalizada
+            const ordem = [1, 0]; // índices do array banners: o Banner 5 (novo index 1) seguido do Banner 1 (index 0)
+            const orderedBanners = ordem.map(i => banners[i]);
+            banners = orderedBanners;
+
+            //Ordem Aleatória
+            // banners = banners.sort(() => Math.random() - 0.5);
+
+            let current = -1;
+            const duration = 1000;
+
+            const mainEl = document.getElementById("bannerMain");
+            const backgroundEl = document.getElementById("bannerBackground");
+            const secondaryEl = document.getElementById("bannerSecondary");
+            const ctaEl = document.getElementById("bannerCta");
+
+            function escolherEfeito(tipo, efeito) {
+                if (!efeito || efeito.trim() === "") return "";
+                if (efeito === "random") {
+                    return efeitoAleatorio(tipo === "in" ? efeitosPossiveis : efeitosSaida);
+                }
+                return efeito;
+            }
+
+            function aplicarEstilos(styles) {
+                const w = window.innerWidth;
+
+                if (styles.base) {
+                    if (styles.base.secondary) Object.assign(secondaryEl.style, styles.base.secondary);
+                    if (styles.base.main) Object.assign(mainEl.style, styles.base.main);
+                }
+
+                // xs: <576px (celulares pequenos)
+                if (w < 576 && styles.xs) {
+                    if (styles.xs.secondary) Object.assign(secondaryEl.style, styles.xs.secondary);
+                    if (styles.xs.main) Object.assign(mainEl.style, styles.xs.main);
+                }
+
+                // sm: ≥576px (celulares grandes)
+                if (w >= 576 && styles.sm) {
+                    if (styles.sm.secondary) Object.assign(secondaryEl.style, styles.sm.secondary);
+                    if (styles.sm.main) Object.assign(mainEl.style, styles.sm.main);
+                }
+
+                // md: ≥768px (tablets)
+                if (w >= 768 && styles.md) {
+                    if (styles.md.secondary) Object.assign(secondaryEl.style, styles.md.secondary);
+                    if (styles.md.main) Object.assign(mainEl.style, styles.md.main);
+                }
+
+                // lg: ≥992px (notebooks pequenos)
+                if (w >= 992 && styles.lg) {
+                    if (styles.lg.secondary) Object.assign(secondaryEl.style, styles.lg.secondary);
+                    if (styles.lg.main) Object.assign(mainEl.style, styles.lg.main);
+                }
+
+                // xl: ≥1200px (desktops médios)
+                if (w >= 1200 && styles.xl) {
+                    if (styles.xl.secondary) Object.assign(secondaryEl.style, styles.xl.secondary);
+                    if (styles.xl.main) Object.assign(mainEl.style, styles.xl.main);
+                }
+
+                // xxl: ≥1400px (telas grandes)
+                if (w >= 1400 && styles.xxl) {
+                    if (styles.xxl.secondary) Object.assign(secondaryEl.style, styles.xxl.secondary);
+                    if (styles.xxl.main) Object.assign(mainEl.style, styles.xxl.main);
+                }
+            }
+
+
+            function trocarBanner() {
+                if (current >= 0) {
+                    const bannerAtual = banners[current];
+                    aplicarAnimacao(mainEl, escolherEfeito("out", bannerAtual.mainOut));
+                    aplicarAnimacao(backgroundEl, escolherEfeito("out", bannerAtual.backgroundOut));
+                    aplicarAnimacao(secondaryEl, escolherEfeito("out", bannerAtual.secondaryOut));
+                    if (bannerAtual.ctaText) aplicarAnimacao(ctaEl, "animate__fadeOut");
+                }
+
+                setTimeout(() => {
+                    current = (current + 1) % banners.length;
+                    const banner = banners[current];
+
+                    // limpa estilos
+                    resetStyles(mainEl);
+                    resetStyles(secondaryEl);
+
+                    // troca imagens
+                    mainEl.src = banner.mainImg;
+                    backgroundEl.style.backgroundImage = `url('${banner.backgroundImg}')`;
+                    secondaryEl.src = banner.secondaryImg;
+
+                    // aplica estilos ANTES das animações
+                    if (banner.styles) aplicarEstilos(banner.styles);
+
+                    // Dark Light
+                    const logo = document.querySelector('.brand-logo');
+
+                    // if (banner.setLogoDark) {
+                    //     $('body').removeClass('dark-horizontal');
+                    //     logo.src = logo.dataset.logoLight;
+                    // } else {
+                    //     $('body').addClass('dark-horizontal');
+                    //     logo.src = logo.dataset.logoDark;
+                    // }
+
+                    // CTA
+                    if (banner.ctaText) {
+                        ctaEl.textContent = banner.ctaText;
+                        ctaEl.href = banner.ctaLink || "#";
+                        ctaEl.target = banner.ctaTarget || "_self"; // 👈 aplica o target
+                        ctaEl.style.display = "inline-block";
+                        ctaEl.style.pointerEvents = "auto";
+                        ctaEl.style.visibility = "visible";
+                        // Se for modal, marca o atributo
+                        ctaEl.dataset.modal = banner.ctaModal ? "true" : "false";
+                        aplicarAnimacao(ctaEl, "animate__fadeInUp");
+                    } else {
+                        ctaEl.style.display = "none";
+                        ctaEl.style.pointerEvents = "none";
+                        ctaEl.style.visibility = "hidden";
+                        ctaEl.dataset.modal = "false";
+                    }
+
+                    // Botão de Play
+                    const playBtn = document.getElementById("playVideo");
+                    if (playBtn) {
+                        if (banner.hidePlayButton) {
+                            playBtn.classList.remove("d-md-block");
+                            playBtn.style.display = "none";
+                        } else {
+                            playBtn.classList.add("d-md-block");
+                            playBtn.style.display = "";
+                        }
+                    }
+
+                    // animações de entrada
+                    aplicarAnimacao(mainEl, escolherEfeito("in", banner.mainIn));
+                    aplicarAnimacao(backgroundEl, escolherEfeito("in", banner.backgroundIn));
+                    aplicarAnimacao(secondaryEl, escolherEfeito("in", banner.secondaryIn));
+                }, duration);
+            }
+
+            // Pré-carrega todas as imagens dos banners antes de iniciar a rotação
+            function preloadBannerImages(bannerList) {
+                const urls = [];
+                bannerList.forEach(b => {
+                    if (b.mainImg) urls.push(b.mainImg);
+                    if (b.backgroundImg) urls.push(b.backgroundImg);
+                    if (b.secondaryImg) urls.push(b.secondaryImg);
+                });
+
+                let loaded = 0;
+                const total = urls.length;
+
+                return new Promise(resolve => {
+                    if (total === 0) return resolve();
+                    urls.forEach(url => {
+                        const img = new Image();
+                        img.onload = img.onerror = () => {
+                            loaded++;
+                            if (loaded >= total) resolve();
+                        };
+                        img.src = url;
+                    });
+                    // Fallback: não trava se alguma imagem demorar demais
+                    setTimeout(resolve, 8000);
+                });
+            }
+
+            preloadBannerImages(banners).then(() => {
+                trocarBanner();
+                setInterval(trocarBanner, 10 * 1000);
+            });
+        });
+    </script>
+    <script>
+        // Modal do formulário para o Banner 5
+        document.getElementById('bannerCta').addEventListener('click', function(e) {
+            if (this.dataset.modal !== 'true') return; // só intercepta se for modal
+            e.preventDefault();
+
+            Swal.fire({
+                title: `<strong style="color:#0d2a4a;">Escolha seu perfil</strong>`,
+                html: `
+                    <p style="font-size: 0.95rem; color: #555; margin-bottom: 1.5rem;">Selecione a opção correspondente ao seu vínculo com o UNIAENE:</p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <a href="https://forms.uniaene.com.br/s/cmog4s1jq0006oc01nl5exhpa" target="_blank"
+                           style="display:flex; align-items:center; gap:14px; padding:16px 20px; border-radius:14px;
+                                  background: linear-gradient(135deg, #e8f5e9, #c8e6c9); text-decoration:none;
+                                  border: 1px solid #a5d6a7; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
+                           onmouseover="this.style.transform='translateY(-2px) scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(76,175,80,0.25)';"
+                           onmouseout="this.style.transform=''; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)';">
+                            <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#43a047,#66bb6a);
+                                        display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fas fa-user-graduate" style="color:#fff; font-size:1.3rem;"></i>
+                            </div>
+                            <div style="text-align:left;">
+                                <strong style="color:#2e7d32; font-size:1.05rem;">Discentes</strong><br>
+                                <small style="color:#558b2f;">Alunos e estudantes</small>
+                            </div>
+                            <i class="fas fa-arrow-right" style="margin-left:auto; color:#43a047; font-size:1.1rem;"></i>
+                        </a>
+
+                        <a href="https://forms.uniaene.com.br/s/cmog7qaz8000boc01jm01hsmz" target="_blank"
+                           style="display:flex; align-items:center; gap:14px; padding:16px 20px; border-radius:14px;
+                                  background: linear-gradient(135deg, #e3f2fd, #bbdefb); text-decoration:none;
+                                  border: 1px solid #90caf9; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
+                           onmouseover="this.style.transform='translateY(-2px) scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(33,150,243,0.25)';"
+                           onmouseout="this.style.transform=''; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)';">
+                            <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#1e88e5,#42a5f5);
+                                        display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fas fa-chalkboard-teacher" style="color:#fff; font-size:1.3rem;"></i>
+                            </div>
+                            <div style="text-align:left;">
+                                <strong style="color:#1565c0; font-size:1.05rem;">Docentes</strong><br>
+                                <small style="color:#1976d2;">Professores e instrutores</small>
+                            </div>
+                            <i class="fas fa-arrow-right" style="margin-left:auto; color:#1e88e5; font-size:1.1rem;"></i>
+                        </a>
+
+                        <a href="https://forms.uniaene.com.br/s/cmog9twlo000foc01whemg9ky" target="_blank"
+                           style="display:flex; align-items:center; gap:14px; padding:16px 20px; border-radius:14px;
+                                  background: linear-gradient(135deg, #fff3e0, #ffe0b2); text-decoration:none;
+                                  border: 1px solid #ffcc80; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
+                           onmouseover="this.style.transform='translateY(-2px) scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(255,152,0,0.25)';"
+                           onmouseout="this.style.transform=''; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)';">
+                            <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#f57c00,#ffa726);
+                                        display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fas fa-briefcase" style="color:#fff; font-size:1.3rem;"></i>
+                            </div>
+                            <div style="text-align:left;">
+                                <strong style="color:#e65100; font-size:1.05rem;">Técnico-Administrativo</strong><br>
+                                <small style="color:#ef6c00;">Colaboradores e funcionários</small>
+                            </div>
+                            <i class="fas fa-arrow-right" style="margin-left:auto; color:#f57c00; font-size:1.1rem;"></i>
+                        </a>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                background: '#fff',
+                color: '#333',
+                width: 520,
+                customClass: {
+                    popup: 'animate__animated animate__fadeInUp'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutDown'
+                }
+            });
+        });
+    </script>
+    <script>
+        const sealEl = document.getElementById('floatingSeal');
+
+        if (sealEl) {
+            sealEl.addEventListener('click', () => {
+                Swal.fire({
+                    title: `
+                <strong style="color:#007e3a;">Certificação ABMES</strong><br>
+                <small>Responsabilidade Social das IES 2024–2025</small>
+            `,
+                    html: `
+                <p style="font-size: 1rem; line-height: 1.6; text-align: justify; color:#333;">
+                    O <strong>UNIAENE</strong> recebeu o selo de 
+                    <strong>Instituição Socialmente Responsável</strong>, concedido pela 
+                    <strong>ABMES</strong> — Associação Brasileira de Mantenedoras de Ensino Superior.
+                    <br><br>
+                    Esse reconhecimento destaca o compromisso da instituição com a 
+                    <strong>responsabilidade social, sustentabilidade e impacto positivo</strong> nas comunidades 
+                    em que atua. 
+                    <br><br>
+                    Trata-se de uma certificação nacional que valoriza ações de 
+                    <strong>cidadania, ética e transformação social</strong> no ensino superior.
+                </p>
+            `,
+                    imageUrl: '../../assets/images/home/HorztPostv.png',
+                    imageWidth: 750,
+                    imageHeight: 'auto',
+                    imageAlt: 'Selo ABMES Responsabilidade Social',
+                    confirmButtonText: 'Fechar',
+                    confirmButtonColor: '#007e3a',
+                    background: '#fff',
+                    color: '#333',
+                    width: 700,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
+            });
+        }
+    </script>
+
+    <script>
+        (function() {
+            function c() {
+                var b = a.contentDocument || a.contentWindow.document;
+                if (b) {
+                    var d = b.createElement('script');
+                    d.innerHTML = "window.__CF$cv$params={r:'a036382949f5b816',t:'MTc4MDA2NTI2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                    b.getElementsByTagName('head')[0].appendChild(d)
+                }
+            }
+            if (document.body) {
+                var a = document.createElement('iframe');
+                a.height = 1;
+                a.width = 1;
+                a.style.position = 'absolute';
+                a.style.top = 0;
+                a.style.left = 0;
+                a.style.border = 'none';
+                a.style.visibility = 'hidden';
+                document.body.appendChild(a);
+                if ('loading' !== document.readyState) c();
+                else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c);
+                else {
+                    var e = document.onreadystatechange || function() {};
+                    document.onreadystatechange = function(b) {
+                        e(b);
+                        'loading' !== document.readyState && (document.onreadystatechange = e, c())
+                    }
+                }
+            }
+        })();
+    </script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"dee135864f894727892e8dfab2720f56","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+<div id="atividades-academicas-alerta" class="atividades-academicas-alerta">
+    <div class="atividades-academicas-alerta-header">
+        <span class="glyphicon ico-alert-triangle atividades-academicas-alerta-icon"></span>
+        <button type="button" class="alert-close" ng-click="controller.fecharAlerta()"></button>
+        <span class="atividades-academicas-alerta-header-text">{{ ::'l-atividades-academicas-alerta-header' |
+            i18n : [] : 'js/aluno/atividades-academicas' }}</span>
+    </div>
+    <div class="atividades-academicas-alerta-content">
+        <totvs-grid grid-data="controller.alertaAtividadesAcademicas" scrollable="true">
+            <totvs-grid-column field="ATIVIDADE" class="text-left text-overflow" width="35%">
+                {{::'l-atividade' | i18n : [] : 'js/aluno/atividades-academicas' }}
+            </totvs-grid-column>
+            <totvs-grid-column template="controller.formatarColunaDataAtividade" class="text-center text-overflow" width="20%">
+                {{ ::'l-data' | i18n : [] : 'js/aluno/atividades-academicas' }}
+            </totvs-grid-column>
+            <totvs-grid-column field="DISCIPLINA_COMPONENTE" class="text-left text-overflow" width="45%">
+                {{ ::'l-disciplina-componente' | i18n : [] : 'js/aluno/atividades-academicas' }}
+        </totvs-grid>
+        <div class="atividades-academicas-alerta-footer">
+            <input type="checkbox" id="naoExibirAlertaAtividadeAcademicaHoje" ng-model="controller.naoExibirAlertaAtividadeAcademicaHoje">&nbsp;
+            <label for="naoExibirAlertaAtividadeAcademicaHoje" class="nao-exibir-alerta-atividade-academica-hoje">
+                {{ ::'l-nao-mostra-mais-hoje' | i18n : [] :
+                'js/aluno/atividades-academicas'}}</label>
+            <button type="button" class="atividades-academicas-alerta-button-close" ng-click="controller.fecharAlerta()">
+                {{ ::'btn-close' | i18n : [] : '' }}
+            </button>
+        </div>
+    </div>
+</div>
