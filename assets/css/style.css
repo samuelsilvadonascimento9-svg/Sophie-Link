@@ -1,0 +1,79 @@
+/* Variáveis de Cores e Temas */
+:root {
+  --color-primary: #FF7A00; /* Laranja forte */
+  --color-primary-hover: #E06C00;
+  --color-bg-dark: #121212; /* Preto de fundo base */
+  --color-surface: #1E1E1E; /* Preto mais claro para cards */
+  --color-surface-hover: #2A2A2A;
+  --color-text-main: #FFFFFF; /* Branco para texto */
+  --color-text-muted: #A0A0A0; /* Cinza claro para textos secundários */
+  --color-border: #333333;
+}
+
+body {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-main);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Utilitários de Cores Customizadas para usar junto com Tailwind se necessário, 
+   embora estejamos usando classes do tailwind, essas variáveis auxiliam em componentes específicos */
+
+.bg-dark { background-color: var(--color-bg-dark); }
+.bg-surface { background-color: var(--color-surface); }
+.text-primary { color: var(--color-primary); }
+.bg-primary { background-color: var(--color-primary); }
+.border-custom { border-color: var(--color-border); }
+
+/* Animações e Transições Premium */
+.transition-all-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(255, 122, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+/* Inputs Personalizados Dark Mode */
+.input-dark {
+  background-color: var(--color-bg-dark);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-dark:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2);
+}
+
+/* Botão Primário Laranja */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}

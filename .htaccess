@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Bloquear acesso direto aos arquivos internos do backend
+RewriteRule ^backend/Core/ - [F,L]
+RewriteRule ^backend/Models/ - [F,L]
+RewriteRule ^database/ - [F,L]

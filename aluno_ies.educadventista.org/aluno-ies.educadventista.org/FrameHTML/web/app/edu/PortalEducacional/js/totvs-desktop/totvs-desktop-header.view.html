@@ -1,0 +1,134 @@
+<div id="menu-header">
+    <div class="" id="menu-header-items">
+        <ul class="list-inline col-xs-12" ng-class="{'usuario-header': !desktop.isAluno }">
+            <li id="company-name" title="{{desktop.nomeFilial}}" ng-if="desktop.objParamsHeader.ExibirNomeFilial" class="col-xs-2">
+                <h3 class="header-title">{{desktop.nomeFilial}}</h3>
+            </li>
+            <li class="dropdown information-menu header-item pull-right col-xs-5 col-lg-3 col-md-3" ng-repeat="menu in desktop.headerInformations.menus">
+
+                <a id="desktopHeaderMenu" data-toggle="dropdown" aria-haspopup="true" class="information-menu-nome-ra" aria-expanded="true">
+          <span class="pull-left information-menu-nome col-xs-8 col-sm-10">{{ desktop.userInfo }}</span>
+          <edu-img-foto src="menu.img.src" css-class="img-foto-sm-auto img-circle pull-left information-menu-foto"
+            default-src="assets/img/avatar-sm.png" alt="menu.img.alt">
+          </edu-img-foto>
+          <span class="caret dropdown-toggle btn-aluno-caret ico-chevron-down pull-left information-menu-seta"></span>
+        </a>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="desktopHeaderMenu">
+                    <li ng-repeat="itemMenu in menu.itens">
+                        <a ng-if="itemMenu.action" ng-click="itemMenu.action()" style="cursor: pointer;">{{itemMenu.label}}</a>
+                        <a ng-if="itemMenu.link" ng-click="desktop.redirect(itemMenu.link)" style="cursor: pointer;">{{itemMenu.label}}</a>
+                    </li>
+                    <li role="separator" class="divider visible-xs"></li>
+                    <li ng-if="desktop.objParamsHeader.HotLink1" class="visible-xs">
+                        <a ng-click="desktop.redirect(desktop.objParamsHeader.HotLink1)">{{desktop.objParamsHeader.HotLinkName1 |
+              i18n : [] : 'js/totvs-desktop'}}</a>
+                    </li>
+                    <li ng-if="desktop.objParamsHeader.HotLink2" class="visible-xs">
+                        <a ng-click="desktop.redirect(desktop.objParamsHeader.HotLink2)">{{desktop.objParamsHeader.HotLinkName2 |
+              i18n : [] : 'js/totvs-desktop'}}</a>
+                    </li>
+                    <li ng-if="desktop.objParamsHeader.HotLink3" class="visible-xs">
+                        <a ng-click="desktop.redirect(desktop.objParamsHeader.HotLink3)">{{desktop.objParamsHeader.HotLinkName3 |
+              i18n : [] : 'js/totvs-desktop'}}</a>
+                    </li>
+                    <li role="separator" class="divider visible-xs"></li>
+                    <li class="visible-xs dropdown-menu-acessibilidade">
+                        <span class="glyphicon ico-zoom-in" ng-click="desktop.increaseFontSize()"></span>
+                        <span class="glyphicon ico-zoom-out" ng-click="desktop.decreaseFontSize()"></span>
+                        <span class="glyphicon ico-a-contrast" ng-click="desktop.changeContrast()"></span>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li>
+                        <a href="#" ng-click="desktop.deslogar()">{{desktop.labelSair}}</a>
+                    </li>
+                </ul>
+            </li>
+            <li ng-if="!desktop.isAluno" class="header-item header-item-separador pull-right">
+                <span>&nbsp;</span>
+            </li>
+            <li ng-if="!desktop.isAluno" class="pull-right col-xs-2">
+                <span title="{{ desktop.userLogado }}" class="header-item pull-right col-xs-12 information-menu-nome">{{
+          ::'l-usuario' | i18n : [] : 'js/totvs-desktop' }}: {{ desktop.userLogado }}</span>
+            </li>
+            <li ng-repeat="information in desktop.headerInformations" ng-click="information.action()" class="header-item pull-right col-xs-2" title="{{information.title}}" ng-class="{'header-item-action': information.action }">
+
+                <span class="col-xs-12 information-menu-curso">{{information.label}}</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<style type="text/css">
+    #subheader {
+        background: none;
+        background-color: {
+                {
+                desktop.objParamsHeader.CorCabecalho
+            }
+        }
+        ;
+    }
+
+    #subheader .hot-links {
+        background: none;
+        color: {
+                {
+                desktop.objParamsHeader.CorMenu
+            }
+        }
+        ;
+    }
+
+    #subheader .edit-font {
+        background: none;
+        color: {
+                {
+                desktop.objParamsHeader.CorFonteCabecalho
+            }
+        }
+        ;
+    }
+</style>
+
+<!-- Subheader -->
+<div id="subheader">
+    <div class="pull-left col-xs-2" ng-if="desktop.objParamsHeader.LogoPortal != 'init'">
+        <edu-img-foto src="desktop.objParamsHeader.LogoPortal" css-class="img-logo" default-src="{{desktop.srcDefaultLogo}}" alt="logo">
+        </edu-img-foto>
+    </div>
+    <div class="pull-right col-xs-*">
+        <ul class="list-inline text-right hidden-xs">
+            <li class="edit-font" ng-if="desktop.objParamsHeader.HotLink1" ng-click="desktop.redirect(desktop.objParamsHeader.HotLink1)">
+                <span title="{{desktop.objParamsHeader.HotLinkName1 | i18n : [] : 'js/totvs-desktop' }}">
+          <span class="{{desktop.objParamsHeader.HotLink1Icon}}">
+            <div class="hotlink">{{desktop.objParamsHeader.HotLinkName1 | i18n : [] : 'js/totvs-desktop' }}</div>
+          </span>
+                </span>
+            </li>
+            <li class="edit-font" ng-if="desktop.objParamsHeader.HotLink2" ng-click="desktop.redirect(desktop.objParamsHeader.HotLink2)">
+                <span title="{{desktop.objParamsHeader.HotLinkName2 | i18n : [] : 'js/totvs-desktop' }}">
+          <span class="{{desktop.objParamsHeader.HotLink2Icon}}">
+            <div class="hotlink">{{desktop.objParamsHeader.HotLinkName2 | i18n : [] : 'js/totvs-desktop' }}</div>
+          </span>
+                </span>
+            </li>
+            <li class="edit-font" ng-if="desktop.objParamsHeader.HotLink3" ng-click="desktop.redirect(desktop.objParamsHeader.HotLink3)">
+                <span title="{{desktop.objParamsHeader.HotLinkName3 | i18n : [] : 'js/totvs-desktop' }}">
+          <span class="{{desktop.objParamsHeader.HotLink3Icon}} title-hotlinks">
+            <div class="hotlink">{{desktop.objParamsHeader.HotLinkName3 | i18n : [] : 'js/totvs-desktop' }}</div>
+          </span>
+                </span>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li class="edit-font" ng-click="desktop.increaseFontSize()" title="{{ ::'l-aumentar-fonte' | i18n : [] : 'js/totvs-desktop' }}">
+                <span class="glyphicon ico-zoom-in"></span>
+            </li>
+            <li class="edit-font" ng-click="desktop.decreaseFontSize()" title="{{ ::'l-diminuir-fonte' | i18n : [] : 'js/totvs-desktop' }}">
+                <span class="glyphicon ico-zoom-out"></span>
+            </li>
+            <li class="edit-font" ng-click="desktop.changeContrast()" title="{{ ::'l-aplicar-contraste' | i18n : [] : 'js/totvs-desktop' }}">
+                <span class="glyphicon ico-a-contrast"></span>
+            </li>
+        </ul>
+    </div>
+</div>

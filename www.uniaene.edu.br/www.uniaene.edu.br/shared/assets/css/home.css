@@ -1,0 +1,312 @@
+/* Cards do Home Cursos */
+
+.cards-courses {
+    display: flex;
+    flex: 1 1 350px;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 2rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #0c1975;
+    min-height: 100px;
+    backdrop-filter: blur(3px) saturate(120%) contrast(100%);
+    -webkit-backdrop-filter: blur(15px) saturate(120%) contrast(120%);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: transform 0.3s ease;
+    transform-origin: center;
+}
+
+.cards-courses:hover {
+    transform: scale(1.05);
+}
+
+/* Container com posição relativa para permitir o hover correto */
+
+.tooltip-video-container {
+    position: relative;
+    width: 100%;
+    min-height: 130px;
+}
+
+@media (max-width: 576px) {
+    .tooltip-video-container {
+        min-height: 70px;
+    }
+}
+
+/* Imagens */
+
+.img-courses {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: none !important;
+    /* remove qualquer efeito */
+    transform: none !important;
+    /* garante que não há scale */
+}
+
+/* Troca de imagem */
+
+.img-hover,
+.img-normal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    transition: none !important;
+    transform: none !important;
+}
+
+/* Oculta a hover por padrão */
+
+.img-hover {
+    display: none;
+}
+
+/* Hover: troca sem efeitos */
+
+.tooltip-video-container:hover .img-normal {
+    display: none;
+}
+
+.tooltip-video-container:hover .img-hover {
+    display: block;
+}
+
+/* -- FIM dos Cursos -- */
+
+/* -- Página Inicial -- */
+
+/* ===========================================
+   CSS Responsivo Mobile-first (Bootstrap 5)
+   =========================================== */
+
+/* Extra small (xs): <576px
+- Estilos padrão para celulares muito pequenos */
+
+/* .texto1 {
+    transform: scale(1.2);
+    margin-left: 3em;
+    width: 80%;
+}
+
+.isaac {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+} */
+
+/* Small (sm): ≥576px
+- Estilos para celulares maiores */
+
+/* @media (min-width: 576px) {
+    .isaac {
+        transform: scale(1);
+        width: 45%;
+    }
+
+    .texto1 {
+        transform: scale(1);
+        margin-top: 2em;
+        margin-bottom: 5em;
+    }
+} */
+
+/* Medium (md): ≥768px
+- Estilos para tablets */
+
+@media (min-width: 768px) {
+    /* Nenhum ajuste necessário por enquanto */
+}
+
+/* Large (lg): ≥992px
+- Estilos para notebooks pequenos */
+
+@media (min-width: 992px) {
+    /* Nenhum ajuste necessário por enquanto */
+}
+
+/* Extra Large (xl): ≥1200px
+- Estilos para desktops médios */
+
+/* @media (min-width: 1200px) {
+    .texto1 {
+        margin-top: 8em;
+    }
+} */
+
+/* Extra Extra Large (xxl): ≥1400px
+- Estilos para telas muito grandes */
+
+/* @media (min-width: 1400px) {
+    .texto1 {
+        margin-top: 8em;
+    }
+} */
+
+/* -- FIM da Página Inicial -- */
+
+/* -- Internato -- 
+*/
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    /* Espaçamento igual */
+    padding: 2rem;
+}
+
+.cards-internato {
+    flex: 1 1 350px;
+    /* Cresce, encolhe, base de 350px */
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #0c1975;
+    padding: 2rem;
+    min-height: 100px;
+    /* Altura mínima (opcional) */
+    backdrop-filter: blur(25px) saturate(180%) contrast(100%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%) contrast(120%);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: all 0.3s ease;
+}
+
+.a-change-bg {
+    color: rgb(255, 255, 255) !important;
+}
+
+@media (max-width: 500px) {
+    .cards-internato {
+        -moz-transform: scale(1.6);
+        -webkit-transform: scale(1.6);
+        transform: scale(1);
+    }
+}
+
+.progress-item-num.font-libre:hover {
+    color: blue;
+}
+
+/* -- Colégio UNIAENE -- */
+
+.slide-title2 {
+    color: #f4f4f4;
+}
+
+.btn-outline-yellow {
+    --bs-btn-color: #fca311;
+    --bs-btn-border-color: #fca311;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #fca311;
+    --bs-btn-hover-border-color: #fca311;
+    --bs-btn-focus-shadow-rgb: 33, 37, 41;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #fca311;
+    --bs-btn-active-border-color: #fca311;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fca311;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #fca311;
+    --bs-gradient: none;
+}
+
+/* Setas das notícias */
+
+/* Setas do carousel (dentro do banner) */
+
+.a-owl-prev,
+.a-owl-next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    margin: 0 8px;
+    font-size: 2rem;
+    font-weight: bold;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.68);
+    color: #fff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.20);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+}
+
+.a-owl-prev:hover,
+.a-owl-next:hover,
+.a-owl-prev:focus,
+.a-owl-next:focus {
+    background: #ffc107;
+    color: #222 !important;
+    border-color: #ffc107;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.30);
+    text-decoration: none !important;
+}
+
+/* Remove sublinhado indesejado */
+
+.a-owl-prev,
+.a-owl-next {
+    text-decoration: none !important;
+}
+
+/* Responsividade: setas um pouco menores em telas pequenas */
+
+@media (max-width: 600px) {
+    .a-owl-prev,
+    .a-owl-next {
+        width: 36px;
+        height: 36px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Espaço entre as setas e o conteúdo se quiser separar mais */
+
+.banner-strip .d-block.mt-5 {
+    gap: 8px;
+    display: flex;
+    justify-content: flex-start;
+    /* ou center, se preferir */
+}
+
+.card-body {
+    color: #f4f4f4 !important;
+}
+
+.icon-plus:before,
+.icon-plus:after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 1px;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    background: #ffffff;
+    transform: rotate(0);
+    transition: transform .4s ease-in-out;
+}
+
+.solution-collapse-item-title a:not(.collapsed) .icon-plus:before,
+.solution-collapse-item-title a:not(.collapsed) .icon-plus:after,
+.solution-collapse-item-title a:hover .icon-plus:before,
+.solution-collapse-item-title a:hover .icon-plus:after {
+    background: #fcd116;
+}
+
+.solution-collapse-item-title a:not(.collapsed),
+.solution-collapse-item-title a:not(.collapsed):hover,
+.solution-collapse-item-title a.collapsed:hover {
+    color: #fcd116;
+}

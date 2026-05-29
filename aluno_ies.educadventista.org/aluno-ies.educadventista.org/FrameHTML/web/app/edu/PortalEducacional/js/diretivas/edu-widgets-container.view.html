@@ -1,0 +1,156 @@
+<span id="edu-widget" ng-if="((objWidgetController.objWidgetShowList.length > 0 || objWidgetController.exibirInformacoes) && objWidgetController.blnVisualizar)">
+   <div class="pageHeader page-head">
+        <div class="pull-left btn">
+            <h2 class="title" ng-if="objWidgetController.containerTitle">
+                {{ ::objWidgetController.containerTitle }}
+            </h2>
+        </div>
+        <div class="pull-right">
+            <div class="settings">
+                <span ng-if="objWidgetController.blnPermiteEditar">
+                    <button type="button"
+                            ng-show="objWidgetController.blnEditMode && objWidgetController.blnOpen"
+                            title="{{ ::'l-cancel' | i18n : [] : 'js/diretivas'}}"
+                            class="btn btn-default"
+                            ng-click="objWidgetController.refresh()">
+                        <span class="ico-x"></span>
+</button>
+<button type="button" ng-show="objWidgetController.blnEditMode && objWidgetController.blnOpen" title="{{ ::'l-save' | i18n : [] : 'js/diretivas'}}" class="btn btn-default" ng-click="objWidgetController.save()">
+                        <span class="ico-check"></span>
+                    </button>
+<button type="button" ng-show="!objWidgetController.blnEditMode && objWidgetController.blnOpen && objWidgetController.objWidgetShowList.length > 0" title="{{ ::'l-edit' | i18n : [] : 'js/diretivas'}}" class="btn btn-default" ng-click="objWidgetController.settings()">
+                        <span class="ico-edit-2"></span>
+                    </button>
+<button type="button" ng-show="!objWidgetController.blnEditMode && objWidgetController.blnOpen" title="{{ ::'l-minimize' | i18n : [] : 'js/diretivas'}}" class="btn btn-default" ng-click="objWidgetController.toggle()">
+                        <span class="ico-minus"></span>
+                    </button>
+<button type="button" ng-show="!objWidgetController.blnEditMode && !objWidgetController.blnOpen" title="{{ ::'l-maximize' | i18n : [] : 'js/diretivas'}}" class="btn btn-default" ng-click="objWidgetController.toggle()">
+                        <span class="ico-maximize"></span>
+                    </button>
+</span>
+</div>
+</div>
+<div class="clearfix"></div>
+</div>
+<span ng-if="objWidgetController.blnOpen">
+        <totvs-page-content ng-if="!objWidgetController.blnEditMode" class="widgetPageContent">
+
+            <div class="col-xs-12">
+
+                <div class="dashboard-portlet col-md-12"
+                        ng-if="objWidgetController.blnMural && objWidgetController.exibirInformacoes"
+                        ng-class="{'col-md-6': (objWidgetController.objWidgetShowList != null &&
+                                                objWidgetController.objWidgetShowList.length > 0 &&
+                                                objWidgetController.objWidgetShowList[0].Tamanho === 'half')}">
+                <totvs-widget>
+                    <totvs-widget-header>
+                    </totvs-widget-header>
+                    <totvs-widget-body>
+
+                        <totvs-page type="base">
+
+                            <totvs-page-content>
+
+                                <totvs-page-detail>
+                                    <div ng-bind-html="objWidgetController.informacoes"></div>
+                                </totvs-page-detail>
+                            </totvs-page-content>
+
+                        </totvs-page>
+
+                    </totvs-widget-body>
+                </totvs-widget>
+                </div>
+                <div class="dashboard-portlet col-md-12"
+                        ng-repeat="objWidget in objWidgetController.objWidgetShowList"
+                        ng-class="{'col-md-6':objWidget.Tamanho === 'half'}">
+                    <div ng-include="objWidget.VIEW"></div>
+                </div>
+            </div>
+
+        </totvs-page-content>
+
+        <div class="clearfix"></div>
+
+        <totvs-page-content ng-if="objWidgetController.blnEditMode" class="widgetPageContent edit">
+
+            <div class="dashboard-portlet col-md-12"
+                 ng-if="objWidgetController.blnMural && objWidgetController.exibirInformacoes"
+                 ng-class="{'col-md-6': (objWidgetController.objWidgetShowList != null &&
+                                         objWidgetController.objWidgetShowList.length > 0 &&
+                                         objWidgetController.objWidgetShowList[0].Tamanho === 'half')}">
+                <totvs-widget>
+                    <totvs-widget-header>
+                    </totvs-widget-header>
+                    <totvs-widget-body>
+
+                        <totvs-page type="base">
+
+                            <totvs-page-content>
+
+                                <totvs-page-detail>
+                                    <div ng-bind-html="objWidgetController.informacoes"></div>
+                                </totvs-page-detail>
+                            </totvs-page-content>
+
+                        </totvs-page>
+
+                    </totvs-widget-body>
+                </totvs-widget>
+            </div>
+            <div ng-repeat="objWidget in objWidgetController.objWidgetShowList"
+                 class="dashboard-portlet-config col-md-12"
+                 ng-class="{'col-md-6':objWidget.Tamanho === 'half'}">
+
+                <div class="dashboard-on-drag" style="margin-top: 20px;">
+
+                    <totvs-widget class="dashboard-painel-no-border">
+
+                        <totvs-widget-header class="dashboard-portlet-header-config">
+
+                            <div class="pull-left-widget">
+                                <field
+                                       type="combo"
+                                       class="col-*-12"
+                                       ng-if="objWidgetController.objWidgetList.length > objWidgetController.maxWidgets"
+                                       ng-model="objWidget.IdConfiguracaoModel"
+                                       ng-change="objWidgetController.changeWidget(objWidget)"
+                                       ng-options="widget.IdConfiguracao as widget.Nome
+                                                   for widget in objWidgetController.objWidgetList | filter: objWidgetController.filter(objWidget)">
+                                </field>
+                            </div>
+
+                            <div class="pull-right-widget">
+
+                                <button type="button" class="btn btn-default" ng-if="!$first"
+                                        ng-click="objWidgetController.left($index)" title="{{ 'l-move-left' | i18n  : [] : 'js/diretivas'}}">
+                                    <span class="ico-chevron-left"></span>
+</button>
+<button type="button" class="btn btn-default" ng-if="!$last" ng-click="objWidgetController.right($index)" title="{{ 'l-move-right' | i18n  : [] : 'js/diretivas'}}">
+                                    <span class="ico-chevron-right"></span>
+                                </button>
+<button type="button" class="btn btn-default" ng-click="objWidgetController.changeSize($index)" title="{{ 'l-change-width' | i18n  : [] : 'js/diretivas'}}">
+                                    <span class="ico-maximize-2"></span>
+                                </button>
+<button type="button" ng-if="objWidget.OrdemFavorito >= 0 && 
+                                               objWidgetController.exibeBotaoFavoritos(objWidget) == true" class="btn btn-default" ng-click="objWidgetController.setFavorito(objWidget, false)" title="{{ 'l-favorito' | i18n  : [] : 'js/diretivas'}}">
+                                    <span class="ico-star-full"></span>
+                                </button>
+<button type="button" ng-if="objWidget.OrdemFavorito < 0 && 
+                                              objWidgetController.exibeBotaoFavoritos(objWidget) == true" class="btn btn-default" ng-click="objWidgetController.setFavorito(objWidget, true)" title="{{ 'l-add-favorito' | i18n  : [] : 'js/diretivas'}}">
+                                    <span class="ico-star"></span>
+                                </button>
+</div>
+
+</totvs-widget-header>
+
+<totvs-widget-body>
+    <div class="disabled-div" ng-include="objWidget.VIEW"></div>
+</totvs-widget-body>
+</totvs-widget>
+</div>
+</div>
+<div class="clearfix"></div>
+</totvs-page-content>
+</span>
+</span>
