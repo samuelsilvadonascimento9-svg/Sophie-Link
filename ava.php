@@ -358,7 +358,7 @@ img { display: block; max-width: 100%; }
     color: var(--c-brand);
 }
 .pending-icon i { width: 15px; height: 15px; }
-.pending-info {}
+
 .pending-name {
     font-size: 0.75rem; font-weight: 600; color: var(--c-text-link);
     margin-bottom: 2px; line-height: 1.3;
