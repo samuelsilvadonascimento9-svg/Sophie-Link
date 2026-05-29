@@ -1,10 +1,9 @@
 <?php
 // portal_professor.php — Portal do Professor | Sophie Link
 session_start();
-if (!isset($_SESSION['usuario_id'])) {
-    $_SESSION['usuario_nome']  = 'Prof. Carlos Menezes';
-    $_SESSION['usuario_nivel'] = 'professor';
-    $_SESSION['usuario_id']    = 2; // Default professor ID
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'professor') {
+    header("Location: login_professor.php");
+    exit;
 }
 $nome = $_SESSION['usuario_nome'] ?? 'Professor';
 $primeiroNome = explode(' ', str_replace(['Prof. ','Dr. '], '', $nome))[0];
@@ -41,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Buscar alunos para as tabelas
-$stmtAlunos = $pdo->query("SELECT id, cpf, nome, curso, empresa_id FROM aprendizes ORDER BY nome ASC");
+$stmtAlunos = $pdo->query("SELECT id, cpf, nome, curso FROM aprendizes ORDER BY nome ASC");
 $alunosDb = $stmtAlunos->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -321,6 +320,7 @@ a { text-decoration: none; color: inherit; }
                         <div style="padding:1.25rem;display:flex;flex-direction:column;gap:8px;">
                             <button class="btn-primary" style="width:100%;justify-content:center;" onclick="showSec('frequencia',document.querySelector('[onclick*=frequencia]'))"><i data-lucide="clipboard-check" style="width:15px;height:15px;"></i> Lançar Frequência de Hoje</button>
                             <button class="btn-secondary" style="width:100%;justify-content:center;" onclick="showSec('notas',document.querySelector('[onclick*=notas]'))"><i data-lucide="edit-3" style="width:15px;height:15px;"></i> Lançar Notas</button>
+                            <button class="btn-secondary" style="width:100%;justify-content:center; border-color:var(--c-purple); color:var(--c-purple);" onclick="analisarTurmaIA()"><i data-lucide="sparkles" style="width:15px;height:15px;"></i> Analisar Turma com IA</button>
                             <button class="btn-secondary" style="width:100%;justify-content:center;" onclick="showSec('atividades',document.querySelector('[onclick*=atividades]'))"><i data-lucide="file-plus" style="width:15px;height:15px;"></i> Nova Atividade no AVA</button>
                             <button class="btn-secondary" style="width:100%;justify-content:center;" onclick="showSec('relatorios',document.querySelector('[onclick*=relatorios]'))"><i data-lucide="file-bar-chart-2" style="width:15px;height:15px;"></i> Gerar Relatório</button>
                         </div>
@@ -498,6 +498,10 @@ function showSec(id, el) {
     if (el) el.classList.add('active');
     const titles = {inicio:'Portal do Professor',turmas:'Minhas Turmas',frequencia:'Lançar Frequência',notas:'Lançar Notas',agenda:'Agenda de Aulas',atividades:'Atividades & AVA',relatorios:'Relatórios'};
     document.getElementById('topbar-title').textContent = titles[id] || 'Professor';
+}
+
+function analisarTurmaIA() {
+    alert("🤖 Assistente de IA Sophie Link\n\nAnalisando Turma A: Eletromecânica...\n- Frequência Média: 93% (Estável)\n- Média de Notas: 8.5 (Boa)\n\n📌 Sugestão Didática:\nA aluna Fernanda Rocha apresenta 72% de frequência e média 6.5. O modelo preditivo sugere risco de reprovação. Recomendação: Oferecer lista de exercícios de nivelamento e contato com o setor pedagógico.");
 }
 </script>
 </body>

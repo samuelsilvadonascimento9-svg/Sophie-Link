@@ -13,7 +13,7 @@ CREATE TABLE usuarios (
 
 -- Inserindo admin padrão (login: admin, senha: admin)
 INSERT INTO usuarios (nome, email, senha, nivel) VALUES 
-('Admin', 'admin', '$2y$10$eGfn4vk/q20wKlgzYYpICu4VmeVa6j5v6O3IC9BGkgYLIDib3UoxG', 'admin');
+('Admin', 'admin@sophielink.com.br', '$2y$10$eGfn4vk/q20wKlgzYYpICu4VmeVa6j5v6O3IC9BGkgYLIDib3UoxG', 'admin');
 
 CREATE TABLE empresas (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,15 +39,23 @@ CREATE TABLE aprendizes (
     endereco TEXT,
     nome_mae VARCHAR(150),
     nome_pai VARCHAR(150),
-    empresa_id INT,
     curso VARCHAR(100),
-    data_entrada DATE,
-    data_termino DATE,
-    status_contrato ENUM('ativo', 'encerrado', 'pendente') DEFAULT 'ativo',
     situacao_aluno ENUM('cursando', 'formado', 'evadido') DEFAULT 'cursando',
     observacoes TEXT,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE contratos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aprendiz_id INT NOT NULL,
+    empresa_id INT NOT NULL,
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    status ENUM('ativo', 'encerrado', 'pendente') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE SET NULL
+    FOREIGN KEY (aprendiz_id) REFERENCES aprendizes(id) ON DELETE CASCADE,
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
 );
 
 CREATE TABLE frequencia (
@@ -85,4 +93,13 @@ CREATE TABLE financeiro (
     observacoes TEXT,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+);
+
+CREATE TABLE logs_auditoria (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    acao VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );

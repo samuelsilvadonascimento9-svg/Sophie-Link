@@ -27,7 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['usuario_nivel'] = $user['nivel'];
             $_SESSION['empresa_id']    = $user['empresa_id'];
             match($user['nivel']) {
-                'admin', 'coordenadora', 'professor', 'empresa' => header('Location: dashboard.php'),
+                'admin' => header('Location: dashboard.php'),
+                'coordenadora' => header('Location: painel_academico.php'),
+                'empresa' => header('Location: portal_empresa.php'),
+                'professor' => header('Location: portal_professor.php'),
                 default => header('Location: index.php'),
             };
             exit;
@@ -367,7 +370,7 @@ a { text-decoration: none; color: inherit; }
             </a>
 
             <div class="lb-title">Entrar na plataforma</div>
-            <div class="lb-sub">Use suas credenciais de <em>administrador, professor ou empresa</em></div>
+            <div class="lb-sub">Acesso exclusivo para <em>Administrativo e Empresas</em></div>
 
             <?php if ($erro): ?>
             <div class="lb-error">
@@ -418,14 +421,13 @@ a { text-decoration: none; color: inherit; }
 
             <div class="lb-divider">ou acesse diretamente</div>
 
-            <div class="lb-portals">
                 <a href="ava.php" class="lb-portal-btn">
                     <i data-lucide="monitor-play" style="color: var(--c-primary);"></i>
                     AVA
                 </a>
-                <a href="portal_aluno.php" class="lb-portal-btn">
-                    <i data-lucide="user" style="color: var(--c-primary);"></i>
-                    Portal do Aluno
+                <a href="login_professor.php" class="lb-portal-btn">
+                    <i data-lucide="book-open-check" style="color: var(--c-primary);"></i>
+                    Portal do Professor
                 </a>
             </div>
 
