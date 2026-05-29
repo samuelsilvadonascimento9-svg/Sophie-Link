@@ -85,7 +85,7 @@
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
         </div>
-        <span class="hn-brand-name"><em>Sophie</em> Link</span>
+        <span class="hn-brand-name"><em>Escola</em> Sophie</span>
     </a>
 
     <!-- Hambúrguer à direita -->

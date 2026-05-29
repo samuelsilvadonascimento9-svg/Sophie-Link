@@ -1,696 +1,464 @@
 <?php
+// login.php — Página de Login | Centro Técnico Profissionalizante Sophie Link
 session_start();
+
 if (isset($_SESSION['usuario_id'])) {
-    header("Location: dashboard.php");
+    header('Location: dashboard.php');
     exit;
 }
-// index.php é a página de login direto — home.php é a landing page pública
+
+$erro = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once 'includes/db.php';
+    $email = trim($_POST['email'] ?? '');
+    $senha = $_POST['senha'] ?? '';
+
+    if (!$email || !$senha) {
+        $erro = 'Preencha todos os campos.';
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($senha, $user['senha'])) {
+            $_SESSION['usuario_id']    = $user['id'];
+            $_SESSION['usuario_nome']  = $user['nome'];
+            $_SESSION['usuario_nivel'] = $user['nivel'];
+            $_SESSION['empresa_id']    = $user['empresa_id'];
+            match($user['nivel']) {
+                'admin', 'coordenadora', 'professor', 'empresa' => header('Location: dashboard.php'),
+                default => header('Location: index.php'),
+            };
+            exit;
+        } else {
+            $erro = 'E-mail ou senha inválidos.';
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sophie Link — Sistema de Gestão de Aprendizes</title>
-    <meta name="description" content="Plataforma profissional de gestão de aprendizes, empresas parceiras, frequência e controle financeiro.">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
+    <title>Entrar — Sophie Link</title>
+    <meta name="description" content="Acesse sua conta no Centro Técnico Profissionalizante Sophie Link.">
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <style>
-        /* === RESET E BASE === */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --orange: #FF7A00;
-            --orange-hover: #E06C00;
-            --orange-glow: rgba(255, 122, 0, 0.25);
-            --black: #0A0A0A;
-            --surface: #141414;
-            --surface2: #1C1C1C;
-            --border: rgba(255, 255, 255, 0.07);
-            --white: #FFFFFF;
-            --muted: #6B6B6B;
-        }
-
-        html,
-        body {
-            height: 100%;
-            font-family: 'Inter', sans-serif;
-            background: var(--black);
-            color: var(--white);
-            overflow: hidden;
-        }
-
-        /* === PRELOADER === */
-        #preloader {
-            position: fixed;
-            inset: 0;
-            background: var(--black);
-            z-index: 99999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
-        }
-
-        #preloader.hide {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .preloader-logo {
-            font-family: 'Teko', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            color: var(--white);
-            animation: preloaderPulse 1.2s ease-in-out infinite;
-        }
-
-        .preloader-logo span {
-            color: var(--orange);
-        }
-
-        @keyframes preloaderPulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.3;
-            }
-        }
-
-        /* === LAYOUT PRINCIPAL: 2 COLUNAS === */
-        .login-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 520px;
-            height: 100vh;
-            opacity: 0;
-            animation: fadeInPage 0.8s ease 1.5s forwards;
-        }
-
-        @keyframes fadeInPage {
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* === LADO ESQUERDO — VISUAL / BRAND === */
-        .login-visual {
-            position: relative;
-            overflow: hidden;
-            background: var(--surface);
-        }
-
-        /* Grade de linhas de fundo estilo tech */
-        .login-visual::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 122, 0, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 122, 0, 0.04) 1px, transparent 1px);
-            background-size: 60px 60px;
-            z-index: 0;
-        }
-
-        /* Brilho laranja difuso no centro */
-        .login-visual::after {
-            content: '';
-            position: absolute;
-            top: 30%;
-            left: 30%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255, 122, 0, 0.18) 0%, transparent 70%);
-            z-index: 0;
-            animation: glowPulse 4s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-
-            50% {
-                transform: scale(1.15);
-                opacity: 1;
-            }
-        }
-
-        .login-visual-content {
-            position: relative;
-            z-index: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 3rem;
-        }
-
-        /* Logo no topo */
-        .brand-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--orange);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .brand-icon svg {
-            color: white;
-        }
-
-        .brand-name {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            color: var(--white);
-        }
-
-        .brand-name span {
-            color: var(--orange);
-        }
-
-        /* Headline central */
-        .visual-headline {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .visual-eyebrow {
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--orange);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .visual-eyebrow::before {
-            content: '';
-            display: block;
-            width: 30px;
-            height: 2px;
-            background: var(--orange);
-        }
-
-        .visual-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 5.5rem;
-            font-weight: 700;
-            line-height: 0.9;
-            letter-spacing: -2px;
-            color: var(--white);
-            margin-bottom: 2rem;
-        }
-
-        .visual-title em {
-            font-style: normal;
-            color: var(--orange);
-            display: block;
-        }
-
-        .visual-description {
-            font-size: 0.95rem;
-            color: var(--muted);
-            max-width: 420px;
-            line-height: 1.7;
-        }
-
-        /* Stats na parte inferior */
-        .visual-stats {
-            display: flex;
-            gap: 3rem;
-            border-top: 1px solid var(--border);
-            padding-top: 2rem;
-        }
-
-
-        .stat-number {
-            font-family: 'Teko', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1;
-        }
-
-        .stat-number span {
-            color: var(--orange);
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 4px;
-        }
-
-        /* === LADO DIREITO — FORMULÁRIO === */
-        .login-panel {
-            background: var(--surface);
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 3.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Detalhe decorativo laranja no topo */
-        .login-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--orange), transparent);
-        }
-
-        .panel-tag {
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 2.5rem;
-        }
-
-        .panel-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            color: var(--white);
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .panel-subtitle {
-            font-size: 0.875rem;
-            color: var(--muted);
-            margin-bottom: 2.5rem;
-        }
-
-        /* Campos */
-        .field-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .field-label {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 0.75rem;
-        }
-
-        .field-input-wrap {
-            position: relative;
-        }
-
-        .field-input-wrap .field-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--muted);
-            pointer-events: none;
-            width: 18px;
-            height: 18px;
-        }
-
-        .field-input {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px 16px 14px 48px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            color: var(--white);
-            outline: none;
-            transition: border-color 0.25s, box-shadow 0.25s;
-        }
-
-        .field-input::placeholder {
-            color: var(--muted);
-        }
-
-        .field-input:focus {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px var(--orange-glow);
-        }
-
-        .field-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            margin-top: 0.5rem;
-        }
-
-        .remember-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: var(--muted);
-            cursor: pointer;
-        }
-
-        .remember-check {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--orange);
-        }
-
-        .forgot-link {
-            font-size: 0.8rem;
-            color: var(--orange);
-            text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.2s;
-        }
-
-        .forgot-link:hover {
-            opacity: 0.75;
-        }
-
-        /* Botão de submit */
-        .submit-btn {
-            width: 100%;
-            background: var(--orange);
-            border: none;
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--white);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .submit-btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0);
-            transition: background 0.3s;
-        }
-
-        .submit-btn:hover {
-            background: var(--orange-hover);
-            box-shadow: 0 8px 25px rgba(255, 122, 0, 0.4);
-        }
-
-        .submit-btn:active {
-            transform: scale(0.98);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* Alerta de erro */
-        #loginAlert {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            padding: 14px 16px;
-            font-size: 0.85rem;
-            color: #FCA5A5;
-            margin-top: 1.25rem;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Rodapé do painel */
-        .panel-footer-text {
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-top: 2.5rem;
-        }
-
-        /* === RESPONSIVO === */
-        @media (max-width: 1024px) {
-            .login-wrapper {
-                grid-template-columns: 1fr;
-            }
-
-            .login-visual {
-                display: none;
-            }
-
-            .login-panel {
-                padding: 2.5rem 2rem;
-            }
-        }
-    </style>
+<style>
+/* ================================================================
+   RESET & TOKENS
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --c-primary:    #FF6B00;
+    --c-primary-d:  #D95A00;
+    --c-primary-lt: #FFF0E6;
+    --c-bg:         #F5F6FA;
+    --c-surface:    #FFFFFF;
+    --c-border:     #E5E7EB;
+    --c-border-lt:  #F0F1F3;
+    --c-text:       #111827;
+    --c-text-2:     #374151;
+    --c-text-muted: #6B7280;
+    --c-error:      #EF4444;
+    --c-error-lt:   #FEF2F2;
+    --radius:       12px;
+    --radius-sm:    8px;
+    --shadow:       0 4px 12px rgba(0,0,0,0.08);
+    --f-body:       'Inter', sans-serif;
+    --f-display:    'Syne', sans-serif;
+}
+html { font-size: 16px; }
+body {
+    font-family: var(--f-body);
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+
+/* ================================================================
+   LAYOUT: DUAS COLUNAS
+   ================================================================ */
+.login-wrapper {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+}
+
+/* ================================================================
+   LEFT PANEL — info institucional
+   ================================================================ */
+.login-left {
+    background: var(--c-primary);
+    display: flex; flex-direction: column;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+/* grade sutil */
+.login-left::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+    pointer-events: none;
+}
+/* orb claro */
+.login-left::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    top: -150px; right: -150px;
+    pointer-events: none;
+}
+
+.ll-top { position: relative; z-index: 2; }
+.ll-brand {
+    display: flex; align-items: center; gap: 12px;
+}
+.ll-brand-mark {
+    width: 40px; height: 40px; border-radius: 9px;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--f-display); font-weight: 800; font-size: 1rem; color: #fff;
+}
+.ll-brand-name { font-family: var(--f-display); font-size: 1.3rem; font-weight: 700; color: #fff; }
+
+.ll-mid {
+    position: relative; z-index: 2;
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 3rem 0;
+}
+.ll-label {
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 1rem;
+}
+.ll-title {
+    font-family: var(--f-display);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 800; line-height: 1.1;
+    color: #fff;
+    margin-bottom: 1.25rem;
+}
+.ll-desc {
+    font-size: 0.9rem; line-height: 1.75;
+    color: rgba(255,255,255,0.75);
+    max-width: 360px;
+    margin-bottom: 2.5rem;
+}
+
+/* info cards */
+.ll-cards { display: flex; flex-direction: column; gap: 10px; }
+.ll-card {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--radius); padding: 12px 16px;
+    backdrop-filter: blur(8px);
+}
+.ll-card-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    color: #fff;
+}
+.ll-card-icon i { width: 16px; height: 16px; }
+.ll-card-label { font-size: 0.8rem; font-weight: 700; color: #fff; }
+.ll-card-sub { font-size: 0.68rem; color: rgba(255,255,255,0.65); margin-top: 1px; }
+
+.ll-bottom {
+    position: relative; z-index: 2;
+    font-size: 0.72rem; color: rgba(255,255,255,0.5);
+}
+
+/* ================================================================
+   RIGHT PANEL — formulário
+   ================================================================ */
+.login-right {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 3rem 2rem;
+    background: var(--c-surface);
+    border-left: 1px solid var(--c-border);
+}
+
+.login-box { width: 100%; max-width: 420px; }
+
+.lb-back {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 0.78rem; font-weight: 600; color: var(--c-text-muted);
+    margin-bottom: 2.5rem; transition: color 0.15s;
+}
+.lb-back:hover { color: var(--c-primary); }
+.lb-back i { width: 15px; height: 15px; }
+
+.lb-title {
+    font-family: var(--f-display);
+    font-size: 1.8rem; font-weight: 800;
+    color: var(--c-text); margin-bottom: 6px;
+}
+.lb-sub { font-size: 0.85rem; color: var(--c-text-muted); margin-bottom: 2rem; }
+.lb-sub em { font-style: normal; color: var(--c-primary); font-weight: 600; }
+
+/* Erro */
+.lb-error {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--c-error-lt);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-left: 3px solid var(--c-error);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    font-size: 0.82rem; color: var(--c-error);
+    margin-bottom: 1.5rem;
+}
+.lb-error i { width: 17px; height: 17px; flex-shrink: 0; }
+
+/* Form */
+.lb-form { display: flex; flex-direction: column; gap: 1.1rem; }
+.lb-field { display: flex; flex-direction: column; gap: 6px; }
+.lb-label { font-size: 0.78rem; font-weight: 700; color: var(--c-text-2); }
+.lb-input-wrap { position: relative; }
+.lb-input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--c-text-muted); }
+.lb-input-icon i { width: 16px; height: 16px; }
+.lb-input {
+    width: 100%;
+    background: var(--c-bg);
+    border: 1.5px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    padding: 11px 12px 11px 40px;
+    font-family: var(--f-body); font-size: 0.88rem;
+    color: var(--c-text); outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+.lb-input::placeholder { color: var(--c-text-muted); }
+.lb-input:focus { border-color: var(--c-primary); background: #fff; }
+.lb-input.err { border-color: var(--c-error); }
+
+.lb-eye {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--c-text-muted); display: flex; align-items: center; transition: color 0.15s;
+}
+.lb-eye:hover { color: var(--c-text); }
+.lb-eye i { width: 16px; height: 16px; }
+
+.lb-row { display: flex; align-items: center; justify-content: space-between; }
+.lb-check { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.78rem; color: var(--c-text-muted); }
+.lb-check input { accent-color: var(--c-primary); }
+.lb-forgot { font-size: 0.78rem; color: var(--c-text-muted); transition: color 0.15s; }
+.lb-forgot:hover { color: var(--c-primary); }
+
+.lb-submit {
+    width: 100%;
+    background: var(--c-primary); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    padding: 13px; font-family: var(--f-body); font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; transition: background 0.15s, transform 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    box-shadow: 0 4px 14px rgba(255,107,0,0.25);
+    margin-top: 0.5rem;
+}
+.lb-submit:hover { background: var(--c-primary-d); transform: translateY(-1px); }
+.lb-submit i { width: 17px; height: 17px; }
+
+.lb-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.5rem 0 1rem;
+    font-size: 0.7rem; color: var(--c-text-muted); font-weight: 600;
+}
+.lb-divider::before, .lb-divider::after { content: ''; flex: 1; height: 1px; background: var(--c-border); }
+
+.lb-portals { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lb-portal-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 12px 8px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--c-border);
+    background: var(--c-bg);
+    font-size: 0.7rem; font-weight: 700;
+    color: var(--c-text-muted); text-align: center;
+    transition: all 0.15s;
+}
+.lb-portal-btn:hover { border-color: var(--c-primary); color: var(--c-primary); background: var(--c-primary-lt); }
+.lb-portal-btn i { width: 20px; height: 20px; }
+
+.lb-footer {
+    text-align: center; margin-top: 2rem;
+    font-size: 0.72rem; color: var(--c-text-muted);
+}
+.lb-footer a { color: var(--c-primary); }
+.lb-footer a:hover { text-decoration: underline; }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+    .login-wrapper { grid-template-columns: 1fr; }
+    .login-left { display: none; }
+    .login-right { background: var(--c-surface); border-left: none; }
+}
+</style>
 </head>
-
 <body>
+<div class="login-wrapper">
 
-    <!-- Preloader -->
-    <div id="preloader">
-        <div class="preloader-logo"><span>S</span>L</div>
-    </div>
+    <!-- LEFT PANEL -->
+    <div class="login-left">
+        <div class="ll-top">
+            <a href="index.php" class="ll-brand">
+                <img src="assets/images/image-removebg-preview (1).png" alt="Sophie Link" style="height: 48px; object-fit: contain;">
+            </a>
+        </div>
 
-    <?php include 'includes/mobile_menu_home.php'; ?>
-    <?php include 'includes/navbar_home.php'; ?>
+        <div class="ll-mid">
+            <div class="ll-label">Sistema Educacional</div>
+            <h1 class="ll-title">Bem-vindo ao<br>Centro Técnico</h1>
+            <p class="ll-desc">Acesse sua conta para gerenciar aprendizes, acompanhar frequências, notas e relatórios financeiros em tempo real.</p>
 
-    <!-- Layout Principal -->
-    <div class="login-wrapper">
-
-        <!-- COLUNA ESQUERDA: Brand / Visual -->
-        <div class="login-visual">
-            <div class="login-visual-content">
-
-                <div class="brand-logo">
-                    <div class="brand-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    </div>
-                    <span class="brand-name"><span>Sophie</span> Link</span>
-                </div>
-
-                <div class="visual-headline">
-                    <div class="visual-eyebrow">Plataforma Profissional</div>
-                    <h1 class="visual-title">
-                        GESTÃO
-                        <em>INTELIGENTE</em>
-                        DE APRENDIZES
-                    </h1>
-                    <p class="visual-description">
-                        Centraliza o controle de aprendizes, empresas parceiras, frequência escolar, notas e financeiro em um único sistema profissional.
-                    </p>
-                </div>
-
-                <div class="visual-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">300<span>+</span></div>
-                        <div class="stat-label">Aprendizes</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">49<span>+</span></div>
-                        <div class="stat-label">Empresas</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">100<span>%</span></div>
-                        <div class="stat-label">Digital</div>
+            <div class="ll-cards">
+                <div class="ll-card">
+                    <div class="ll-card-icon"><i data-lucide="graduation-cap"></i></div>
+                    <div>
+                        <div class="ll-card-label">AVA — Aulas Online</div>
+                        <div class="ll-card-sub">Ambiente virtual para professores e alunos</div>
                     </div>
                 </div>
-
+                <div class="ll-card">
+                    <div class="ll-card-icon"><i data-lucide="check-square"></i></div>
+                    <div>
+                        <div class="ll-card-label">Frequência & Notas</div>
+                        <div class="ll-card-sub">Lançamento diário pelo professor</div>
+                    </div>
+                </div>
+                <div class="ll-card">
+                    <div class="ll-card-icon"><i data-lucide="credit-card"></i></div>
+                    <div>
+                        <div class="ll-card-label">Relatórios Financeiros</div>
+                        <div class="ll-card-sub">Controle de pagamentos por empresa</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- COLUNA DIREITA: Formulário -->
-        <div class="login-panel">
+        <div class="ll-bottom">
+            © <?= date('Y') ?> Centro Técnico Profissionalizante Sophie Link · Parauapebas, PA
+        </div>
+    </div>
 
-            <div class="panel-tag">Acesso Restrito ao Sistema</div>
+    <!-- RIGHT PANEL -->
+    <div class="login-right">
+        <div class="login-box">
 
-            <h2 class="panel-title">Bem-vindo</h2>
-            <p class="panel-subtitle">Insira suas credenciais para acessar o painel.</p>
+            <a href="index.php" class="lb-back">
+                <i data-lucide="arrow-left"></i> Voltar ao site
+            </a>
 
-            <form id="loginForm" novalidate>
+            <div class="lb-title">Entrar na plataforma</div>
+            <div class="lb-sub">Use suas credenciais de <em>administrador, professor ou empresa</em></div>
 
-                <div class="field-group">
-                    <label class="field-label" for="email">Usuário</label>
-                    <div class="field-input-wrap">
-                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                        <input type="text" id="email" name="email" class="field-input" placeholder="admin" autocomplete="username" required>
+            <?php if ($erro): ?>
+            <div class="lb-error">
+                <i data-lucide="alert-circle"></i>
+                <?= htmlspecialchars($erro) ?>
+            </div>
+            <?php endif; ?>
+
+            <form method="POST" action="" class="lb-form" id="login-form">
+
+                <div class="lb-field">
+                    <label class="lb-label" for="email">E-mail</label>
+                    <div class="lb-input-wrap">
+                        <div class="lb-input-icon"><i data-lucide="mail"></i></div>
+                        <input type="text" id="email" name="email"
+                               class="lb-input <?= $erro ? 'err' : '' ?>"
+                               placeholder="seu@email.com"
+                               value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+                               required autocomplete="username">
                     </div>
                 </div>
 
-                <div class="field-group">
-                    <label class="field-label" for="senha">Senha</label>
-                    <div class="field-input-wrap">
-                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                        <input type="password" id="senha" name="senha" class="field-input" placeholder="••••••••" autocomplete="current-password" required>
+                <div class="lb-field">
+                    <label class="lb-label" for="senha">Senha</label>
+                    <div class="lb-input-wrap">
+                        <div class="lb-input-icon"><i data-lucide="lock"></i></div>
+                        <input type="password" id="senha" name="senha"
+                               class="lb-input <?= $erro ? 'err' : '' ?>"
+                               placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="lb-eye" id="toggle-eye">
+                            <i data-lucide="eye" id="eye-icon"></i>
+                        </button>
                     </div>
                 </div>
 
-                <div class="field-footer">
-                    <label class="remember-label">
-                        <input type="checkbox" class="remember-check"> Lembrar-me
+                <div class="lb-row">
+                    <label class="lb-check">
+                        <input type="checkbox" name="lembrar"> Lembrar-me
                     </label>
-                    <a href="#" class="forgot-link">Esqueceu a senha?</a>
+                    <a href="#" class="lb-forgot">Esqueceu a senha?</a>
                 </div>
 
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                        <polyline points="10 17 15 12 10 7" />
-                        <line x1="15" y1="12" x2="3" y2="12" />
-                    </svg>
-                    Entrar no Sistema
+                <button type="submit" class="lb-submit" id="login-btn">
+                    <i data-lucide="log-in"></i> Entrar
                 </button>
 
-                <div id="loginAlert"></div>
             </form>
 
-            <div class="panel-footer-text">
-                Sophie Link &copy; <?= date('Y') ?> — Todos os direitos reservados.
+            <div class="lb-divider">ou acesse diretamente</div>
+
+            <div class="lb-portals">
+                <a href="ava.php" class="lb-portal-btn">
+                    <i data-lucide="monitor-play" style="color: var(--c-primary);"></i>
+                    AVA
+                </a>
+                <a href="portal_aluno.php" class="lb-portal-btn">
+                    <i data-lucide="user" style="color: var(--c-primary);"></i>
+                    Portal do Aluno
+                </a>
+            </div>
+
+            <div class="lb-footer">
+                <a href="index.php">← Início</a> &nbsp;·&nbsp; © <?= date('Y') ?> Sophie Link
             </div>
 
         </div>
     </div>
 
-    <script>
-        // Preloader
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('preloader').classList.add('hide');
-            }, 900);
-        });
+</div>
 
-        // Login Form
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value.trim();
-            const senha = document.getElementById('senha').value;
-            const alertEl = document.getElementById('loginAlert');
-            const btn = document.getElementById('submitBtn');
+<script>
+lucide.createIcons();
 
-            if (!email || !senha) {
-                alertEl.textContent = 'Preencha todos os campos.';
-                alertEl.style.display = 'block';
-                return;
-            }
+const senhaInput = document.getElementById('senha');
+const toggleEye  = document.getElementById('toggle-eye');
+toggleEye.addEventListener('click', () => {
+    const visible = senhaInput.type === 'text';
+    senhaInput.type = visible ? 'password' : 'text';
+    toggleEye.innerHTML = visible
+        ? '<i data-lucide="eye"></i>'
+        : '<i data-lucide="eye-off"></i>';
+    lucide.createIcons();
+});
 
-            btn.disabled = true;
-            btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Verificando...';
-            alertEl.style.display = 'none';
-
-            try {
-                const formData = new FormData();
-                formData.append('email', email);
-                formData.append('senha', senha);
-
-                const res = await fetch('backend/api/auth/login.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Redirecionando...';
-                    btn.style.background = '#16a34a';
-                    setTimeout(() => window.location.href = 'dashboard.php', 700);
-                } else {
-                    alertEl.textContent = data.message || 'Credenciais inválidas. Tente novamente.';
-                    alertEl.style.display = 'block';
-                    btn.disabled = false;
-                    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Entrar no Sistema';
-                }
-            } catch {
-                alertEl.textContent = 'Erro de conexão com o servidor.';
-                alertEl.style.display = 'block';
-                btn.disabled = false;
-                btn.innerHTML = 'Entrar no Sistema';
-            }
-        });
-    </script>
-
-    <style>
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
+document.getElementById('login-form').addEventListener('submit', () => {
+    const btn = document.getElementById('login-btn');
+    btn.innerHTML = '<i data-lucide="loader-circle"></i> Verificando...';
+    btn.style.opacity = '0.8';
+    btn.disabled = true;
+    lucide.createIcons();
+});
+</script>
 </body>
-
 </html>

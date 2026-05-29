@@ -1,882 +1,595 @@
 <?php
+// dashboard.php — Painel Administrativo | Sophie Link
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: index.php");
+    header("Location: login.php");
     exit;
 }
-$nomeUsuario = $_SESSION['usuario_nome'] ?? 'Usuário';
-$nivelUsuario = $_SESSION['usuario_nivel'] ?? 'admin';
+$nome       = $_SESSION['usuario_nome'] ?? 'Administrador';
+$nivel      = $_SESSION['usuario_nivel'] ?? 'admin';
+$primeiroNome = explode(' ', $nome)[0];
 $nivelLabel = ['admin' => 'Administrador', 'coordenadora' => 'Coordenadora', 'professor' => 'Professor', 'empresa' => 'Empresa'];
+
+// Redireciona professores e empresas para seus portais
+if ($nivel === 'professor') { header('Location: portal_professor.php'); exit; }
+if ($nivel === 'empresa')   { header('Location: portal_empresa.php');   exit; }
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — Sophie Link</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Painel Admin — Sophie Link</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<style>
+/* ================================================================
+   RESET & TOKENS — ADMIN CLEAN
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --c-primary:    #FF6B00;
+    --c-primary-d:  #D95A00;
+    --c-primary-lt: #FFF0E6;
+    --c-bg:         #F5F6FA;
+    --c-surface:    #FFFFFF;
+    --c-border:     #E5E7EB;
+    --c-border-lt:  #F0F1F3;
+    --c-text:       #111827;
+    --c-text-2:     #374151;
+    --c-text-muted: #6B7280;
+    --c-text-light: #9CA3AF;
+    --c-blue:       #3B82F6;
+    --c-blue-lt:    #EFF6FF;
+    --c-green:      #22C55E;
+    --c-green-lt:   #F0FDF4;
+    --c-purple:     #8B5CF6;
+    --c-purple-lt:  #F5F3FF;
+    --c-amber:      #F59E0B;
+    --c-amber-lt:   #FFFBEB;
+    --c-red:        #EF4444;
+    --c-red-lt:     #FEF2F2;
+    --sidebar-w:    256px;
+    --header-h:     64px;
+    --radius:       12px;
+    --radius-sm:    8px;
+    --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+    --shadow:       0 4px 12px rgba(0,0,0,0.08);
+    --f-body:       'Inter', sans-serif;
+    --f-display:    'Syne', sans-serif;
+}
+html { font-size: 16px; }
+body { font-family: var(--f-body); background: var(--c-bg); color: var(--c-text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 10px; }
 
-        :root {
-            --orange: #FF7A00;
-            --orange-hover: #E06C00;
-            --orange-glow: rgba(255,122,0,0.2);
-            --orange-subtle: rgba(255,122,0,0.08);
-            --black: #0A0A0A;
-            --surface: #141414;
-            --surface2: #1C1C1C;
-            --surface3: #222222;
-            --border: rgba(255,255,255,0.06);
-            --border-hover: rgba(255,122,0,0.4);
-            --white: #FFFFFF;
-            --muted: #6B6B6B;
-            --muted-light: #999999;
-            --sidebar-w: 260px;
-        }
+/* LAYOUT */
+.app { display: flex; min-height: 100vh; }
 
-        html, body {
-            height: 100%;
-            font-family: 'Inter', sans-serif;
-            background: var(--black);
-            color: var(--white);
-            -webkit-font-smoothing: antialiased;
-        }
+/* ================================================================
+   SIDEBAR
+   ================================================================ */
+.sidebar {
+    width: var(--sidebar-w); background: var(--c-surface);
+    border-right: 1px solid var(--c-border);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 200;
+    overflow-y: auto;
+}
+.sb-brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 18px 18px 14px; border-bottom: 1px solid var(--c-border-lt);
+    flex-shrink: 0;
+}
+.sb-mark { width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--c-primary); display: flex; align-items: center; justify-content: center; font-family: var(--f-display); font-weight: 800; font-size: 0.85rem; color: #fff; }
+.sb-name { font-family: var(--f-display); font-size: 0.95rem; font-weight: 700; color: var(--c-text); }
+.sb-name span { color: var(--c-primary); }
+.sb-tag { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-light); margin-top: 1px; }
 
-        /* ===================== */
-        /* SCROLLBAR CUSTOMIZADO */
-        /* ===================== */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+.sb-user { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--c-bg); margin: 10px; border-radius: var(--radius); }
+.sb-avatar { width: 36px; height: 36px; background: var(--c-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #fff; flex-shrink: 0; }
+.sb-uname { font-size: 0.8rem; font-weight: 600; color: var(--c-text); }
+.sb-urole { font-size: 0.68rem; color: var(--c-text-muted); }
 
-        /* ===================== */
-        /* PRELOADER             */
-        /* ===================== */
-        #preloader {
-            position: fixed; inset: 0; background: var(--black); z-index: 99999;
-            display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.5s, visibility 0.5s;
-        }
-        #preloader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-        .preloader-bar {
-            width: 200px; height: 2px; background: var(--surface2); border-radius: 2px; overflow: hidden;
-        }
-        .preloader-fill {
-            height: 100%; width: 0; background: var(--orange);
-            animation: loadFill 1s ease forwards;
-        }
-        @keyframes loadFill { to { width: 100%; } }
+.sb-sec { padding: 10px 18px 4px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-light); }
+.nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 14px 9px 18px; font-size: 0.82rem; font-weight: 500; color: var(--c-text-muted); transition: all 0.15s; position: relative; cursor: pointer; }
+.nav-link i { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-link:hover { color: var(--c-primary); background: var(--c-primary-lt); }
+.nav-link.active { color: var(--c-primary); background: var(--c-primary-lt); font-weight: 600; }
+.nav-link.active::before { content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 3px; background: var(--c-primary); border-radius: 0 3px 3px 0; }
+.nav-badge { margin-left: auto; background: var(--c-primary); color: #fff; font-size: 0.58rem; font-weight: 700; padding: 1px 6px; border-radius: 20px; }
 
-        /* ===================== */
-        /* LAYOUT GERAL          */
-        /* ===================== */
-        .app-layout {
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+.sb-footer { margin-top: auto; padding: 14px 18px; border-top: 1px solid var(--c-border-lt); }
+.sb-footer a { display: flex; align-items: center; gap: 8px; font-size: 0.77rem; font-weight: 500; color: var(--c-text-muted); transition: color 0.15s; }
+.sb-footer a:hover { color: var(--c-primary); }
 
-        /* ===================== */
-        /* SIDEBAR               */
-        /* ===================== */
-        .sidebar {
-            width: var(--sidebar-w);
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-            transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
-        }
+/* ================================================================
+   WORKSPACE
+   ================================================================ */
+.workspace { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
 
-        /* Linha laranja no topo da sidebar */
-        .sidebar::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--orange), transparent);
-        }
+.topbar { height: var(--header-h); background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 100; }
+.tb-left { display: flex; align-items: center; gap: 10px; }
+.tb-title { font-size: 1rem; font-weight: 700; color: var(--c-text); }
+.tb-right { display: flex; align-items: center; gap: 8px; }
+.tb-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); border: 1px solid var(--c-border); background: transparent; color: var(--c-text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; position: relative; }
+.tb-btn:hover { background: var(--c-bg); color: var(--c-text); }
+.tb-btn i { width: 16px; height: 16px; }
+.notif-dot { position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; background: var(--c-primary); border-radius: 50%; border: 1.5px solid #fff; }
 
-        .sidebar-brand {
-            height: 64px;
-            display: flex;
-            align-items: center;
-            padding: 0 1.5rem;
-            border-bottom: 1px solid var(--border);
-            gap: 10px;
-            flex-shrink: 0;
-        }
-        .sidebar-brand-icon {
-            width: 32px; height: 32px;
-            background: var(--orange);
-            border-radius: 7px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .sidebar-brand-name {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: var(--white);
-            white-space: nowrap;
-        }
-        .sidebar-brand-name span { color: var(--orange); }
+.content { padding: 2rem; flex: 1; }
 
-        /* Nav */
-        .sidebar-nav {
-            flex: 1;
-            padding: 1.25rem 0.75rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
+/* PAGE HEADER */
+.page-hdr { margin-bottom: 2rem; }
+.ph-greeting { font-size: 0.78rem; font-weight: 600; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.ph-title { font-family: var(--f-display); font-size: 1.8rem; font-weight: 800; color: var(--c-text); margin-bottom: 6px; }
+.ph-sub { font-size: 0.88rem; color: var(--c-text-muted); max-width: 600px; }
 
-        .nav-section-label {
-            font-size: 0.62rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--muted);
-            padding: 0.75rem 0.75rem 0.5rem;
-            margin-top: 0.5rem;
-        }
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
+.stat-card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 1.25rem 1.5rem; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s, transform 0.2s; }
+.stat-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.stat-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; }
+.stat-icon i { width: 20px; height: 20px; }
+.si-blue   { background: var(--c-blue-lt);   color: var(--c-blue);   }
+.si-purple { background: var(--c-purple-lt); color: var(--c-purple); }
+.si-green  { background: var(--c-green-lt);  color: var(--c-green);  }
+.si-orange { background: var(--c-primary-lt);color: var(--c-primary);}
+.stat-trend { font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+.trend-up   { background: var(--c-green-lt);  color: #15803D; }
+.trend-down { background: var(--c-amber-lt);  color: #B45309; }
+.stat-val { font-family: var(--f-display); font-size: 1.8rem; font-weight: 800; color: var(--c-text); margin-bottom: 2px; }
+.stat-lbl { font-size: 0.75rem; color: var(--c-text-muted); }
 
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--muted-light);
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .nav-link .nav-icon {
-            width: 18px; height: 18px;
-            flex-shrink: 0;
-            transition: color 0.2s;
-        }
-        .nav-link:hover {
-            background: var(--orange-subtle);
-            color: var(--white);
-        }
-        .nav-link:hover .nav-icon { color: var(--orange); }
-        .nav-link.active {
-            background: var(--orange-subtle);
-            color: var(--white);
-            border: 1px solid rgba(255,122,0,0.2);
-        }
-        .nav-link.active .nav-icon { color: var(--orange); }
-        .nav-link.active::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 20%; bottom: 20%;
-            width: 3px;
-            background: var(--orange);
-            border-radius: 0 2px 2px 0;
-        }
-        .nav-badge {
-            margin-left: auto;
-            background: var(--orange);
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 20px;
-        }
+/* GRID PRINCIPAL */
+.dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.75rem; }
 
-        /* User no rodapé da sidebar */
-        .sidebar-footer {
-            padding: 1rem 0.75rem;
-            border-top: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-        .user-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-        }
-        .user-avatar {
-            width: 34px; height: 34px;
-            border-radius: 8px;
-            background: var(--orange);
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Teko', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: white;
-            flex-shrink: 0;
-        }
-        .user-info { flex: 1; min-width: 0; }
-        .user-name {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--white);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .user-role {
-            font-size: 0.7rem;
-            color: var(--muted);
-        }
-        .logout-btn {
-            background: none; border: none; cursor: pointer;
-            color: var(--muted);
-            padding: 4px;
-            border-radius: 4px;
-            display: flex;
-            transition: color 0.2s;
-        }
-        .logout-btn:hover { color: #ef4444; }
+/* CARDS GENÉRICOS */
+.card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+.card-head { padding: 1rem 1.5rem; border-bottom: 1px solid var(--c-border-lt); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 0.9rem; font-weight: 700; color: var(--c-text); display: flex; align-items: center; gap: 8px; }
+.card-title i { width: 17px; height: 17px; color: var(--c-primary); }
+.card-link { font-size: 0.75rem; font-weight: 600; color: var(--c-primary); }
+.card-link:hover { text-decoration: underline; }
 
-        /* ===================== */
-        /* ÁREA PRINCIPAL        */
-        /* ===================== */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            min-width: 0;
-        }
+/* ALERTAS */
+.alert-list { display: flex; flex-direction: column; }
+.alert-item { display: flex; align-items: center; gap: 14px; padding: 14px 1.5rem; border-bottom: 1px solid var(--c-border-lt); transition: background 0.15s; }
+.alert-item:last-child { border-bottom: none; }
+.alert-item:hover { background: var(--c-bg); }
+.alert-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.alert-icon i { width: 18px; height: 18px; }
+.ai-warn  { background: var(--c-amber-lt); color: var(--c-amber); }
+.ai-err   { background: var(--c-red-lt);   color: var(--c-red);   }
+.ai-info  { background: var(--c-blue-lt);  color: var(--c-blue);  }
+.ai-ok    { background: var(--c-green-lt); color: var(--c-green); }
+.alert-body { flex: 1; min-width: 0; }
+.alert-title { font-size: 0.83rem; font-weight: 700; color: var(--c-text); margin-bottom: 2px; }
+.alert-desc  { font-size: 0.73rem; color: var(--c-text-muted); line-height: 1.5; }
+.alert-btn { flex-shrink: 0; font-size: 0.72rem; font-weight: 700; padding: 5px 12px; border-radius: var(--radius-sm); border: 1px solid var(--c-border); background: none; font-family: var(--f-body); cursor: pointer; color: var(--c-text-2); transition: all 0.15s; }
+.alert-btn:hover { border-color: var(--c-primary); color: var(--c-primary); background: var(--c-primary-lt); }
 
-        /* TOPBAR */
-        .topbar {
-            height: 64px;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            flex-shrink: 0;
-        }
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .page-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: var(--white);
-        }
-        .page-breadcrumb {
-            font-size: 0.75rem;
-            color: var(--muted);
-        }
+/* AÇÕES RÁPIDAS */
+.action-list { display: flex; flex-direction: column; gap: 0; }
+.action-btn { display: flex; align-items: center; justify-content: space-between; padding: 12px 1.5rem; border-bottom: 1px solid var(--c-border-lt); transition: background 0.15s; cursor: pointer; }
+.action-btn:last-child { border-bottom: none; }
+.action-btn:hover { background: var(--c-bg); }
+.ab-left { display: flex; align-items: center; gap: 12px; }
+.ab-icon { width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--c-primary-lt); color: var(--c-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ab-icon i { width: 16px; height: 16px; }
+.ab-label { font-size: 0.83rem; font-weight: 600; color: var(--c-text-2); }
+.ab-arrow { width: 15px; height: 15px; color: var(--c-text-light); transition: transform 0.15s; }
+.action-btn:hover .ab-arrow { transform: translateX(3px); color: var(--c-primary); }
 
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .icon-btn {
-            width: 36px; height: 36px;
-            border: 1px solid var(--border);
-            background: var(--surface2);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--muted-light);
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-        .icon-btn:hover {
-            border-color: var(--border-hover);
-            color: var(--white);
-        }
-        .icon-btn .badge-dot {
-            position: absolute;
-            top: 6px; right: 6px;
-            width: 7px; height: 7px;
-            background: #ef4444;
-            border-radius: 50%;
-            border: 2px solid var(--surface);
-        }
+/* PILLS */
+.pill { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; }
+.pill-green  { background: var(--c-green-lt);  color: #15803D; }
+.pill-amber  { background: var(--c-amber-lt);  color: #B45309; }
+.pill-red    { background: var(--c-red-lt);    color: var(--c-red); }
+.pill-blue   { background: var(--c-blue-lt);   color: #1D4ED8; }
+.pill-gray   { background: var(--c-bg);        color: var(--c-text-muted); border: 1px solid var(--c-border); }
 
-        /* CONTEÚDO ROLÁVEL */
-        .content-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem;
-        }
+/* TABELAS */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { text-align: left; padding: 9px 1.5rem; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--c-text-light); border-bottom: 1px solid var(--c-border); }
+.data-table td { padding: 12px 1.5rem; font-size: 0.82rem; border-bottom: 1px solid var(--c-border-lt); color: var(--c-text-2); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--c-bg); }
+.td-bold { font-weight: 700; color: var(--c-text); }
 
-        /* HEADER DA PÁGINA */
-        .content-header {
-            margin-bottom: 2rem;
-        }
-        .content-header-greeting {
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--orange);
-            margin-bottom: 0.5rem;
-        }
-        .content-header-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            line-height: 1;
-            color: var(--white);
-            margin-bottom: 0.5rem;
-        }
-        .content-header-subtitle {
-            font-size: 0.875rem;
-            color: var(--muted);
-        }
+/* NAVEGAÇÃO SEÇÕES */
+.sec { display: none; }
+.sec.active { display: block; }
 
-        /* ===================== */
-        /* CARDS DE ESTATÍSTICAS */
-        /* ===================== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
-            cursor: default;
-        }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at top right, var(--card-glow, transparent), transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .stat-card:hover {
-            border-color: var(--card-border, var(--border));
-            transform: translateY(-3px);
-        }
-        .stat-card:hover::before { opacity: 1; }
-
-        .stat-card-orange { --card-glow: rgba(255,122,0,0.12); --card-border: rgba(255,122,0,0.25); }
-        .stat-card-blue   { --card-glow: rgba(59,130,246,0.12); --card-border: rgba(59,130,246,0.25); }
-        .stat-card-green  { --card-glow: rgba(34,197,94,0.12);  --card-border: rgba(34,197,94,0.25);  }
-        .stat-card-red    { --card-glow: rgba(239,68,68,0.12);  --card-border: rgba(239,68,68,0.25);  }
-
-        .stat-card-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 1.25rem;
-        }
-        .stat-card-icon {
-            width: 40px; height: 40px;
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .stat-card-icon.orange { background: rgba(255,122,0,0.15); color: var(--orange); }
-        .stat-card-icon.blue   { background: rgba(59,130,246,0.15); color: #3B82F6; }
-        .stat-card-icon.green  { background: rgba(34,197,94,0.15);  color: #22C55E; }
-        .stat-card-icon.red    { background: rgba(239,68,68,0.15);   color: #EF4444; }
-
-        .stat-badge {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 20px;
-        }
-        .stat-badge.up   { background: rgba(34,197,94,0.15); color: #4ADE80; }
-        .stat-badge.down { background: rgba(239,68,68,0.15); color: #F87171; }
-
-        .stat-card-value {
-            font-family: 'Teko', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1;
-            letter-spacing: -1px;
-            margin-bottom: 0.4rem;
-        }
-        .stat-card-label {
-            font-size: 0.78rem;
-            color: var(--muted);
-            font-weight: 500;
-        }
-
-        /* ===================== */
-        /* LINHA INFERIOR        */
-        /* ===================== */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.25rem;
-        }
-
-        /* Card genérico */
-        .panel-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .panel-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .panel-card-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: var(--white);
-        }
-        .panel-card-link {
-            font-size: 0.75rem;
-            color: var(--orange);
-            text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.2s;
-        }
-        .panel-card-link:hover { opacity: 0.75; }
-
-        /* Lista de alertas */
-        .alerts-list {
-            padding: 1rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .alert-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            transition: border-color 0.2s;
-        }
-        .alert-item:hover { border-color: var(--border-hover); }
-        .alert-item-icon {
-            width: 36px; height: 36px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; margin-top: 2px;
-        }
-        .alert-item-icon.warning  { background: rgba(251,191,36,0.15); color: #FBB124; }
-        .alert-item-icon.danger   { background: rgba(239,68,68,0.15);  color: #EF4444; }
-        .alert-item-icon.info     { background: rgba(59,130,246,0.15); color: #3B82F6; }
-
-        .alert-item-body { flex: 1; }
-        .alert-item-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--white);
-            margin-bottom: 3px;
-        }
-        .alert-item-desc {
-            font-size: 0.78rem;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-        .alert-item-action {
-            background: var(--orange);
-            border: none;
-            color: white;
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            flex-shrink: 0;
-            white-space: nowrap;
-            transition: background 0.2s;
-        }
-        .alert-item-action:hover { background: var(--orange-hover); }
-
-        /* Ações rápidas */
-        .quick-actions-list {
-            padding: 1rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .quick-action-btn {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 14px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            group: true;
-        }
-        .quick-action-btn:hover {
-            border-color: var(--border-hover);
-            background: var(--orange-subtle);
-        }
-        .quick-action-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .quick-action-icon {
-            width: 34px; height: 34px;
-            background: var(--surface3);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--muted-light);
-            transition: all 0.2s;
-        }
-        .quick-action-btn:hover .quick-action-icon {
-            background: var(--orange-subtle);
-            color: var(--orange);
-        }
-        .quick-action-label {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--muted-light);
-            transition: color 0.2s;
-        }
-        .quick-action-btn:hover .quick-action-label { color: var(--white); }
-        .quick-action-chevron {
-            color: var(--muted);
-            transition: color 0.2s, transform 0.2s;
-        }
-        .quick-action-btn:hover .quick-action-chevron {
-            color: var(--orange);
-            transform: translateX(3px);
-        }
-
-        /* ===================== */
-        /* RESPONSIVO            */
-        /* ===================== */
-        @media (max-width: 1280px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+@media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .workspace { margin-left: 0; } .content { padding: 1rem; } }
+</style>
 </head>
 <body>
+<div class="app">
 
-    <!-- Preloader -->
-    <div id="preloader">
-        <div class="preloader-bar"><div class="preloader-fill"></div></div>
-    </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sb-brand" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+            <img src="assets/images/image-removebg-preview (1).png" alt="Sophie Link" style="height: 32px; object-fit: contain;">
+            <div class="sb-tag" style="margin-top: 4px;">Painel Administrativo</div>
+        </div>
 
-    <div class="app-layout">
-
-        <!-- ===== SIDEBAR ===== -->
-        <aside class="sidebar">
-
-            <div class="sidebar-brand">
-                <div class="sidebar-brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <span class="sidebar-brand-name"><span>Sophie</span> Link</span>
+        <div class="sb-user">
+            <div class="sb-avatar"><?= strtoupper(substr($nome, 0, 1)) ?></div>
+            <div>
+                <div class="sb-uname"><?= htmlspecialchars($primeiroNome) ?></div>
+                <div class="sb-urole"><?= $nivelLabel[$nivel] ?? $nivel ?></div>
             </div>
+        </div>
 
-            <nav class="sidebar-nav">
-                <span class="nav-section-label">Principal</span>
-                <a href="dashboard.php" class="nav-link active">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    Dashboard
-                </a>
+        <div class="sb-sec">Principal</div>
+        <a href="#" class="nav-link active" onclick="showSec('dashboard',this)"><i data-lucide="layout-dashboard"></i> Dashboard</a>
 
-                <span class="nav-section-label">Gestão</span>
-                <?php if (in_array($nivelUsuario, ['admin', 'coordenadora'])): ?>
-                <a href="empresas.php" class="nav-link">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                    Empresas
-                </a>
-                <?php endif; ?>
-                <a href="aprendizes.php" class="nav-link">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    Aprendizes
-                    <span class="nav-badge" style="margin-left:auto">312</span>
-                </a>
-                <a href="#" class="nav-link">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    Frequência
-                </a>
-                <a href="#" class="nav-link">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                    Notas
-                </a>
+        <div class="sb-sec">Gestão Educacional</div>
+        <a href="#" class="nav-link" onclick="showSec('aprendizes',this)"><i data-lucide="users"></i> Aprendizes <span class="nav-badge">312</span></a>
+        <?php if (in_array($nivel, ['admin','coordenadora'])): ?>
+        <a href="#" class="nav-link" onclick="showSec('empresas-list',this)"><i data-lucide="building-2"></i> Empresas</a>
+        <a href="portal_professor.php" class="nav-link"><i data-lucide="user-check"></i> Portal Professor</a>
+        <?php endif; ?>
+        <a href="#" class="nav-link" onclick="showSec('frequencia',this)"><i data-lucide="calendar-check"></i> Frequência</a>
+        <a href="#" class="nav-link" onclick="showSec('notas',this)"><i data-lucide="bar-chart-2"></i> Notas & AVA</a>
 
-                <span class="nav-section-label">Financeiro</span>
-                <?php if (in_array($nivelUsuario, ['admin', 'coordenadora', 'empresa'])): ?>
-                <a href="#" class="nav-link">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                    Pagamentos
-                </a>
-                <?php endif; ?>
-                <a href="#" class="nav-link">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                    Relatórios
-                </a>
+        <div class="sb-sec">Administrativo</div>
+        <?php if (in_array($nivel, ['admin','coordenadora','empresa'])): ?>
+        <a href="#" class="nav-link" onclick="showSec('financeiro',this)"><i data-lucide="receipt"></i> Financeiro</a>
+        <?php endif; ?>
+        <a href="#" class="nav-link" onclick="showSec('relatorios',this)"><i data-lucide="file-bar-chart-2"></i> Relatórios</a>
 
-                <?php if ($nivelUsuario === 'admin'): ?>
-                <span class="nav-section-label">Sistema</span>
-                <a href="#" class="nav-link">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-                    Configurações
-                </a>
-                <?php endif; ?>
-            </nav>
+        <?php if ($nivel === 'admin'): ?>
+        <div class="sb-sec">Sistema</div>
+        <a href="#" class="nav-link" onclick="showSec('configuracoes',this)"><i data-lucide="settings"></i> Configurações do Site</a>
+        <a href="#" class="nav-link" onclick="showSec('usuarios',this)"><i data-lucide="shield-check"></i> Usuários & Acessos</a>
+        <?php endif; ?>
 
-            <div class="sidebar-footer">
-                <div class="user-card">
-                    <div class="user-avatar"><?= strtoupper(substr($nomeUsuario, 0, 1)) ?></div>
-                    <div class="user-info">
-                        <div class="user-name"><?= htmlspecialchars($nomeUsuario) ?></div>
-                        <div class="user-role"><?= $nivelLabel[$nivelUsuario] ?? $nivelUsuario ?></div>
-                    </div>
-                    <a href="backend/api/auth/logout.php" class="logout-btn" title="Sair">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    </a>
-                </div>
+        <div class="sb-footer">
+            <a href="backend/api/auth/logout.php"><i data-lucide="log-out"></i> Sair</a>
+        </div>
+    </aside>
+
+    <!-- WORKSPACE -->
+    <div class="workspace">
+        <header class="topbar">
+            <div class="tb-left">
+                <div class="tb-title" id="topbar-title">Dashboard</div>
             </div>
+            <div class="tb-right">
+                <button class="tb-btn"><i data-lucide="search"></i></button>
+                <button class="tb-btn"><i data-lucide="bell"></i><span class="notif-dot"></span></button>
+                <button class="tb-btn"><i data-lucide="settings"></i></button>
+            </div>
+        </header>
 
-        </aside>
+        <main class="content">
 
-        <!-- ===== ÁREA PRINCIPAL ===== -->
-        <div class="main-content">
-
-            <!-- Topbar -->
-            <header class="topbar">
-                <div class="topbar-left">
-                    <div>
-                        <div class="page-breadcrumb">Sophie Link / Dashboard</div>
-                        <div class="page-title">Visão Geral</div>
-                    </div>
-                </div>
-                <div class="topbar-actions">
-                    <div class="icon-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    </div>
-                    <div class="icon-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                        <span class="badge-dot"></span>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Conteúdo -->
-            <div class="content-scroll">
-
-                <!-- Header da página -->
-                <div class="content-header">
-                    <div class="content-header-greeting">— Painel Administrativo</div>
-                    <h1 class="content-header-title">Olá, <?= explode(' ', $nomeUsuario)[0] ?>.</h1>
-                    <p class="content-header-subtitle">Aqui está o resumo completo do sistema Sophie Link.</p>
+            <!-- =========== DASHBOARD =========== -->
+            <div id="sec-dashboard" class="sec active">
+                <div class="page-hdr">
+                    <div class="ph-greeting">Bem-vindo de volta</div>
+                    <div class="ph-title">Olá, <?= $primeiroNome ?>. 👋</div>
+                    <div class="ph-sub">Acompanhe as métricas do programa de aprendizagem. Controle frequência, notas e situação financeira em tempo real.</div>
                 </div>
 
-                <!-- Cards de Estatísticas -->
                 <div class="stats-grid">
-                    <div class="stat-card stat-card-orange">
-                        <div class="stat-card-top">
-                            <div class="stat-card-icon orange">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            </div>
-                            <span class="stat-badge up">+12 mês</span>
-                        </div>
-                        <div class="stat-card-value">312</div>
-                        <div class="stat-card-label">Aprendizes Ativos</div>
+                    <div class="stat-card">
+                        <div class="stat-top"><div class="stat-icon si-blue"><i data-lucide="users"></i></div><span class="stat-trend trend-up">+12 este mês</span></div>
+                        <div class="stat-val">312</div><div class="stat-lbl">Aprendizes Ativos</div>
                     </div>
-
-                    <div class="stat-card stat-card-blue">
-                        <div class="stat-card-top">
-                            <div class="stat-card-icon blue">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            </div>
-                            <span class="stat-badge up">+2 mês</span>
-                        </div>
-                        <div class="stat-card-value">49</div>
-                        <div class="stat-card-label">Empresas Parceiras</div>
+                    <div class="stat-card">
+                        <div class="stat-top"><div class="stat-icon si-purple"><i data-lucide="building-2"></i></div><span class="stat-trend trend-up">+2 este mês</span></div>
+                        <div class="stat-val">49</div><div class="stat-lbl">Empresas Parceiras</div>
                     </div>
-
-                    <div class="stat-card stat-card-green">
-                        <div class="stat-card-top">
-                            <div class="stat-card-icon green">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                            </div>
-                            <span class="stat-badge up">Semana</span>
-                        </div>
-                        <div class="stat-card-value">94%</div>
-                        <div class="stat-card-label">Frequência Geral</div>
+                    <div class="stat-card">
+                        <div class="stat-top"><div class="stat-icon si-green"><i data-lucide="percent"></i></div><span class="stat-trend trend-up">Estável</span></div>
+                        <div class="stat-val">94%</div><div class="stat-lbl">Frequência Média</div>
                     </div>
-
-                    <div class="stat-card stat-card-red">
-                        <div class="stat-card-top">
-                            <div class="stat-card-icon red">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            </div>
-                            <span class="stat-badge down">5 emp.</span>
-                        </div>
-                        <div class="stat-card-value">R$ 1,25k</div>
-                        <div class="stat-card-label">Pendências Financeiras</div>
+                    <div class="stat-card">
+                        <div class="stat-top"><div class="stat-icon si-orange"><i data-lucide="alert-circle"></i></div><span class="stat-trend trend-down">Atenção</span></div>
+                        <div class="stat-val">R$ 1.2k</div><div class="stat-lbl">Inadimplências</div>
                     </div>
                 </div>
 
-                <!-- Grid inferior -->
-                <div class="dashboard-grid">
-
-                    <!-- Avisos e Pendências -->
-                    <div class="panel-card">
-                        <div class="panel-card-header">
-                            <span class="panel-card-title">Avisos e Pendências</span>
-                            <a href="#" class="panel-card-link">Ver todos →</a>
+                <div class="dash-grid">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-title"><i data-lucide="bell"></i> Avisos & Pendências</div>
+                            <a href="#" class="card-link">Ver histórico →</a>
                         </div>
-                        <div class="alerts-list">
-
+                        <div class="alert-list">
                             <div class="alert-item">
-                                <div class="alert-item-icon warning">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                <div class="alert-icon ai-warn"><i data-lucide="file-warning"></i></div>
+                                <div class="alert-body">
+                                    <div class="alert-title">Contratos próximos do vencimento</div>
+                                    <div class="alert-desc">12 aprendizes terão contratos encerrados nos próximos 30 dias. Revise para prorrogação ou desligamento.</div>
                                 </div>
-                                <div class="alert-item-body">
-                                    <div class="alert-item-title">Contratos próximos do vencimento</div>
-                                    <div class="alert-item-desc">12 aprendizes terão seus contratos encerrados nos próximos 30 dias.</div>
-                                </div>
-                                <button class="alert-item-action">Revisar</button>
+                                <button class="alert-btn">Revisar</button>
                             </div>
-
                             <div class="alert-item">
-                                <div class="alert-item-icon danger">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                                <div class="alert-icon ai-err"><i data-lucide="credit-card"></i></div>
+                                <div class="alert-body">
+                                    <div class="alert-title">Pagamento em atraso</div>
+                                    <div class="alert-desc">A empresa "Tech Solutions LTDA" está com faturamento pendente do mês anterior.</div>
                                 </div>
-                                <div class="alert-item-body">
-                                    <div class="alert-item-title">Pagamento em atraso detectado</div>
-                                    <div class="alert-item-desc">Tech Solutions LTDA está com faturamento pendente há 5 dias.</div>
-                                </div>
-                                <button class="alert-item-action">Notificar</button>
+                                <button class="alert-btn">Notificar</button>
                             </div>
-
                             <div class="alert-item">
-                                <div class="alert-item-icon info">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                <div class="alert-icon ai-info"><i data-lucide="bar-chart-down"></i></div>
+                                <div class="alert-body">
+                                    <div class="alert-title">Alerta de frequência baixa</div>
+                                    <div class="alert-desc">3 aprendizes registraram menos de 75% de presença neste módulo.</div>
                                 </div>
-                                <div class="alert-item-body">
-                                    <div class="alert-item-title">Frequência baixa detectada</div>
-                                    <div class="alert-item-desc">3 aprendizes estão com menos de 75% de presença no mês.</div>
-                                </div>
-                                <button class="alert-item-action">Ver lista</button>
+                                <button class="alert-btn">Ver lista</button>
                             </div>
-
+                            <div class="alert-item">
+                                <div class="alert-icon ai-ok"><i data-lucide="check-circle"></i></div>
+                                <div class="alert-body">
+                                    <div class="alert-title">Avaliação bimestral concluída</div>
+                                    <div class="alert-desc">Módulos 1 e 2 corrigidos. Média geral da turma: 8.2. Relatório disponível.</div>
+                                </div>
+                                <button class="alert-btn">Baixar</button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Ações Rápidas -->
-                    <div class="panel-card">
-                        <div class="panel-card-header">
-                            <span class="panel-card-title">Ações Rápidas</span>
-                        </div>
-                        <div class="quick-actions-list">
-
-                            <div class="quick-action-btn">
-                                <div class="quick-action-left">
-                                    <div class="quick-action-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                                    </div>
-                                    <span class="quick-action-label">Novo Aprendiz</span>
-                                </div>
-                                <svg class="quick-action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                            </div>
-
-                            <div class="quick-action-btn">
-                                <div class="quick-action-left">
-                                    <div class="quick-action-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                                    </div>
-                                    <span class="quick-action-label">Nova Empresa</span>
-                                </div>
-                                <svg class="quick-action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                            </div>
-
-                            <div class="quick-action-btn">
-                                <div class="quick-action-left">
-                                    <div class="quick-action-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                                    </div>
-                                    <span class="quick-action-label">Registrar Frequência</span>
-                                </div>
-                                <svg class="quick-action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                            </div>
-
-                            <div class="quick-action-btn">
-                                <div class="quick-action-left">
-                                    <div class="quick-action-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                                    </div>
-                                    <span class="quick-action-label">Gerar Relatório</span>
-                                </div>
-                                <svg class="quick-action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                            </div>
-
-                            <div class="quick-action-btn">
-                                <div class="quick-action-left">
-                                    <div class="quick-action-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                                    </div>
-                                    <span class="quick-action-label">Lançar Pagamento</span>
-                                </div>
-                                <svg class="quick-action-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                            </div>
-
+                    <div class="card">
+                        <div class="card-head"><div class="card-title"><i data-lucide="zap"></i> Ações Rápidas</div></div>
+                        <div class="action-list">
+                            <a href="#" class="action-btn" onclick="showSec('aprendizes',document.querySelector('[onclick*=aprendizes]'))">
+                                <div class="ab-left"><div class="ab-icon"><i data-lucide="user-plus"></i></div><span class="ab-label">Cadastrar Aprendiz</span></div>
+                                <i data-lucide="chevron-right" class="ab-arrow"></i>
+                            </a>
+                            <a href="#" class="action-btn" onclick="showSec('empresas-list',document.querySelector('[onclick*=empresas-list]'))">
+                                <div class="ab-left"><div class="ab-icon"><i data-lucide="building"></i></div><span class="ab-label">Nova Empresa</span></div>
+                                <i data-lucide="chevron-right" class="ab-arrow"></i>
+                            </a>
+                            <a href="#" class="action-btn" onclick="showSec('frequencia',document.querySelector('[onclick*=frequencia]'))">
+                                <div class="ab-left"><div class="ab-icon"><i data-lucide="clipboard-check"></i></div><span class="ab-label">Registrar Frequência</span></div>
+                                <i data-lucide="chevron-right" class="ab-arrow"></i>
+                            </a>
+                            <a href="#" class="action-btn" onclick="showSec('financeiro',document.querySelector('[onclick*=financeiro]'))">
+                                <div class="ab-left"><div class="ab-icon"><i data-lucide="receipt"></i></div><span class="ab-label">Lançar Pagamento</span></div>
+                                <i data-lucide="chevron-right" class="ab-arrow"></i>
+                            </a>
+                            <a href="portal_professor.php" class="action-btn">
+                                <div class="ab-left"><div class="ab-icon"><i data-lucide="user-check"></i></div><span class="ab-label">Portal do Professor</span></div>
+                                <i data-lucide="chevron-right" class="ab-arrow"></i>
+                            </a>
+                            <a href="portal_empresa.php" class="action-btn">
+                                <div class="ab-left"><div class="ab-icon"><i data-lucide="briefcase"></i></div><span class="ab-label">Portal da Empresa</span></div>
+                                <i data-lucide="chevron-right" class="ab-arrow"></i>
+                            </a>
                         </div>
                     </div>
-
                 </div>
 
-            </div><!-- /content-scroll -->
-        </div><!-- /main-content -->
-    </div><!-- /app-layout -->
+                <!-- Tabela recente -->
+                <div class="card">
+                    <div class="card-head">
+                        <div class="card-title"><i data-lucide="users"></i> Aprendizes Recentes</div>
+                        <a href="#" class="card-link" onclick="showSec('aprendizes',null)">Ver todos →</a>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Nome</th><th>Curso</th><th>Empresa</th><th>Frequência</th><th>Situação</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-bold">Ana Paula Souza</td><td>Eletromecânica</td><td>Vale S.A.</td><td>96%</td><td><span class="pill pill-green">Regular</span></td></tr>
+                            <tr><td class="td-bold">Carlos Eduardo Lima</td><td>Gestão da Qualidade</td><td>Sotreq</td><td>88%</td><td><span class="pill pill-green">Regular</span></td></tr>
+                            <tr><td class="td-bold">Fernanda Rocha</td><td>Segurança do Trabalho</td><td>Vale S.A.</td><td>72%</td><td><span class="pill pill-amber">Atenção</span></td></tr>
+                            <tr><td class="td-bold">João Mendes</td><td>Logística</td><td>Tech Solutions</td><td>61%</td><td><span class="pill pill-red">Crítico</span></td></tr>
+                            <tr><td class="td-bold">Maria Clara Neves</td><td>Administração</td><td>Sotreq</td><td>94%</td><td><span class="pill pill-green">Regular</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <script>
-        // Inicializa ícones Lucide se necessário
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+            <!-- =========== APRENDIZES =========== -->
+            <div id="sec-aprendizes" class="sec">
+                <div class="page-hdr">
+                    <div class="ph-greeting">Gestão Educacional</div>
+                    <div class="ph-title">Aprendizes</div>
+                    <div class="ph-sub">Cadastro, acompanhamento e situação dos aprendizes matriculados.</div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:6px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:7px 12px;"><i data-lucide="search" style="width:15px;height:15px;color:var(--c-text-muted);"></i><input type="text" placeholder="Buscar aprendiz..." style="border:none;outline:none;font-family:var(--f-body);font-size:0.82rem;background:transparent;color:var(--c-text);width:200px;"></div>
+                    </div>
+                    <button style="display:flex;align-items:center;gap:7px;background:var(--c-primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:var(--f-body);font-size:0.82rem;font-weight:700;cursor:pointer;"><i data-lucide="user-plus" style="width:15px;height:15px;"></i> Novo Aprendiz</button>
+                </div>
+                <div class="card">
+                    <table class="data-table">
+                        <thead><tr><th>Nome</th><th>RA</th><th>Curso</th><th>Empresa</th><th>Frequência</th><th>Situação</th><th>Ações</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-bold">Ana Paula Souza</td><td>2026100401</td><td>Eletromecânica</td><td>Vale S.A.</td><td>96%</td><td><span class="pill pill-green">Regular</span></td><td><button style="background:none;border:1px solid var(--c-border);border-radius:5px;padding:3px 8px;font-size:0.7rem;cursor:pointer;font-family:var(--f-body);">Detalhes</button></td></tr>
+                            <tr><td class="td-bold">Carlos Eduardo Lima</td><td>2026100402</td><td>Gestão da Qualidade</td><td>Sotreq</td><td>88%</td><td><span class="pill pill-green">Regular</span></td><td><button style="background:none;border:1px solid var(--c-border);border-radius:5px;padding:3px 8px;font-size:0.7rem;cursor:pointer;font-family:var(--f-body);">Detalhes</button></td></tr>
+                            <tr><td class="td-bold">Fernanda Rocha</td><td>2026100403</td><td>Segurança do Trabalho</td><td>Vale S.A.</td><td>72%</td><td><span class="pill pill-amber">Atenção</span></td><td><button style="background:none;border:1px solid var(--c-border);border-radius:5px;padding:3px 8px;font-size:0.7rem;cursor:pointer;font-family:var(--f-body);">Detalhes</button></td></tr>
+                            <tr><td class="td-bold">João Mendes</td><td>2026100404</td><td>Logística</td><td>Tech Solutions</td><td>61%</td><td><span class="pill pill-red">Crítico</span></td><td><button style="background:none;border:1px solid var(--c-border);border-radius:5px;padding:3px 8px;font-size:0.7rem;cursor:pointer;font-family:var(--f-body);">Detalhes</button></td></tr>
+                            <tr><td class="td-bold">Maria Clara Neves</td><td>2026100405</td><td>Administração</td><td>Sotreq</td><td>94%</td><td><span class="pill pill-green">Regular</span></td><td><button style="background:none;border:1px solid var(--c-border);border-radius:5px;padding:3px 8px;font-size:0.7rem;cursor:pointer;font-family:var(--f-body);">Detalhes</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-        // Remove preloader
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('preloader').classList.add('hide');
-            }, 1000);
-        });
-    </script>
+            <!-- =========== EMPRESAS =========== -->
+            <div id="sec-empresas-list" class="sec">
+                <div class="page-hdr">
+                    <div class="ph-greeting">Gestão Educacional</div>
+                    <div class="ph-title">Empresas Parceiras</div>
+                    <div class="ph-sub">Gestão das empresas que participam do Programa de Aprendizagem.</div>
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+                    <button style="display:flex;align-items:center;gap:7px;background:var(--c-primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:var(--f-body);font-size:0.82rem;font-weight:700;cursor:pointer;"><i data-lucide="plus" style="width:15px;height:15px;"></i> Nova Empresa</button>
+                </div>
+                <div class="card">
+                    <table class="data-table">
+                        <thead><tr><th>Empresa</th><th>CNPJ</th><th>Aprendizes</th><th>Situação Fin.</th><th>Responsável</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-bold">Vale S.A. — Programa Partilhar</td><td>33.592.510/0001-54</td><td>148</td><td><span class="pill pill-green">Em dia</span></td><td>Juliana Costa</td></tr>
+                            <tr><td class="td-bold">Sotreq — Instituto Social</td><td>60.367.015/0001-20</td><td>94</td><td><span class="pill pill-green">Em dia</span></td><td>Ricardo Alves</td></tr>
+                            <tr><td class="td-bold">Tech Solutions LTDA</td><td>12.345.678/0001-90</td><td>18</td><td><span class="pill pill-red">Pendente</span></td><td>Marcos Lopes</td></tr>
+                            <tr><td class="td-bold">MinerTech Parauapebas</td><td>98.765.432/0001-11</td><td>52</td><td><span class="pill pill-green">Em dia</span></td><td>Cláudia Ferro</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========== FREQUÊNCIA =========== -->
+            <div id="sec-frequencia" class="sec">
+                <div class="page-hdr">
+                    <div class="ph-title">Frequência</div>
+                    <div class="ph-sub">Registro e acompanhamento de presença nas aulas teóricas.</div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><div class="card-title"><i data-lucide="calendar-check"></i> Registro de Presença — Maio 2026</div><span class="pill pill-blue">Turma: Eletromecânica A</span></div>
+                    <table class="data-table">
+                        <thead><tr><th>Aluno</th><th>Aulas Dadas</th><th>Presenças</th><th>Faltas</th><th>%</th><th>Situação</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-bold">Ana Paula Souza</td><td>40</td><td>38</td><td>2</td><td>96%</td><td><span class="pill pill-green">OK</span></td></tr>
+                            <tr><td class="td-bold">Fernanda Rocha</td><td>40</td><td>29</td><td>11</td><td>72%</td><td><span class="pill pill-amber">Atenção</span></td></tr>
+                            <tr><td class="td-bold">João Mendes</td><td>40</td><td>24</td><td>16</td><td>61%</td><td><span class="pill pill-red">Crítico</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========== NOTAS =========== -->
+            <div id="sec-notas" class="sec">
+                <div class="page-hdr"><div class="ph-title">Notas & AVA</div><div class="ph-sub">Boletim geral e lançamentos de notas por disciplina.</div></div>
+                <div class="card">
+                    <div class="card-head"><div class="card-title"><i data-lucide="bar-chart-2"></i> Boletim Geral 2026/1</div></div>
+                    <table class="data-table">
+                        <thead><tr><th>Aluno</th><th>Eletromecânica</th><th>Gest. Qualidade</th><th>SST</th><th>Logística</th><th>Média</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-bold">Ana Paula Souza</td><td>9.0</td><td>8.5</td><td>9.0</td><td>—</td><td style="color:var(--c-green);font-weight:700">8.8</td></tr>
+                            <tr><td class="td-bold">Carlos Eduardo Lima</td><td>8.0</td><td>9.0</td><td>7.5</td><td>—</td><td style="color:var(--c-green);font-weight:700">8.2</td></tr>
+                            <tr><td class="td-bold">Fernanda Rocha</td><td>6.5</td><td>7.0</td><td>8.0</td><td>—</td><td style="color:var(--c-amber);font-weight:700">7.2</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========== FINANCEIRO =========== -->
+            <div id="sec-financeiro" class="sec">
+                <div class="page-hdr"><div class="ph-title">Financeiro</div><div class="ph-sub">Gestão de mensalidades, faturamentos e inadimplências.</div></div>
+                <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.25rem;">
+                    <div class="stat-card"><div class="stat-top"><div class="stat-icon si-green"><i data-lucide="check-circle"></i></div></div><div class="stat-val">R$ 48.5k</div><div class="stat-lbl">Recebido (Mês)</div></div>
+                    <div class="stat-card"><div class="stat-top"><div class="stat-icon si-orange"><i data-lucide="clock"></i></div></div><div class="stat-val">R$ 1.2k</div><div class="stat-lbl">Pendente</div></div>
+                    <div class="stat-card"><div class="stat-top"><div class="stat-icon si-blue"><i data-lucide="trending-up"></i></div></div><div class="stat-val">R$ 49.7k</div><div class="stat-lbl">Total Previsto</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><div class="card-title"><i data-lucide="receipt"></i> Lançamentos — Maio 2026</div></div>
+                    <table class="data-table">
+                        <thead><tr><th>Empresa</th><th>Referência</th><th>Valor</th><th>Vencimento</th><th>Situação</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-bold">Vale S.A.</td><td>Mai/2026</td><td>R$ 22.200,00</td><td>10/05/2026</td><td><span class="pill pill-green">Pago</span></td></tr>
+                            <tr><td class="td-bold">Sotreq</td><td>Mai/2026</td><td>R$ 14.100,00</td><td>10/05/2026</td><td><span class="pill pill-green">Pago</span></td></tr>
+                            <tr><td class="td-bold">Tech Solutions</td><td>Abr/2026</td><td>R$ 1.200,00</td><td>10/04/2026</td><td><span class="pill pill-red">Pendente</span></td></tr>
+                            <tr><td class="td-bold">MinerTech</td><td>Mai/2026</td><td>R$ 7.800,00</td><td>10/05/2026</td><td><span class="pill pill-green">Pago</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========== RELATÓRIOS =========== -->
+            <div id="sec-relatorios" class="sec">
+                <div class="page-hdr"><div class="ph-title">Relatórios</div><div class="ph-sub">Exporte relatórios do programa para fins institucionais e de auditoria.</div></div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+                    <?php
+                    $relatorios = [
+                        ['Frequência Mensal','Presença por turma e aluno exportado em PDF/Excel','calendar-check','blue'],
+                        ['Boletim Geral','Notas e médias de todas as disciplinas do período','bar-chart-2','purple'],
+                        ['Financeiro','Faturamentos e inadimplências por empresa parceira','receipt','orange'],
+                        ['Contratos','Status dos contratos de aprendizagem vigentes','file-text','green'],
+                        ['Aprendizes','Listagem completa com situação e dados cadastrais','users','blue'],
+                        ['Empresas','Empresas ativas, aprendizes vinculados e status','building-2','purple'],
+                    ];
+                    foreach ($relatorios as $r): ?>
+                    <div class="card" style="padding:1.5rem;display:flex;flex-direction:column;gap:12px;">
+                        <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:var(--c-<?= $r[3] ?>-lt);color:var(--c-<?= $r[3] ?>);display:flex;align-items:center;justify-content:center;"><i data-lucide="<?= $r[0] == 'Frequência Mensal' ? 'calendar-check' : ($r[0] == 'Boletim Geral' ? 'bar-chart-2' : ($r[0] == 'Financeiro' ? 'receipt' : ($r[0] == 'Contratos' ? 'file-text' : ($r[0] == 'Aprendizes' ? 'users' : 'building-2')))) ?>" style="width:22px;height:22px;"></i></div>
+                        <div><div style="font-size:0.9rem;font-weight:700;color:var(--c-text);margin-bottom:4px;"><?= $r[0] ?></div><div style="font-size:0.75rem;color:var(--c-text-muted);line-height:1.5;"><?= $r[1] ?></div></div>
+                        <button style="margin-top:auto;display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--c-border);border-radius:var(--radius-sm);padding:7px 12px;font-family:var(--f-body);font-size:0.75rem;font-weight:700;cursor:pointer;color:var(--c-text-2);width:fit-content;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--c-primary)';this.style.color='var(--c-primary)'" onmouseout="this.style.borderColor='var(--c-border)';this.style.color='var(--c-text-2)'"><i data-lucide="download" style="width:13px;height:13px;"></i> Exportar</button>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <!-- =========== CONFIGURAÇÕES =========== -->
+            <div id="sec-configuracoes" class="sec">
+                <div class="page-hdr"><div class="ph-title">Configurações do Site</div><div class="ph-sub">Gerencie informações institucionais, textos e configurações gerais do portal.</div></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+                    <div class="card card-body" style="padding:1.5rem;">
+                        <div style="font-size:0.9rem;font-weight:700;color:var(--c-text);margin-bottom:1rem;display:flex;align-items:center;gap:8px;"><i data-lucide="globe" style="width:17px;height:17px;color:var(--c-primary);"></i> Dados Institucionais</div>
+                        <div style="display:flex;flex-direction:column;gap:12px;">
+                            <div><label style="font-size:0.75rem;font-weight:700;color:var(--c-text-muted);display:block;margin-bottom:5px;">Nome da Instituição</label><input type="text" value="Centro Técnico Profissionalizante Sophie Link" style="width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--radius-sm);font-family:var(--f-body);font-size:0.85rem;color:var(--c-text);outline:none;background:var(--c-bg);"></div>
+                            <div><label style="font-size:0.75rem;font-weight:700;color:var(--c-text-muted);display:block;margin-bottom:5px;">Endereço</label><input type="text" value="Avenida Amazonas, 64 – Bairro Rio Verde, Parauapebas – PA" style="width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--radius-sm);font-family:var(--f-body);font-size:0.85rem;color:var(--c-text);outline:none;background:var(--c-bg);"></div>
+                            <div><label style="font-size:0.75rem;font-weight:700;color:var(--c-text-muted);display:block;margin-bottom:5px;">E-mail de Contato</label><input type="email" value="contato@sophielink.com.br" style="width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--radius-sm);font-family:var(--f-body);font-size:0.85rem;color:var(--c-text);outline:none;background:var(--c-bg);"></div>
+                            <button style="background:var(--c-primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px 20px;font-family:var(--f-body);font-weight:700;font-size:0.85rem;cursor:pointer;margin-top:5px;align-self:flex-start;">Salvar Alterações</button>
+                        </div>
+                    </div>
+                    <div class="card" style="padding:1.5rem;">
+                        <div style="font-size:0.9rem;font-weight:700;color:var(--c-text);margin-bottom:1rem;display:flex;align-items:center;gap:8px;"><i data-lucide="layout" style="width:17px;height:17px;color:var(--c-primary);"></i> Seções da Página Inicial</div>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <?php $secoes = ['Hero (Banner Principal)' => true, 'Seção Institucional' => true, 'Nossos Cursos' => true, 'Portais de Acesso' => true, 'Parceiros' => true, 'Rodapé de Contato' => true]; foreach ($secoes as $sec => $ativo): ?>
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--radius-sm);">
+                                <span style="font-size:0.83rem;font-weight:600;color:var(--c-text-2);"><?= $sec ?></span>
+                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                                    <input type="checkbox" <?= $ativo ? 'checked' : '' ?> style="accent-color:var(--c-primary);width:15px;height:15px;">
+                                    <span style="font-size:0.72rem;color:var(--c-text-muted);"><?= $ativo ? 'Visível' : 'Oculto' ?></span>
+                                </label>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========== USUÁRIOS =========== -->
+            <div id="sec-usuarios" class="sec">
+                <div class="page-hdr"><div class="ph-title">Usuários & Acessos</div><div class="ph-sub">Gerencie contas de professores, coordenadores e empresas no sistema.</div></div>
+                <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+                    <button style="display:flex;align-items:center;gap:7px;background:var(--c-primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:var(--f-body);font-size:0.82rem;font-weight:700;cursor:pointer;"><i data-lucide="user-plus" style="width:15px;height:15px;"></i> Novo Usuário</button>
+                </div>
+                <div class="card">
+                    <table class="data-table">
+                        <thead><tr><th>Nome</th><th>E-mail</th><th>Nível</th><th>Último Acesso</th><th>Status</th><th>Ações</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-bold">Admin Sophie Link</td><td>admin@sophielink.com.br</td><td><span class="pill pill-red">Admin</span></td><td>Hoje, 10:30</td><td><span class="pill pill-green">Ativo</span></td><td><button style="font-size:0.7rem;border:1px solid var(--c-border);background:none;border-radius:5px;padding:3px 8px;cursor:pointer;font-family:var(--f-body);">Editar</button></td></tr>
+                            <tr><td class="td-bold">Prof. Carlos Menezes</td><td>carlos@sophielink.com.br</td><td><span class="pill pill-blue">Professor</span></td><td>Hoje, 08:15</td><td><span class="pill pill-green">Ativo</span></td><td><button style="font-size:0.7rem;border:1px solid var(--c-border);background:none;border-radius:5px;padding:3px 8px;cursor:pointer;font-family:var(--f-body);">Editar</button></td></tr>
+                            <tr><td class="td-bold">Vale S.A. (Empresa)</td><td>vale@sophielink.com.br</td><td><span class="pill pill-purple">Empresa</span></td><td>Ontem</td><td><span class="pill pill-green">Ativo</span></td><td><button style="font-size:0.7rem;border:1px solid var(--c-border);background:none;border-radius:5px;padding:3px 8px;cursor:pointer;font-family:var(--f-body);">Editar</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+lucide.createIcons();
+function showSec(id, el) {
+    event && event.preventDefault();
+    document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+    const sec = document.getElementById('sec-' + id);
+    if (sec) sec.classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const titles = {
+        dashboard:'Dashboard', aprendizes:'Aprendizes',
+        'empresas-list':'Empresas Parceiras', frequencia:'Frequência',
+        notas:'Notas & AVA', financeiro:'Financeiro',
+        relatorios:'Relatórios', configuracoes:'Configurações do Site', usuarios:'Usuários & Acessos'
+    };
+    document.getElementById('topbar-title').textContent = titles[id] || 'Admin';
+}
+</script>
 </body>
 </html>

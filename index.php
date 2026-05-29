@@ -1,718 +1,736 @@
-<?php
-// Home page - Landing Page Sophie Link
-?>
+<?php // Landing Page Institucional — Centro Técnico Profissionalizante Sophie Link ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sophie Link — Gestão de Aprendizes</title>
-    <meta name="description" content="Sophie Link — Plataforma profissional de gestão de aprendizes, empresas parceiras e desenvolvimento de jovens talentos.">
+    <title>Centro Técnico Sophie Link — Parauapebas, PA</title>
+    <meta name="description" content="Centro Técnico Profissionalizante Sophie Link — Educação técnica de excelência em Parauapebas, PA. Cursos de Eletromecânica, Logística, Segurança do Trabalho e mais.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+<style>
+/* ================================================================
+   RESET & DESIGN TOKENS — TEMA CLEAN INSTITUCIONAL
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --c-primary:    #FF6B00;
+    --c-primary-d:  #D95A00;
+    --c-primary-lt: #FFF0E6;
+    --c-bg:         #F5F6FA;
+    --c-surface:    #FFFFFF;
+    --c-border:     #E5E7EB;
+    --c-border-lt:  #F0F1F3;
+    --c-text:       #111827;
+    --c-text-2:     #374151;
+    --c-text-muted: #6B7280;
+    --c-text-light: #9CA3AF;
+    --c-blue:       #3B82F6;
+    --c-blue-lt:    #EFF6FF;
+    --c-green:      #22C55E;
+    --c-green-lt:   #F0FDF4;
+    --radius:       12px;
+    --radius-sm:    8px;
+    --shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow:       0 4px 12px rgba(0,0,0,0.08);
+    --f-body:       'Inter', sans-serif;
+    --f-display:    'Syne', sans-serif;
+    --nav-h:        68px;
+}
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--f-body); background: var(--c-bg); color: var(--c-text); -webkit-font-smoothing: antialiased; overflow-x: hidden; line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 10px; }
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
+/* ================================================================
+   NAVBAR
+   ================================================================ */
+.nav {
+    position: sticky; top: 0; z-index: 1000;
+    height: var(--nav-h);
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 3rem;
+    box-shadow: var(--shadow-sm);
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-brand-mark {
+    width: 38px; height: 38px; border-radius: var(--radius-sm);
+    background: var(--c-primary);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--f-display); font-weight: 800; font-size: 0.95rem; color: #fff;
+}
+.nav-brand-name { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; color: var(--c-text); }
+.nav-brand-name span { color: var(--c-primary); }
 
-    <style>
-        /* ===== RESET & BASE ===== */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.nav-actions { display: flex; align-items: center; gap: 8px; }
+.nav-link-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    font-size: 0.82rem; font-weight: 600; color: var(--c-text-muted);
+    border: 1px solid transparent;
+    transition: all 0.15s;
+}
+.nav-link-btn:hover { color: var(--c-primary); background: var(--c-primary-lt); border-color: rgba(255,107,0,0.2); }
+.nav-link-btn i { width: 15px; height: 15px; }
+.nav-cta {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 18px; border-radius: var(--radius-sm);
+    font-size: 0.82rem; font-weight: 700;
+    background: var(--c-primary); color: #fff;
+    transition: background 0.15s, transform 0.15s;
+}
+.nav-cta:hover { background: var(--c-primary-d); transform: translateY(-1px); }
+.nav-cta i { width: 15px; height: 15px; }
 
-        :root {
-            --orange:       #FF7A00;
-            --orange-deep:  #E06C00;
-            --orange-light: #FF9D3A;
-            --orange-glow:  rgba(255,122,0,0.3);
-            --black:        #0A0A0A;
-            --black2:       #111111;
-            --white:        #FFFFFF;
-            --muted:        #888888;
-            --surface:      rgba(255,255,255,0.05);
-            --border:       rgba(255,255,255,0.08);
-        }
+.menu-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: none; border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm); padding: 8px 14px;
+    font-family: var(--f-body); font-size: 0.8rem; font-weight: 600;
+    color: var(--c-text-muted); cursor: pointer;
+    transition: all 0.15s;
+}
+.menu-btn:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.menu-btn i { width: 17px; height: 17px; }
 
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--black);
-            color: var(--white);
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
+/* ================================================================
+   SIDE MENU
+   ================================================================ */
+.side-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(3px);
+    z-index: 9000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+}
+.side-overlay.active { opacity: 1; pointer-events: all; }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 4px; }
+.side-menu {
+    position: fixed; top: 0; right: -380px; bottom: 0;
+    width: 340px; z-index: 9001;
+    background: var(--c-surface);
+    border-left: 1px solid var(--c-border);
+    display: flex; flex-direction: column;
+    transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+}
+.side-menu.active { right: 0; }
 
-        /* ===== PRELOADER ===== */
-        #preloader {
-            position: fixed; inset: 0; z-index: 99999;
-            background: var(--black);
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column; gap: 24px;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
-        }
-        #preloader.hide { opacity: 0; visibility: hidden; }
-        .pre-logo {
-            font-family: 'Teko', sans-serif;
-            font-size: 3.5rem; font-weight: 700;
-            letter-spacing: 6px; color: var(--white);
-        }
-        .pre-logo span { color: var(--orange); }
-        .pre-bar {
-            width: 200px; height: 2px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px; overflow: hidden;
-        }
-        .pre-fill {
-            height: 100%; width: 0; background: var(--orange);
-            animation: prefill 1.2s ease forwards;
-        }
-        @keyframes prefill { to { width: 100%; } }
+.sm-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--c-border-lt);
+}
+.sm-head-brand { display: flex; align-items: center; gap: 10px; }
+.sm-head-mark { width: 32px; height: 32px; border-radius: 7px; background: var(--c-primary); display: flex; align-items: center; justify-content: center; font-family: var(--f-display); font-weight: 800; font-size: 0.8rem; color: #fff; }
+.sm-head-name { font-family: var(--f-display); font-size: 1rem; font-weight: 700; color: var(--c-text); }
+.sm-head-name span { color: var(--c-primary); }
+.sm-close { background: none; border: 1px solid var(--c-border); border-radius: 7px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--c-text-muted); transition: all 0.15s; }
+.sm-close:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.sm-close i { width: 16px; height: 16px; }
 
+.sm-section { padding: 14px 20px 4px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-light); }
+.sm-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; font-size: 0.85rem; font-weight: 500;
+    color: var(--c-text-2); transition: all 0.15s;
+}
+.sm-link:hover { color: var(--c-primary); background: var(--c-primary-lt); }
+.sm-link i { width: 16px; height: 16px; color: var(--c-text-light); flex-shrink: 0; }
+.sm-link:hover i { color: var(--c-primary); }
 
-        /* ===== HERO ===== */
-        .hero {
-            min-height: 100vh;
-            display: flex; align-items: center;
-            position: relative; overflow: hidden;
-        }
+.sm-acc-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 10px 20px;
+    font-family: var(--f-body); font-size: 0.85rem; font-weight: 600;
+    color: var(--c-text-2); background: none; border: none; cursor: pointer;
+    transition: all 0.15s;
+}
+.sm-acc-btn:hover { color: var(--c-primary); background: var(--c-primary-lt); }
+.sm-acc-btn i { width: 16px; height: 16px; transition: transform 0.2s; }
+.sm-acc-btn.open i { transform: rotate(180deg); }
 
-        .hero-bg {
-            position: absolute; inset: 0; z-index: 0;
-            background: linear-gradient(135deg,
-                #1a0a00 0%, #2d1200 20%,
-                var(--orange-deep) 60%,
-                var(--orange) 80%,
-                var(--orange-light) 100%
-            );
-        }
-        .hero-bg::before {
-            content: '';
-            position: absolute; inset: 0;
-            background-image:
-                linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-        .hero-bg::after {
-            content: '';
-            position: absolute;
-            top: -100px; left: -100px;
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0,0,0,0.55) 0%, transparent 70%);
-        }
+.sm-acc-body { display: none; background: var(--c-bg); border-top: 1px solid var(--c-border-lt); border-bottom: 1px solid var(--c-border-lt); }
+.sm-acc-body.open { display: block; }
+.sm-sub-link { display: flex; align-items: center; gap: 8px; padding: 9px 20px 9px 34px; font-size: 0.8rem; color: var(--c-text-muted); transition: all 0.15s; }
+.sm-sub-link::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--c-border); flex-shrink: 0; }
+.sm-sub-link:hover { color: var(--c-primary); }
+.sm-sub-link:hover::before { background: var(--c-primary); }
 
-        .hero-shapes { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-        .shape {
-            position: absolute; border-radius: 4px; opacity: 0.12;
-            animation: floatShape 6s ease-in-out infinite;
-        }
-        .shape-1 { width: 60px; height: 60px; background: var(--white); top: 15%; right: 42%; transform: rotate(15deg); }
-        .shape-2 { width: 40px; height: 40px; background: var(--black); top: 60%; right: 35%; transform: rotate(-10deg); animation-delay: 1s; }
-        .shape-3 { width: 80px; height: 20px; background: var(--white); top: 30%; left: 10%; transform: rotate(5deg); animation-delay: 2s; }
-        .shape-4 { width: 30px; height: 30px; background: var(--black); bottom: 25%; right: 50%; transform: rotate(20deg); animation-delay: 0.5s; }
-        @keyframes floatShape {
-            0%, 100% { transform: translateY(0) rotate(15deg); }
-            50%       { transform: translateY(-15px) rotate(15deg); }
-        }
+.sm-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--c-border-lt); }
+.sm-footer-addr { font-size: 0.72rem; color: var(--c-text-light); display: flex; align-items: flex-start; gap: 7px; }
+.sm-footer-addr i { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; color: var(--c-primary); }
 
-        .hero-star {
-            position: absolute; bottom: 12%; left: 4%;
-            width: 80px; height: 80px; z-index: 2;
-            animation: spin 20s linear infinite; opacity: 0.5;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+/* ================================================================
+   HERO
+   ================================================================ */
+.hero {
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    padding: 6rem 3rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,107,0,0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+.hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--c-primary);
+    background: var(--c-primary-lt);
+    border: 1px solid rgba(255,107,0,0.2);
+    padding: 5px 14px; border-radius: 20px;
+    margin-bottom: 1.5rem;
+}
+.hero-tag::before { content: ''; width: 6px; height: 6px; background: var(--c-primary); border-radius: 50%; }
+.hero h1 {
+    font-family: var(--f-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; line-height: 1.1;
+    color: var(--c-text);
+    margin-bottom: 1.25rem;
+    max-width: 700px; margin-left: auto; margin-right: auto;
+}
+.hero h1 span { color: var(--c-primary); }
+.hero p {
+    font-size: 1.05rem; color: var(--c-text-muted);
+    max-width: 560px; margin: 0 auto 2.5rem;
+    line-height: 1.75;
+}
+.hero-actions { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--c-primary); color: #fff;
+    padding: 12px 28px; border-radius: var(--radius-sm);
+    font-size: 0.9rem; font-weight: 700;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 4px 14px rgba(255,107,0,0.25);
+}
+.btn-primary:hover { background: var(--c-primary-d); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,0,0.3); }
+.btn-primary i { width: 17px; height: 17px; }
+.btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--c-text-2);
+    padding: 12px 24px; border-radius: var(--radius-sm);
+    font-size: 0.9rem; font-weight: 600;
+    border: 1px solid var(--c-border);
+    transition: all 0.15s;
+}
+.btn-secondary:hover { border-color: var(--c-primary); color: var(--c-primary); background: var(--c-primary-lt); }
+.btn-secondary i { width: 17px; height: 17px; }
 
-        .hero-content {
-            position: relative; z-index: 3;
-            max-width: 1300px; margin: 0 auto; padding: 96px 3rem 3rem;
-            display: grid; grid-template-columns: 1fr 1fr;
-            align-items: center; gap: 2rem; width: 100%;
-        }
+/* hero stats row */
+.hero-stats {
+    display: flex; justify-content: center; gap: 3rem;
+    margin-top: 4rem; padding-top: 3rem;
+    border-top: 1px solid var(--c-border);
+    flex-wrap: wrap;
+}
+.hero-stat-val { font-family: var(--f-display); font-size: 2rem; font-weight: 800; color: var(--c-primary); }
+.hero-stat-lbl { font-size: 0.78rem; color: var(--c-text-muted); margin-top: 2px; }
 
-        .hero-eyebrow {
-            display: inline-flex; align-items: center; gap: 10px;
-            font-size: 0.72rem; font-weight: 700; letter-spacing: 4px;
-            text-transform: uppercase; color: rgba(0,0,0,0.6);
-            background: rgba(0,0,0,0.12); border-radius: 20px;
-            padding: 6px 14px; margin-bottom: 1.5rem;
-        }
-        .hero-eyebrow-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: var(--black); animation: blink 1.5s ease-in-out infinite;
-        }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* ================================================================
+   SEÇÕES GENÉRICAS
+   ================================================================ */
+.section { padding: 5rem 3rem; }
+.section-alt { background: var(--c-surface); border-top: 1px solid var(--c-border); border-bottom: 1px solid var(--c-border); }
+.container { max-width: 1080px; margin: 0 auto; }
+.sec-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--c-primary);
+    background: var(--c-primary-lt);
+    border: 1px solid rgba(255,107,0,0.2);
+    padding: 4px 12px; border-radius: 20px;
+    margin-bottom: 1rem;
+}
+.sec-title { font-family: var(--f-display); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: var(--c-text); margin-bottom: 0.75rem; }
+.sec-sub { font-size: 0.95rem; color: var(--c-text-muted); max-width: 520px; line-height: 1.7; }
 
-        .hero-title {
-            font-family: 'Teko', sans-serif;
-            font-size: clamp(3.5rem, 7vw, 6.5rem);
-            font-weight: 700; line-height: 0.88;
-            letter-spacing: -2px; color: var(--black);
-            margin-bottom: 1.5rem;
-        }
-        .hero-title .accent { color: var(--white); display: block; }
-        .hero-title .line2 {
-            font-size: clamp(2.2rem, 4.5vw, 4rem);
-            display: block; margin-top: 0.2rem;
-        }
+/* ================================================================
+   SEÇÃO INSTITUCIONAL
+   ================================================================ */
+.inst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem; }
+.inst-text p { font-size: 0.92rem; color: var(--c-text-muted); line-height: 1.8; margin-bottom: 1.25rem; }
+.inst-text strong { color: var(--c-text-2); }
+.inst-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.inst-card {
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+}
+.inst-card:hover { border-color: var(--c-primary); transform: translateY(-3px); }
+.inst-card i { width: 36px; height: 36px; color: var(--c-primary); margin-bottom: 0.75rem; }
+.inst-card h4 { font-size: 0.9rem; font-weight: 700; color: var(--c-text); margin-bottom: 0.4rem; }
+.inst-card p { font-size: 0.78rem; color: var(--c-text-muted); line-height: 1.5; }
 
-        .hero-desc {
-            font-size: 1rem; line-height: 1.7;
-            color: rgba(0,0,0,0.6);
-            max-width: 480px; margin-bottom: 2.5rem;
-        }
+/* ================================================================
+   CURSOS
+   ================================================================ */
+.courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+.course-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex; align-items: flex-start; gap: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+}
+.course-card:hover { border-color: var(--c-primary); box-shadow: var(--shadow); }
+.course-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: var(--c-primary-lt);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--c-primary);
+}
+.course-icon i { width: 22px; height: 22px; }
+.course-name { font-size: 0.9rem; font-weight: 700; color: var(--c-text); margin-bottom: 4px; }
+.course-desc { font-size: 0.75rem; color: var(--c-text-muted); line-height: 1.5; }
 
-        .hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-        .btn-hero {
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 16px 28px; border-radius: 10px;
-            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700;
-            text-decoration: none; transition: all 0.25s;
-            cursor: pointer; border: none; letter-spacing: 0.3px;
-        }
-        .btn-hero-admin {
-            background: var(--black); color: var(--white);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-        .btn-hero-admin:hover { background: #222; transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
-        .btn-hero-ava { background: var(--white); color: var(--black); }
-        .btn-hero-ava:hover { background: rgba(255,255,255,0.9); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.2); }
+/* ================================================================
+   PORTAIS DE ACESSO
+   ================================================================ */
+.portals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2.5rem; }
+.portal-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.portal-card:hover { border-color: var(--c-primary); box-shadow: var(--shadow); transform: translateY(-4px); }
+.pc-icon {
+    width: 52px; height: 52px;
+    background: var(--c-primary-lt);
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--c-primary); margin-bottom: 1.25rem;
+}
+.pc-icon i { width: 26px; height: 26px; }
+.pc-title { font-family: var(--f-display); font-size: 1.05rem; font-weight: 700; color: var(--c-text); margin-bottom: 0.5rem; }
+.pc-desc { font-size: 0.82rem; color: var(--c-text-muted); line-height: 1.65; flex: 1; margin-bottom: 1.5rem; }
+.pc-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; font-weight: 700; color: var(--c-primary);
+    transition: gap 0.15s;
+}
+.pc-btn i { width: 15px; height: 15px; }
+.portal-card:hover .pc-btn { gap: 10px; }
 
-        .hero-stats {
-            display: flex; gap: 2.5rem; margin-top: 3rem;
-            padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.15);
-        }
-        .hero-stat-num {
-            font-family: 'Teko', sans-serif; font-size: 2.5rem;
-            font-weight: 700; color: var(--black); line-height: 1;
-        }
-        .hero-stat-label {
-            font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
-            text-transform: uppercase; color: rgba(0,0,0,0.5); margin-top: 2px;
-        }
+/* ================================================================
+   PARCEIROS
+   ================================================================ */
+.partners-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 2.5rem; flex-wrap: wrap; margin-top: 2rem;
+}
+.partner-badge {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--c-surface); border: 1px solid var(--c-border);
+    border-radius: var(--radius); padding: 14px 20px;
+    box-shadow: var(--shadow-sm);
+    font-size: 0.85rem; font-weight: 700; color: var(--c-text-2);
+    transition: border-color 0.15s;
+}
+.partner-badge:hover { border-color: var(--c-primary); }
+.partner-badge i { width: 20px; height: 20px; color: var(--c-primary); }
 
-        .hero-image {
-            display: flex; align-items: flex-end; justify-content: center;
-            position: relative; min-height: 500px;
-        }
-        .hero-image img {
-            max-height: 580px; width: auto; object-fit: contain; object-position: bottom;
-            filter: drop-shadow(0 30px 60px rgba(0,0,0,0.4));
-            animation: heroFloat 4s ease-in-out infinite;
-        }
-        @keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+/* ================================================================
+   FOOTER
+   ================================================================ */
+.footer {
+    background: var(--c-text);
+    color: rgba(255,255,255,0.8);
+    padding: 4rem 3rem 2rem;
+}
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; max-width: 1080px; margin: 0 auto 3rem; }
+.footer-brand { font-family: var(--f-display); font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+.footer-brand span { color: var(--c-primary); }
+.footer-desc { font-size: 0.8rem; line-height: 1.7; color: rgba(255,255,255,0.5); margin-bottom: 1rem; }
+.footer-addr { font-size: 0.75rem; color: rgba(255,255,255,0.4); display: flex; align-items: flex-start; gap: 7px; }
+.footer-addr i { width: 14px; height: 14px; flex-shrink: 0; color: var(--c-primary); margin-top: 2px; }
+.footer-col h4 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 1rem; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.footer-col ul li a { font-size: 0.82rem; color: rgba(255,255,255,0.6); transition: color 0.15s; }
+.footer-col ul li a:hover { color: var(--c-primary); }
+.footer-bottom { max-width: 1080px; margin: 0 auto; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.75rem; color: rgba(255,255,255,0.35); text-align: center; }
 
-        /* Badges flutuantes */
-        .hero-badge {
-            position: absolute; top: 20%; left: -10px;
-            background: var(--black); border: 1px solid rgba(255,122,0,0.25);
-            border-radius: 12px; padding: 14px 18px;
-            display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            animation: badgeFloat 3s ease-in-out infinite;
-        }
-        @keyframes badgeFloat { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-8px) rotate(-1deg)} }
-        .hero-badge-icon {
-            width: 40px; height: 40px; border-radius: 8px;
-            background: rgba(255,122,0,0.15); color: var(--orange);
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .hero-badge-num { font-family:'Teko',sans-serif; font-size:1.6rem; font-weight:700; line-height:1; color:var(--white); }
-        .hero-badge-label { font-size:0.68rem; color:var(--muted); font-weight:500; }
-
-        .hero-badge2 {
-            position: absolute; bottom: 22%; right: 0;
-            background: var(--orange); border-radius: 12px;
-            padding: 12px 16px; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 10px 25px rgba(255,122,0,0.45);
-            animation: badgeFloat2 3.5s ease-in-out infinite;
-        }
-        @keyframes badgeFloat2 { 0%,100%{transform:translateY(0) rotate(1deg)} 50%{transform:translateY(-10px) rotate(1deg)} }
-        .hero-badge2-icon {
-            width: 34px; height: 34px; border-radius: 6px;
-            background: rgba(0,0,0,0.2);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .hero-badge2-text { font-size:0.78rem; font-weight:700; color:var(--white); }
-        .hero-badge2-sub  { font-size:0.65rem; color:rgba(255,255,255,0.75); }
-
-        .scroll-indicator {
-            position: absolute; bottom: 2.5rem; left: 50%;
-            transform: translateX(-50%); z-index: 10;
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-            animation: scrollBounce 2s ease-in-out infinite;
-        }
-        .scroll-indicator span { font-size:0.65rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:rgba(0,0,0,0.45); }
-        @keyframes scrollBounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
-
-        /* ===== PORTAIS ===== */
-        .section-portals {
-            padding: 7rem 3rem; background: var(--black2);
-            position: relative; overflow: hidden;
-        }
-        .section-portals::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--orange), transparent);
-        }
-        .section-inner { max-width: 1200px; margin: 0 auto; }
-
-        .section-label {
-            font-size: 0.68rem; font-weight: 700; letter-spacing: 4px;
-            text-transform: uppercase; color: var(--orange);
-            display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;
-        }
-        .section-label::before { content:''; display:block; width:24px; height:2px; background:var(--orange); }
-        .section-title {
-            font-family: 'Teko', sans-serif;
-            font-size: clamp(2.5rem, 4vw, 3.5rem);
-            font-weight: 700; letter-spacing: -1px; line-height: 1;
-            color: var(--white); margin-bottom: 1rem;
-        }
-        .section-subtitle { font-size:0.95rem; color:var(--muted); max-width:500px; line-height:1.7; margin-bottom:3.5rem; }
-
-        .portals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-
-        .portal-card {
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 16px; padding: 2rem;
-            position: relative; overflow: hidden;
-            transition: all 0.3s; text-decoration: none;
-            display: flex; flex-direction: column; cursor: pointer;
-        }
-        .portal-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(ellipse at top left, var(--pc-glow, transparent), transparent 70%);
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .portal-card:hover { border-color: var(--pc-border, var(--border)); transform: translateY(-6px); }
-        .portal-card:hover::before { opacity: 1; }
-
-        .portal-card-admin { --pc-glow: rgba(255,122,0,0.12); --pc-border: rgba(255,122,0,0.35); }
-        .portal-card-ava   { --pc-glow: rgba(59,130,246,0.12); --pc-border: rgba(59,130,246,0.35); }
-        .portal-card-info  { --pc-glow: rgba(34,197,94,0.1);   --pc-border: rgba(34,197,94,0.3); }
-
-        .portal-icon {
-            width: 52px; height: 52px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;
-        }
-        .portal-icon-orange { background: rgba(255,122,0,0.15); color: var(--orange); }
-        .portal-icon-blue   { background: rgba(59,130,246,0.15); color: #3B82F6; }
-        .portal-icon-green  { background: rgba(34,197,94,0.15); color: #22C55E; }
-
-        .portal-tag { font-size:0.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem; }
-        .portal-name { font-family:'Teko',sans-serif; font-size:1.8rem; font-weight:700; letter-spacing:0.5px; color:var(--white); margin-bottom:0.75rem; line-height:1; }
-        .portal-desc { font-size:0.85rem; color:var(--muted); line-height:1.6; flex:1; margin-bottom:1.5rem; }
-
-        .portal-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 10px 18px; border-radius: 8px;
-            font-size: 0.82rem; font-weight: 700; text-decoration: none;
-            width: fit-content; transition: all 0.2s;
-        }
-        .portal-btn-orange { background: var(--orange); color: var(--white); }
-        .portal-btn-orange:hover { background: var(--orange-deep); box-shadow: 0 6px 20px rgba(255,122,0,0.4); }
-        .portal-btn-blue { background: rgba(59,130,246,0.2); color: #60A5FA; border: 1px solid rgba(59,130,246,0.3); }
-        .portal-btn-blue:hover { background: rgba(59,130,246,0.35); }
-        .portal-btn-green { background: rgba(34,197,94,0.15); color: #4ADE80; border: 1px solid rgba(34,197,94,0.25); }
-        .portal-btn-green:hover { background: rgba(34,197,94,0.3); }
-
-        .portal-corner {
-            position: absolute; top: 1.5rem; right: 1.5rem;
-            width: 32px; height: 32px; border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            background: var(--border);
-        }
-        .portal-arrow { color: var(--muted); transition: color 0.2s, transform 0.2s; }
-        .portal-card:hover .portal-arrow { color: var(--white); transform: translate(3px,-3px); }
-
-        /* ===== FEATURES ===== */
-        .section-features { padding: 7rem 3rem; background: var(--black); }
-        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-
-        .features-mockup {
-            background: #141414; border: 1px solid var(--border);
-            border-radius: 16px; overflow: hidden;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-            position: relative;
-        }
-        .mockup-topbar { background: #1C1C1C; border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
-        .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .mockup-body { padding: 1.25rem; }
-        .mockup-row { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
-        .mockup-avatar { width:36px; height:36px; border-radius:8px; background:var(--orange); display:flex; align-items:center; justify-content:center; font-family:'Teko',sans-serif; font-size:1rem; font-weight:700; color:white; flex-shrink:0; }
-        .mockup-name { font-size:0.82rem; font-weight:600; color:var(--white); }
-        .mockup-sub  { font-size:0.7rem; color:var(--muted); }
-        .mockup-badge { font-size:0.65rem; font-weight:700; padding:3px 10px; border-radius:20px; white-space:nowrap; }
-        .mb-green  { background:rgba(34,197,94,0.15); color:#4ADE80; }
-        .mb-orange { background:rgba(255,122,0,0.15); color:var(--orange); }
-        .mb-blue   { background:rgba(59,130,246,0.15); color:#60A5FA; }
-
-        .glow-card {
-            position: absolute; right: -30px; bottom: -25px;
-            background: var(--orange); border-radius: 14px; padding: 16px 20px;
-            box-shadow: 0 20px 50px rgba(255,122,0,0.5);
-            display: flex; align-items: center; gap: 12px;
-            animation: gcFloat 3s ease-in-out infinite;
-        }
-        @keyframes gcFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        .glow-card-num { font-family:'Teko',sans-serif; font-size:2rem; font-weight:700; color:white; line-height:1; }
-        .glow-card-text { font-size:0.72rem; color:rgba(255,255,255,0.8); font-weight:600; }
-
-        .features-list { display:flex; flex-direction:column; gap:1.25rem; margin-top:2.5rem; }
-        .feature-item {
-            display: flex; gap: 1.25rem; align-items: flex-start;
-            padding: 1.25rem; background: var(--surface);
-            border: 1px solid var(--border); border-radius: 12px;
-            transition: border-color 0.2s;
-        }
-        .feature-item:hover { border-color: rgba(255,122,0,0.25); }
-        .feature-item-icon { width:42px; height:42px; border-radius:10px; background:rgba(255,122,0,0.12); color:var(--orange); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .feature-item-title { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:4px; }
-        .feature-item-desc  { font-size:0.8rem; color:var(--muted); line-height:1.5; }
-
-        /* ===== FOOTER ===== */
-        footer { background: #090909; border-top: 1px solid var(--border); padding: 3rem; }
-        .footer-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem; }
-        .footer-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
-        .footer-copy { font-size:0.8rem; color:var(--muted); }
-        .footer-links { display:flex; gap:1.5rem; }
-        .footer-links a { font-size:0.8rem; color:var(--muted); text-decoration:none; transition:color 0.2s; }
-        .footer-links a:hover { color:var(--orange); }
-
-
-
-        /* ===== RESPONSIVO ===== */
-        @media (max-width: 1024px) { .portals-grid { grid-template-columns: 1fr; } .features-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) {
-            .hero-content { grid-template-columns: 1fr; padding: 80px 1.5rem 3rem; }
-            .hero-image { display: none; }
-            .hero-title { font-size: 3.5rem; }
-            .section-portals, .section-features { padding: 4rem 1.5rem; }
-            .portals-grid { grid-template-columns: 1fr; }
-            footer { padding: 2rem 1.5rem; }
-            .footer-inner { flex-direction: column; text-align: center; }
-            .features-grid { grid-template-columns: 1fr; }
-            .features-mockup-wrap { display: none; }
-        }
-    </style>
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 900px) {
+    .inst-grid { grid-template-columns: 1fr; }
+    .portals-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+    .nav { padding: 0 1.25rem; }
+    .hero { padding: 4rem 1.5rem 3rem; }
+    .section { padding: 3.5rem 1.5rem; }
+    .hero-stats { gap: 1.5rem; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .courses-grid { grid-template-columns: 1fr; }
+    .inst-cards { grid-template-columns: 1fr; }
+    .nav-link-btn { display: none; }
+}
+</style>
 </head>
 <body>
 
-<!-- PRELOADER -->
-<div id="preloader">
-    <div class="pre-logo"><span>S</span>L</div>
-    <div class="pre-bar"><div class="pre-fill"></div></div>
+<!-- NAV -->
+<nav class="nav">
+    <a href="index.php" class="brand">
+        <img src="assets/images/image-removebg-preview (1).png" alt="Sophie Link" style="height: 38px; object-fit: contain;">
+    </a>
+    <div class="nav-actions">
+        <a href="#institucional" class="nav-link-btn"><i data-lucide="info"></i> Institucional</a>
+        <a href="#cursos" class="nav-link-btn"><i data-lucide="book-open"></i> Cursos</a>
+        <a href="#portais" class="nav-link-btn"><i data-lucide="layout-grid"></i> Portais</a>
+        <a href="#contato" class="nav-link-btn"><i data-lucide="map-pin"></i> Contato</a>
+        <a href="portal_aluno.php" class="nav-cta"><i data-lucide="user"></i> Área do Aluno</a>
+        <button class="menu-btn" id="menuOpen"><i data-lucide="menu"></i> Menu</button>
+    </div>
+</nav>
+
+<!-- SIDE MENU OVERLAY -->
+<div class="side-overlay" id="sideOverlay"></div>
+<div class="side-menu" id="sideMenu">
+    <div class="sm-head">
+        <div class="sm-head-brand">
+            <div class="sm-head-mark">SL</div>
+            <div class="sm-head-name"><span>Sophie</span> Link</div>
+        </div>
+        <button class="sm-close" id="smClose"><i data-lucide="x"></i></button>
+    </div>
+
+    <div class="sm-section">Navegação</div>
+    <a href="#institucional" class="sm-link" onclick="toggleMenu()"><i data-lucide="info"></i> Institucional</a>
+    <a href="#cursos" class="sm-link" onclick="toggleMenu()"><i data-lucide="book-open"></i> Nossos Cursos</a>
+    <a href="#portais" class="sm-link" onclick="toggleMenu()"><i data-lucide="layout-grid"></i> Portais de Acesso</a>
+    <a href="#contato" class="sm-link" onclick="toggleMenu()"><i data-lucide="map-pin"></i> Contato</a>
+
+    <div class="sm-section">Portais</div>
+
+    <!-- Accordion: Sou Aluno -->
+    <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="graduation-cap" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Aluno</span>
+        <i data-lucide="chevron-down"></i>
+    </button>
+    <div class="sm-acc-body">
+        <a href="portal_aluno.php" class="sm-sub-link">Portal do Aluno</a>
+        <a href="ava.php" class="sm-sub-link">Ambiente Virtual (AVA)</a>
+        <a href="portal_aluno.php" class="sm-sub-link">Notas & Frequência</a>
+        <a href="portal_aluno.php" class="sm-sub-link">Histórico Escolar</a>
+        <a href="portal_aluno.php" class="sm-sub-link">Financeiro / Boletos</a>
+    </div>
+
+    <!-- Accordion: Sou Professor -->
+    <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="user-check" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Professor</span>
+        <i data-lucide="chevron-down"></i>
+    </button>
+    <div class="sm-acc-body">
+        <a href="login.php" class="sm-sub-link">Portal do Professor</a>
+        <a href="ava.php" class="sm-sub-link">Câmpus Virtual (AVA)</a>
+        <a href="login.php" class="sm-sub-link">Lançamento de Notas</a>
+        <a href="login.php" class="sm-sub-link">Gestão de Frequência</a>
+    </div>
+
+    <!-- Accordion: Sou Colaborador -->
+    <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="briefcase" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Colaborador</span>
+        <i data-lucide="chevron-down"></i>
+    </button>
+    <div class="sm-acc-body">
+        <a href="login.php" class="sm-sub-link">Área Administrativa</a>
+        <a href="login.php" class="sm-sub-link">RH On-line</a>
+        <a href="login.php" class="sm-sub-link">Ordens de Serviço - TI</a>
+        <a href="login.php" class="sm-sub-link">Ordens de Serviço - Compras</a>
+    </div>
+
+    <!-- Accordion: Nossos Cursos -->
+    <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="book-open" style="width:16px;height:16px;color:var(--c-text-light);"></i> Nossos Cursos</span>
+        <i data-lucide="chevron-down"></i>
+    </button>
+    <div class="sm-acc-body">
+        <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Ensino Médio Integrado</a>
+        <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Eletromecânica</a>
+        <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Seg. do Trabalho</a>
+        <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Administração</a>
+        <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Eletrônica</a>
+        <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Gestão da Qualidade</a>
+        <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Logística</a>
+    </div>
+
+    <div class="sm-footer">
+        <div class="sm-footer-addr">
+            <i data-lucide="map-pin"></i>
+            Avenida Amazonas, 64 – Bairro Rio Verde, Parauapebas – PA.
+        </div>
+    </div>
 </div>
 
-<?php include 'includes/mobile_menu_home.php'; ?>
-<?php include 'includes/navbar_home.php'; ?>
-
-<!-- HERO -->
-<section class="hero" id="inicio">
-    <div class="hero-bg"></div>
-    <div class="hero-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-        <div class="shape shape-4"></div>
+<!-- ================================================================
+     HERO
+     ================================================================ -->
+<section class="hero">
+    <div class="hero-tag">Centro Técnico Profissionalizante · Parauapebas, PA</div>
+    <h1>Formando Profissionais para o <span>Mercado Industrial</span></h1>
+    <p>A Sophie Link prepara jovens para os setores de mineração, indústria e serviços — com cursos técnicos reconhecidos e parcerias com a Vale e Sotreq.</p>
+    <div class="hero-actions">
+        <a href="#portais" class="btn-primary"><i data-lucide="layout-grid"></i> Acessar Portais</a>
+        <a href="#cursos" class="btn-secondary"><i data-lucide="book-open"></i> Ver Cursos</a>
     </div>
-
-    <!-- Estrela decorativa estilo UNIAENE -->
-    <svg class="hero-star" viewBox="0 0 100 100" fill="rgba(0,0,0,0.35)">
-        <path d="M50 0 L53 47 L100 50 L53 53 L50 100 L47 53 L0 50 L47 47 Z"/>
-    </svg>
-
-    <div class="hero-content">
-        <!-- Texto -->
-        <div class="hero-text">
-            <div class="hero-eyebrow">
-                <span class="hero-eyebrow-dot"></span>
-                Plataforma Profissional
-            </div>
-
-            <h1 class="hero-title">
-                GESTÃO
-                <span class="accent">INTELIGENTE</span>
-                <span class="line2">DE APRENDIZES</span>
-            </h1>
-
-            <p class="hero-desc">
-                Centralize o controle de aprendizes, empresas parceiras, frequência escolar e financeiro em uma única plataforma moderna e poderosa.
-            </p>
-
-            <div class="hero-actions">
-                <a href="dashboard.php" class="btn-hero btn-hero-admin" id="btn-admin">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    Painel Administrativo
-                </a>
-                <a href="#portais" class="btn-hero btn-hero-ava" id="btn-ava">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                    Acessar AVA
-                </a>
-            </div>
-
-            <div class="hero-stats">
-                <div>
-                    <div class="hero-stat-num">300<span style="color:var(--orange-deep)">+</span></div>
-                    <div class="hero-stat-label">Aprendizes</div>
-                </div>
-                <div>
-                    <div class="hero-stat-num">49<span style="color:var(--orange-deep)">+</span></div>
-                    <div class="hero-stat-label">Empresas</div>
-                </div>
-                <div>
-                    <div class="hero-stat-num">100<span style="color:var(--orange-deep)">%</span></div>
-                    <div class="hero-stat-label">Digital</div>
-                </div>
-            </div>
+    <div class="hero-stats">
+        <div>
+            <div class="hero-stat-val">+500</div>
+            <div class="hero-stat-lbl">Alunos formados</div>
         </div>
-
-        <!-- Imagem do aprendiz -->
-        <div class="hero-image">
-            <img src="assets/images/hero_aprendiz.png" alt="Aprendiz Sophie Link" onerror="this.style.display='none'">
-
-            <!-- Badge 1 -->
-            <div class="hero-badge">
-                <div class="hero-badge-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                </div>
-                <div>
-                    <div class="hero-badge-num">312</div>
-                    <div class="hero-badge-label">Aprendizes ativos</div>
-                </div>
-            </div>
-
-            <!-- Badge 2 -->
-            <div class="hero-badge2">
-                <div class="hero-badge2-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div>
-                    <div class="hero-badge2-text">Frequência 94%</div>
-                    <div class="hero-badge2-sub">Média mensal</div>
-                </div>
-            </div>
+        <div>
+            <div class="hero-stat-val">6</div>
+            <div class="hero-stat-lbl">Cursos técnicos</div>
         </div>
-    </div>
-
-    <!-- Indicador de scroll -->
-    <div class="scroll-indicator">
-        <span>Explorar</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        <div>
+            <div class="hero-stat-val">100%</div>
+            <div class="hero-stat-lbl">Bolsas Vale/Sotreq</div>
+        </div>
+        <div>
+            <div class="hero-stat-val">Parauapebas</div>
+            <div class="hero-stat-lbl">Nossa cidade, PA</div>
+        </div>
     </div>
 </section>
 
-<!-- PORTAIS DE ACESSO -->
-<section class="section-portals" id="portais">
-    <div class="section-inner">
-        <div class="section-label">Portais de Acesso</div>
-        <h2 class="section-title">Escolha seu ambiente</h2>
-        <p class="section-subtitle">Acesse o sistema administrativo completo ou o Ambiente Virtual de Aprendizagem com um clique.</p>
+<!-- ================================================================
+     INSTITUCIONAL
+     ================================================================ -->
+<section class="section section-alt" id="institucional">
+    <div class="container">
+        <div class="sec-tag">Quem somos</div>
+        <div class="sec-title">Muito mais que ensino,<br>um Compromisso Social</div>
+        <div class="inst-grid">
+            <div class="inst-text">
+                <p>Guiada pelos princípios da <strong>Comunidade Kolping</strong> — uma organização internacional de cunho social — a Sophie Link tem como objetivo formar profissionais éticos, críticos e tecnicamente capacitados para impulsionar o desenvolvimento socioeconômico de Parauapebas e região.</p>
+                <p>Temos parcerias sólidas com empresas como <strong>Vale (Programa Partilhar)</strong> e <strong>Sotreq (Instituto Social Sotreq)</strong>, que financiam bolsas de estudo integrais para jovens de baixa renda, tornando a formação técnica de qualidade acessível a todos.</p>
+            </div>
+            <div class="inst-cards">
+                <div class="inst-card">
+                    <i data-lucide="hard-hat"></i>
+                    <h4>Cursos Técnicos</h4>
+                    <p>Eletromecânica, Logística, Segurança do Trabalho e mais.</p>
+                </div>
+                <div class="inst-card">
+                    <i data-lucide="building-2"></i>
+                    <h4>Infraestrutura</h4>
+                    <p>Laboratórios modernos, biblioteca, auditório e áreas verdes.</p>
+                </div>
+                <div class="inst-card">
+                    <i data-lucide="handshake"></i>
+                    <h4>Parcerias</h4>
+                    <p>Vale, Sotreq e outras empresas que investem no seu futuro.</p>
+                </div>
+                <div class="inst-card">
+                    <i data-lucide="award"></i>
+                    <h4>Reconhecimento</h4>
+                    <p>Formação certificada e reconhecida pelo mercado regional.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- ================================================================
+     CURSOS
+     ================================================================ -->
+<section class="section" id="cursos">
+    <div class="container">
+        <div class="sec-tag">Formação técnica</div>
+        <div class="sec-title">Nossos Cursos</div>
+        <div class="sec-sub">Habilitações voltadas ao mercado de mineração, indústria e serviços de Parauapebas e região.</div>
+        <div class="courses-grid">
+            <div class="course-card">
+                <div class="course-icon"><i data-lucide="cpu"></i></div>
+                <div>
+                    <div class="course-name">Técnico em Eletromecânica</div>
+                    <div class="course-desc">O mais procurado. Formação voltada às demandas das mineradoras, com foco em manutenção industrial.</div>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-icon"><i data-lucide="hard-hat"></i></div>
+                <div>
+                    <div class="course-name">Técnico em Segurança do Trabalho</div>
+                    <div class="course-desc">Prevenção de acidentes, EPIs, laudos e normas de saúde ocupacional.</div>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-icon"><i data-lucide="bar-chart-2"></i></div>
+                <div>
+                    <div class="course-name">Técnico em Administração</div>
+                    <div class="course-desc">Gestão, finanças, recursos humanos e processos organizacionais.</div>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-icon"><i data-lucide="zap"></i></div>
+                <div>
+                    <div class="course-name">Técnico em Eletrônica</div>
+                    <div class="course-desc">Circuitos, automação e sistemas eletrônicos aplicados à indústria.</div>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-icon"><i data-lucide="shield-check"></i></div>
+                <div>
+                    <div class="course-name">Técnico em Gestão da Qualidade</div>
+                    <div class="course-desc">Normas ISO, controle de processos, auditorias e melhoria contínua.</div>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-icon"><i data-lucide="package"></i></div>
+                <div>
+                    <div class="course-name">Técnico em Logística</div>
+                    <div class="course-desc">Cadeia de suprimentos, armazenagem, transporte e gestão de estoque.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     PORTAIS DE ACESSO
+     ================================================================ -->
+<section class="section section-alt" id="portais">
+    <div class="container">
+        <div class="sec-tag">Sistemas acadêmicos</div>
+        <div class="sec-title">Portais de Acesso</div>
+        <div class="sec-sub">Selecione o ambiente adequado ao seu perfil para acessar os serviços da Sophie Link.</div>
         <div class="portals-grid">
-
-            <!-- Admin -->
-            <a href="dashboard.php" class="portal-card portal-card-admin" id="portal-admin">
-                <div class="portal-corner">
-                    <svg class="portal-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-                </div>
-                <div class="portal-icon portal-icon-orange">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </div>
-                <div class="portal-tag">Administrativo</div>
-                <div class="portal-name">Painel Admin</div>
-                <div class="portal-desc">
-                    Gerencie aprendizes, empresas parceiras, frequência, notas e financeiro. Controle total do sistema Sophie Link.
-                </div>
-                <span class="portal-btn portal-btn-orange">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                    Acessar Painel
-                </span>
+            <a href="portal_aluno.php" class="portal-card">
+                <div class="pc-icon"><i data-lucide="graduation-cap"></i></div>
+                <div class="pc-title">Portal do Aluno</div>
+                <p class="pc-desc">Acompanhe notas, frequência, histórico escolar, boletos e documentos da secretaria.</p>
+                <span class="pc-btn">Acessar Portal <i data-lucide="arrow-right"></i></span>
             </a>
-
-            <!-- AVA -->
-            <a href="ava.php" class="portal-card portal-card-ava" id="portal-ava">
-                <div class="portal-corner">
-                    <svg class="portal-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-                </div>
-                <div class="portal-icon portal-icon-blue">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                </div>
-                <div class="portal-tag">Ambiente Virtual</div>
-                <div class="portal-name">AVA</div>
-                <div class="portal-desc">
-                    Acesse o Ambiente Virtual de Aprendizagem para atividades, conteúdos, avaliações e acompanhamento acadêmico.
-                </div>
-                <span class="portal-btn portal-btn-blue">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                    Acessar AVA
-                </span>
+            <a href="ava.php" class="portal-card">
+                <div class="pc-icon"><i data-lucide="monitor-play"></i></div>
+                <div class="pc-title">Ambiente Virtual (AVA)</div>
+                <p class="pc-desc">Sala de aula digital com módulos, videoaulas, atividades e acompanhamento de progresso.</p>
+                <span class="pc-btn">Acessar AVA <i data-lucide="arrow-right"></i></span>
             </a>
-
-            <!-- Empresas -->
-            <a href="empresas.php" class="portal-card portal-card-info" id="portal-empresas">
-                <div class="portal-corner">
-                    <svg class="portal-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-                </div>
-                <div class="portal-icon portal-icon-green">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                </div>
-                <div class="portal-tag">Empresas Parceiras</div>
-                <div class="portal-name">Empresas</div>
-                <div class="portal-desc">
-                    Portal para empresas parceiras visualizarem dados dos aprendizes vinculados, frequência e relatórios.
-                </div>
-                <span class="portal-btn portal-btn-green">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                    Portal Empresas
-                </span>
+            <a href="login.php" class="portal-card">
+                <div class="pc-icon"><i data-lucide="shield"></i></div>
+                <div class="pc-title">Área Administrativa</div>
+                <p class="pc-desc">Acesso restrito para professores, coordenadores e gestores de empresas parceiras.</p>
+                <span class="pc-btn">Fazer Login <i data-lucide="arrow-right"></i></span>
             </a>
-
         </div>
     </div>
 </section>
 
-<!-- RECURSOS DO SISTEMA -->
-<section class="section-features" id="sistema">
-    <div class="section-inner">
-        <div class="features-grid">
-
-            <!-- Mockup visual -->
-            <div class="features-mockup-wrap" style="position:relative; padding-bottom:30px; padding-right:30px;">
-                <div class="features-mockup">
-                    <div class="mockup-topbar">
-                        <div class="mockup-dot" style="background:#ef4444"></div>
-                        <div class="mockup-dot" style="background:#f59e0b"></div>
-                        <div class="mockup-dot" style="background:#22c55e"></div>
-                        <span style="font-size:0.72rem;color:var(--muted);margin-left:8px">Painel de Aprendizes — Sophie Link</span>
-                    </div>
-                    <div class="mockup-body">
-                        <div class="mockup-row">
-                            <div class="mockup-avatar">A</div>
-                            <div style="flex:1">
-                                <div class="mockup-name">Ana Paula Ferreira</div>
-                                <div class="mockup-sub">Tech Solutions · contrato ativo até dez/2025</div>
-                            </div>
-                            <span class="mockup-badge mb-green">Cursando</span>
-                        </div>
-                        <div class="mockup-row">
-                            <div class="mockup-avatar" style="background:#3B82F6">B</div>
-                            <div style="flex:1">
-                                <div class="mockup-name">Bruno Costa Lima</div>
-                                <div class="mockup-sub">Construtora ABC · frequência 94%</div>
-                            </div>
-                            <span class="mockup-badge mb-orange">94% freq.</span>
-                        </div>
-                        <div class="mockup-row">
-                            <div class="mockup-avatar" style="background:#22C55E">C</div>
-                            <div style="flex:1">
-                                <div class="mockup-name">Carla Souza Melo</div>
-                                <div class="mockup-sub">Grupo SL · encerra em 30 dias</div>
-                            </div>
-                            <span class="mockup-badge mb-blue">Formando</span>
-                        </div>
-                        <div class="mockup-row" style="opacity:0.45">
-                            <div class="mockup-avatar" style="background:#6B7280">D</div>
-                            <div style="flex:1">
-                                <div class="mockup-name">Diego Alves Santos</div>
-                                <div class="mockup-sub">Metalúrgica Norte · ativo</div>
-                            </div>
-                            <span class="mockup-badge mb-green">Cursando</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="glow-card">
-                    <div>
-                        <div class="glow-card-num">49</div>
-                        <div class="glow-card-text">Empresas<br>Parceiras</div>
-                    </div>
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                </div>
-            </div>
-
-            <!-- Lista de recursos -->
-            <div>
-                <div class="section-label">Recursos do Sistema</div>
-                <h2 class="section-title">Tudo em um só lugar</h2>
-                <p class="section-subtitle">O Sophie Link oferece controle total sobre todos os aspectos da gestão de aprendizes.</p>
-
-                <div class="features-list">
-                    <div class="feature-item">
-                        <div class="feature-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-                        <div>
-                            <div class="feature-item-title">Gestão Completa de Aprendizes</div>
-                            <div class="feature-item-desc">Dados pessoais, documentos, filiação, empresa vinculada e datas de contrato em um único cadastro.</div>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-                        <div>
-                            <div class="feature-item-title">Controle de Frequência e Notas</div>
-                            <div class="feature-item-desc">Registro de presença e desempenho com alertas para frequência abaixo do mínimo.</div>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
-                        <div>
-                            <div class="feature-item-title">Financeiro e Pagamentos</div>
-                            <div class="feature-item-desc">Controle de repasses, pendências e histórico financeiro por empresa parceira.</div>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-                        <div>
-                            <div class="feature-item-title">Relatórios em PDF</div>
-                            <div class="feature-item-desc">Gere relatórios profissionais com identidade visual Sophie Link para envio e arquivamento.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- ================================================================
+     PARCEIROS
+     ================================================================ -->
+<section class="section">
+    <div class="container" style="text-align: center;">
+        <div class="sec-tag">Empresas parceiras</div>
+        <div class="sec-title">Quem investe no seu futuro</div>
+        <div class="sec-sub" style="margin: 0 auto;">Empresas que financiam bolsas integrais para alunos da Sophie Link em Parauapebas.</div>
+        <div class="partners-row">
+            <div class="partner-badge"><i data-lucide="building-2"></i> Vale S.A. — Programa Partilhar</div>
+            <div class="partner-badge"><i data-lucide="settings"></i> Sotreq — Instituto Social</div>
+            <div class="partner-badge"><i data-lucide="heart"></i> Comunidade Kolping</div>
         </div>
     </div>
 </section>
 
-<!-- FOOTER -->
-<footer id="sobre">
-    <div class="footer-inner">
-        <a href="home.php" class="footer-brand">
-            <div class="nav-brand-icon" style="width:30px;height:30px;border-radius:6px">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+<!-- ================================================================
+     FOOTER / CONTATO
+     ================================================================ -->
+<footer class="footer" id="contato">
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand"><span>Sophie</span> Link</div>
+            <p class="footer-desc">Centro Técnico Profissionalizante comprometido com a formação de jovens para o mercado industrial e de mineração da Região dos Carajás.</p>
+            <div class="footer-addr">
+                <i data-lucide="map-pin"></i>
+                Avenida Amazonas, 64 – Bairro Rio Verde, Parauapebas – PA
             </div>
-            <span style="font-family:'Teko',sans-serif;font-size:1.3rem;font-weight:600;letter-spacing:2px;color:var(--white)"><span style="color:var(--orange)">Sophie</span> Link</span>
-        </a>
-        <span class="footer-copy">© <?= date('Y') ?> Sophie Link — Todos os direitos reservados.</span>
-        <div class="footer-links">
-            <a href="dashboard.php">Admin</a>
-            <a href="aprendizes.php">Aprendizes</a>
-            <a href="empresas.php">Empresas</a>
         </div>
+        <div class="footer-col">
+            <h4>Sistemas</h4>
+            <ul>
+                <li><a href="portal_aluno.php">Portal do Aluno</a></li>
+                <li><a href="ava.php">Ambiente Virtual (AVA)</a></li>
+                <li><a href="login.php">Área Administrativa</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Institucional</h4>
+            <ul>
+                <li><a href="#institucional">Sobre a Escola</a></li>
+                <li><a href="#cursos">Nossos Cursos</a></li>
+                <li><a href="#portais">Empresas Parceiras</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Atendimento</h4>
+            <ul>
+                <li><a href="#">Fale Conosco</a></li>
+                <li><a href="#">Ouvidoria</a></li>
+                <li><a href="#">Trabalhe Conosco</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; <?= date('Y') ?> Centro Técnico Profissionalizante Sophie Link · Parauapebas, PA · Todos os direitos reservados.
     </div>
 </footer>
 
 <script>
-    // Preloader
-    window.addEventListener('load', () => {
-        setTimeout(() => document.getElementById('preloader').classList.add('hide'), 1200);
-    });
+lucide.createIcons();
 
-    // Animações de entrada com IntersectionObserver
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
+// Side menu
+const sideMenu = document.getElementById('sideMenu');
+const sideOverlay = document.getElementById('sideOverlay');
+function toggleMenu() {
+    sideMenu.classList.toggle('active');
+    sideOverlay.classList.toggle('active');
+}
+document.getElementById('menuOpen').addEventListener('click', toggleMenu);
+document.getElementById('smClose').addEventListener('click', toggleMenu);
+sideOverlay.addEventListener('click', toggleMenu);
 
-    document.querySelectorAll('.portal-card, .feature-item').forEach((el, i) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(24px)';
-        el.style.animationDelay = `${i * 0.1}s`;
-        observer.observe(el);
-    });
+// Accordion
+function toggleAcc(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    // fecha todos
+    document.querySelectorAll('.sm-acc-body.open').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.sm-acc-btn.open').forEach(b => b.classList.remove('open'));
+    if (!isOpen) {
+        body.classList.add('open');
+        btn.classList.add('open');
+    }
+}
 </script>
-
-<style>
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-</style>
 </body>
 </html>
