@@ -132,9 +132,9 @@
     </div>
 
     <div class="hn-mm-logo-area">
-        <div class="hn-mm-logo-text">SOPHIE<span>LINK</span></div>
+        <div class="hn-mm-logo-text">ESCOLA<span>SOPHIE</span></div>
         <div class="hn-mm-logo-sub">
-            SISTEMA PROFISSIONAL DE GESTÃO<br>DE APRENDIZES
+            TRANSFORMANDO O FUTURO<br>ATRAVÉS DA APRENDIZAGEM
         </div>
     </div>
 
@@ -146,8 +146,8 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>
         </a>
         
-        <a href="#sistema" class="hn-mm-link" onclick="hnToggleMobile()">
-            Recursos do Sistema
+        <a href="#conheca" class="hn-mm-link" onclick="hnToggleMobile()">
+            Conheça a Escola
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>
         </a>
         
@@ -163,10 +163,15 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
             Acessar AVA
         </a>
+
+        <a href="portal_aluno.php" class="hn-mm-btn" style="background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3);" onclick="hnToggleMobile()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Portal do Aluno
+        </a>
         
         <a href="dashboard.php" class="hn-mm-btn hn-mm-btn-orange" onclick="hnToggleMobile()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            Painel Administrativo
+            Painel Admin
         </a>
     </div>
 
@@ -183,7 +188,7 @@
             </a>
         </div>
         <div class="hn-mm-copy">
-            © <?= date('Y') ?> <strong>SOPHIE LINK</strong>.<br>TODOS OS DIREITOS RESERVADOS.
+            © <?= date('Y') ?> <strong>ESCOLA SOPHIE</strong>.<br>TODOS OS DIREITOS RESERVADOS.
         </div>
     </div>
 </div>

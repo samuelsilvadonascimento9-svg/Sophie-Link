@@ -1,41 +1,57 @@
         </div><!-- /content-scroll -->
-    </div><!-- /main-content -->
+    </main><!-- /main-content -->
 </div><!-- /app-layout -->
 
 <script>
+// Inicializar os ícones do Lucide
+if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+}
+
 // Preloader
 window.addEventListener('load', () => {
-    setTimeout(() => document.getElementById('preloader').classList.add('hide'), 600);
+    setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if(preloader) preloader.classList.add('hide');
+    }, 400);
 });
 
-// Modal helpers
-function openModal(id)  { const m = document.getElementById(id); if(m) m.classList.add('open'); }
-function closeModal(id) { const m = document.getElementById(id); if(m) m.classList.remove('open'); }
-document.addEventListener('click', e => {
-    if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
-});
-
-// Toast
+// Toast Notifications
 function showToast(msg, type = 'success') {
     const toast = document.getElementById('toast');
     const item = document.createElement('div');
     item.className = `toast-item ${type}`;
     item.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${type==='success'?'#22C55E':'#EF4444'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${type==='success'?'#4ADE80':'#EF4444'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
             ${type==='success'
-                ? '<polyline points="20 6 9 17 4 12"/>'
+                ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
                 : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}
         </svg>
-        ${msg}`;
+        <div>${msg}</div>`;
     toast.appendChild(item);
-    setTimeout(() => item.remove(), 3500);
+    setTimeout(() => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(20px)';
+        item.style.transition = 'all 0.3s ease';
+        setTimeout(() => item.remove(), 300);
+    }, 3500);
 }
 
-// Modal helpers
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// Modal Helpers
+function openModal(id) { 
+    const modal = document.getElementById(id);
+    if(modal) modal.classList.add('open'); 
+}
+function closeModal(id) { 
+    const modal = document.getElementById(id);
+    if(modal) modal.classList.remove('open'); 
+}
+
+// Click outside to close modal
 document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    m.addEventListener('click', e => { 
+        if (e.target === m) m.classList.remove('open'); 
+    });
 });
 </script>
 </body>
