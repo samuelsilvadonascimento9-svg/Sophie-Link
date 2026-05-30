@@ -24,6 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $update = $pdo->prepare("UPDATE usuarios SET reset_token = ? WHERE id = ?");
             $update->execute([$token, $usuario['id']]);
             
+            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/resetar_senha.php?token=" . $token;
+            $htmlBody = "<h2>Redefinição de Senha</h2><p>Olá {$usuario['nome']},</p><p>Você solicitou a recuperação de senha. Clique no link abaixo para criar uma nova senha:</p><p><a href='{$resetLink}'>{$resetLink}</a></p><p>Se não foi você, ignore este e-mail.</p>";
+            
+            Mailer::send($email, "Recuperação de Senha - Sophie Link", $htmlBody);
+            
             // Simula o envio de e-mail mostrando o link na tela (já que é localhost)
             $mensagem = "Um link de redefinição foi gerado para " . htmlspecialchars($email) . ".";
             $linkMock = "resetar_senha.php?token=" . $token;
@@ -66,6 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .back-link { display: block; text-align: center; margin-top: 24px; font-size: 13px; color: #6B7280; text-decoration: none; font-weight: 500; }
         .back-link:hover { color: #111827; text-decoration: underline; }
     </style>
+
+    <link rel="stylesheet" href="assets/css/premium.css">
 </head>
 <body>
 

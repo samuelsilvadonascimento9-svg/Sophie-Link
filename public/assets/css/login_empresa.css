@@ -1,0 +1,88 @@
+/* ================================================================
+   LOGIN EMPRESA — TEMA CORPORATIVO
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --c-primary:    #1E3A8A;
+    --c-primary-lt: #DBEAFE;
+    --c-bg:         #0F172A;
+    --c-surface:    #FFFFFF;
+    --c-border:     #E5E7EB;
+    --c-text:       #1E293B;
+    --c-text-muted: #64748B;
+    --c-error:      #EF4444;
+    --radius:       4px;
+    --f-body:       'Inter', sans-serif;
+    --f-display:    'Syne', sans-serif;
+}
+html { font-size: 16px; }
+body {
+    font-family: var(--f-body);
+    background: var(--c-bg);
+    background-image: radial-gradient(circle at top right, #1E3A8A 0%, #0F172A 70%);
+    color: var(--c-text);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+
+.corp-wrapper {
+    width: 100%; max-width: 450px;
+    background: var(--c-surface);
+    border-radius: var(--radius);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    padding: 3rem;
+    position: relative;
+}
+
+/* Faixa superior */
+.corp-wrapper::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 6px;
+    background: var(--c-primary);
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.corp-brand { text-align: center; margin-bottom: 2.5rem; }
+.corp-brand i { width: 40px; height: 40px; color: var(--c-primary); margin-bottom: 15px; }
+.corp-title { font-family: var(--f-display); font-size: 1.5rem; font-weight: 700; color: var(--c-text); letter-spacing: -0.5px; }
+.corp-sub { font-size: 0.85rem; color: var(--c-text-muted); margin-top: 5px; }
+
+.lb-error {
+    background: #FEF2F2; border: 1px solid #FECACA;
+    border-radius: var(--radius); padding: 12px;
+    font-size: 0.8rem; color: var(--c-error); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 8px;
+}
+.lb-error i { width: 16px; height: 16px; }
+
+.cf-field { margin-bottom: 1.25rem; }
+.cf-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--c-text); margin-bottom: 8px; }
+.cf-input {
+    width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1;
+    border-radius: var(--radius); padding: 12px 14px;
+    font-family: var(--f-body); font-size: 0.9rem; color: var(--c-text);
+    transition: all 0.2s; outline: none;
+}
+.cf-input:focus { border-color: var(--c-primary); background: #fff; box-shadow: 0 0 0 3px var(--c-primary-lt); }
+
+.cf-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+.cf-check { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.8rem; color: var(--c-text-muted); }
+.cf-forgot { font-size: 0.8rem; color: var(--c-primary); font-weight: 600; }
+
+.cf-submit {
+    width: 100%; background: var(--c-primary); color: #fff;
+    border: none; border-radius: var(--radius); padding: 14px;
+    font-family: var(--f-body); font-size: 0.9rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; transition: background 0.15s;
+}
+.cf-submit:hover { background: #1E40AF; }
+
+.cf-footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: var(--c-text-muted); }
+.cf-footer a { color: var(--c-primary); font-weight: 600; }
+
+@media (max-width: 500px) {
+    .corp-wrapper { margin: 1rem; padding: 2rem; }
+}

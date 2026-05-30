@@ -16,6 +16,8 @@
         .btn { display: inline-flex; align-items: center; gap: 8px; background: #111827; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: 0.2s; }
         .btn:hover { background: #374151; transform: translateY(-2px); }
     </style>
+
+    <link rel="stylesheet" href="assets/css/premium.css">
 </head>
 <body>
 

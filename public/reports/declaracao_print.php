@@ -97,6 +97,8 @@ if ($tipo === 'matricula') {
             .btn-print:hover { background: #E65C00; }
         }
     </style>
+
+    <link rel="stylesheet" href="../assets/css/premium.css">
 </head>
 <body onload="window.print()">
 

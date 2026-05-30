@@ -1,0 +1,86 @@
+/* ================================================================
+   LOGIN ADMIN — TEMA DARK / DASHBOARD
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --c-primary:    #FF6B00;
+    --c-bg:         #0F172A;
+    --c-surface:    #1E293B;
+    --c-border:     #334155;
+    --c-text:       #F8FAFC;
+    --c-text-muted: #94A3B8;
+    --c-error:      #F87171;
+    --radius:       16px;
+    --f-body:       'Inter', sans-serif;
+    --f-display:    'Syne', sans-serif;
+}
+html { font-size: 16px; }
+body {
+    font-family: var(--f-body);
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    position: relative; overflow: hidden;
+}
+body::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(255,107,0,0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(59,130,246,0.08), transparent 25%);
+    pointer-events: none;
+}
+a { text-decoration: none; color: inherit; }
+
+.admin-box {
+    width: 100%; max-width: 420px;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 3rem 2.5rem;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    position: relative; z-index: 10;
+}
+
+.ab-head { text-align: center; margin-bottom: 2.5rem; }
+.ab-icon {
+    width: 48px; height: 48px; margin: 0 auto 1rem;
+    background: rgba(255,107,0,0.15); border: 1px solid rgba(255,107,0,0.3);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    color: var(--c-primary);
+}
+.ab-icon i { width: 24px; height: 24px; }
+.ab-title { font-family: var(--f-display); font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.ab-sub { font-size: 0.8rem; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+.lb-error {
+    background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px; padding: 12px;
+    font-size: 0.8rem; color: var(--c-error); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 8px;
+}
+
+.a-field { margin-bottom: 1.25rem; }
+.a-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--c-text-muted); margin-bottom: 8px; }
+.a-input-wrap { position: relative; }
+.a-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748B; }
+.a-input {
+    width: 100%; background: #0F172A; border: 1px solid var(--c-border);
+    border-radius: 8px; padding: 12px 14px 12px 42px;
+    font-family: var(--f-body); font-size: 0.9rem; color: #fff;
+    transition: all 0.2s; outline: none;
+}
+.a-input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 1px var(--c-primary); }
+
+.a-submit {
+    width: 100%; background: var(--c-primary); color: #fff;
+    border: none; border-radius: 8px; padding: 14px;
+    font-family: var(--f-body); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: background 0.15s; margin-top: 1rem;
+}
+.a-submit:hover { background: #E66000; }
+
+.ab-footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: var(--c-text-muted); }
+.ab-footer a:hover { color: #fff; }

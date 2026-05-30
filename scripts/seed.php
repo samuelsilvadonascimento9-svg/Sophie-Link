@@ -15,7 +15,7 @@ try {
     $pdo->exec("USE sophie_link;");
     
     // Tenta carregar o schema atualizado se existir
-    $schemaFile = __DIR__ . '/database/schema.sql';
+    $schemaFile = __DIR__ . '/../database/schema.sql';
     if (file_exists($schemaFile)) {
         // Cuidado: Executar script SQL inteiro pode ter problemas de sintaxe no PDO.
         // Como já criamos as tabelas manualmente via código antes ou o db já existe, 
@@ -35,7 +35,7 @@ try {
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
     
     // Executando o schema.sql
-    $schema = file_get_contents(__DIR__ . '/database/schema.sql');
+    $schema = file_get_contents(__DIR__ . '/../database/schema.sql');
     $pdo->exec($schema);
     
     // ===== INSERIR DADOS: EMPRESAS =====
