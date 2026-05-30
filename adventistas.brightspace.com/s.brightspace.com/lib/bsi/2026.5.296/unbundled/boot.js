@@ -1,3 +1,0 @@
-window.JSCompiler_renameProperty = function(r, e) {
-    return r
-};

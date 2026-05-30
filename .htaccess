@@ -1,9 +1,30 @@
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+# Esconder listagem de diretórios (Segurança)
+Options -Indexes
 
-# Bloquear acesso direto aos arquivos internos do backend
-RewriteRule ^backend/Core/ - [F,L]
-RewriteRule ^backend/Models/ - [F,L]
-RewriteRule ^database/ - [F,L]
+# Ocultar assinatura do servidor
+ServerSignature Off
+
+# Configurar página de erro 404 personalizada
+ErrorDocument 404 /public/404.php
+
+# Prevenir acesso direto ao arquivo .env e arquivos de log
+<FilesMatch "^\.env|app\.log$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear acesso direto às pastas do Core (caso o Rewrite falhe)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Bloqueia acesso direto via navegador às pastas do Core
+    RewriteRule ^(includes|database|backend|scripts) - [F,L]
+
+    # Redireciona tudo silenciosamente para a pasta public/
+    RewriteCond %{REQUEST_URI} !public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Compressão GZIP para performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
