@@ -6,9 +6,10 @@ CREATE TABLE usuarios (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-    nivel ENUM('admin', 'coordenadora', 'professor', 'empresa') NOT NULL,
+    nivel ENUM('admin', 'coordenadora', 'professor', 'empresa', 'colaborador', 'aluno') NOT NULL,
     empresa_id INT NULL,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL
 );
 
 -- Inserindo admin padrão (login: admin, senha: admin)
@@ -42,7 +43,8 @@ CREATE TABLE aprendizes (
     curso VARCHAR(100),
     situacao_aluno ENUM('cursando', 'formado', 'evadido') DEFAULT 'cursando',
     observacoes TEXT,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL
 );
 
 CREATE TABLE contratos (
