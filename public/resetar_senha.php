@@ -64,6 +64,8 @@ if (empty($token)) {
         .alert-error { background: #FEF2F2; color: #991B1B; border: 1px solid #F87171; }
         .alert-success { background: #ECFCCB; color: #3F6212; border: 1px solid #BEF264; }
     </style>
+
+    <link rel="stylesheet" href="assets/css/premium.css">
 </head>
 <body>
 
@@ -88,7 +90,11 @@ if (empty($token)) {
         <form method="POST">
             <div class="form-group">
                 <label class="form-label">Nova Senha</label>
-                <input type="password" name="senha" class="form-control" required placeholder="Mínimo 6 caracteres" autofocus>
+                <input type="password" name="senha" id="new-password" class="form-control" required placeholder="Mínimo 6 caracteres" autofocus>
+                <div style="height: 4px; background: #E5E7EB; margin-top: 8px; border-radius: 2px; overflow: hidden;">
+                    <div id="pwd-strength-bar" style="height: 100%; width: 0%; transition: 0.3s;"></div>
+                </div>
+                <div id="pwd-strength-text" style="font-size: 11px; margin-top: 4px; font-weight: 500; color: #6B7280; text-align: right;">Força da Senha</div>
             </div>
             <div class="form-group">
                 <label class="form-label">Confirmar Senha</label>
@@ -99,6 +105,46 @@ if (empty($token)) {
     <?php endif; ?>
 </div>
 
-<script>lucide.createIcons();</script>
+<script>
+    lucide.createIcons();
+
+    const pwdInput = document.getElementById('new-password');
+    const pwdBar = document.getElementById('pwd-strength-bar');
+    const pwdText = document.getElementById('pwd-strength-text');
+
+    if(pwdInput) {
+        pwdInput.addEventListener('input', function() {
+            const val = this.value;
+            let strength = 0;
+            if(val.length >= 6) strength += 25;
+            if(val.length >= 8) strength += 25;
+            if(/[A-Z]/.test(val)) strength += 25;
+            if(/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) strength += 25;
+
+            pwdBar.style.width = strength + '%';
+            
+            if(val.length === 0) {
+                pwdBar.style.width = '0%';
+                pwdText.innerText = 'Força da Senha';
+            } else if(strength <= 25) {
+                pwdBar.style.background = '#EF4444';
+                pwdText.innerText = 'Fraca';
+                pwdText.style.color = '#EF4444';
+            } else if(strength <= 50) {
+                pwdBar.style.background = '#F59E0B';
+                pwdText.innerText = 'Razoável';
+                pwdText.style.color = '#F59E0B';
+            } else if(strength <= 75) {
+                pwdBar.style.background = '#10B981';
+                pwdText.innerText = 'Boa';
+                pwdText.style.color = '#10B981';
+            } else {
+                pwdBar.style.background = '#059669';
+                pwdText.innerText = 'Forte';
+                pwdText.style.color = '#059669';
+            }
+        });
+    }
+</script>
 </body>
 </html>

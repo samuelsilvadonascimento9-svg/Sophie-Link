@@ -42,6 +42,8 @@ $lista = $aprendizes->fetchAll(PDO::FETCH_ASSOC);
         }
         .btn-print { background: #FF6B00; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; margin-bottom: 20px; }
     </style>
+
+    <link rel="stylesheet" href="../assets/css/premium.css">
 </head>
 <body>
     <button class="btn-print" onclick="window.print()">Imprimir PDF</button>

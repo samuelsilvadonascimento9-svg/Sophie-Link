@@ -36,6 +36,8 @@ $aluno = $_SESSION['usuario_nome'] ?? 'Aluno Exemplo';
             .no-print { display: none; }
         }
     </style>
+
+    <link rel="stylesheet" href="../assets/css/premium.css">
 </head>
 <body>
     <div class="no-print" style="margin-bottom: 20px; text-align:center;">

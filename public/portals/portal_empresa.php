@@ -72,99 +72,9 @@ $sitFinColor = $totalPendentes > 0 ? '#DC2626' : '#16A34A'; // Red or Green
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-<style>
-/* ================================================================
-   RESET & TOKENS (Corporate Banking Theme)
-   ================================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-    --c-brand:      #1E3A8A; /* Deep Blue Corporate */
-    --c-brand-d:    #172554;
-    --c-brand-lt:   #DBEAFE;
-    --c-bg:         #F1F5F9; /* Slate 100 */
-    --c-surface:    #FFFFFF;
-    --c-border:     #E2E8F0;
-    --c-text:       #0F172A;
-    --c-text-2:     #334155;
-    --c-text-muted: #64748B;
-    --sidebar-w:    72px; /* Thin Sidebar */
-    --topbar-h:     70px;
-    --radius:       8px;
-    --f-body:       'Roboto', sans-serif;
-}
-html { font-size: 15px; }
-body { font-family: var(--f-body); background: var(--c-bg); color: var(--c-text); -webkit-font-smoothing: antialiased; }
-a { text-decoration: none; color: inherit; }
+<link rel="stylesheet" href="../assets/css/portal_empresa.css">
 
-/* ================================================================
-   LAYOUT
-   ================================================================ */
-.app { display: flex; min-height: 100vh; }
-
-/* THIN SIDEBAR */
-.sidebar {
-    width: var(--sidebar-w); background: var(--c-brand); display: flex; flex-direction: column; align-items: center; padding-top: 1.5rem; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-}
-.sb-logo {
-    width: 40px; height: 40px; background: #FF6B00; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; margin-bottom: 2rem;
-}
-.nav-link {
-    width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6); border-radius: 12px; margin-bottom: 0.5rem; transition: 0.2s; cursor: pointer; position: relative;
-}
-.nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
-.nav-link.active { color: var(--c-brand); background: #fff; }
-.nav-link i { width: 22px; height: 22px; }
-
-.sb-bottom { margin-top: auto; padding-bottom: 1.5rem; }
-
-/* WORKSPACE */
-.workspace { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
-.topbar {
-    height: var(--topbar-h); background: var(--c-surface); display: flex; align-items: center; justify-content: space-between; padding: 0 3rem; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 100;
-}
-.tb-title { font-size: 1.2rem; font-weight: 500; color: var(--c-text); letter-spacing: -0.5px; }
-.tb-user { display: flex; align-items: center; gap: 12px; }
-.tb-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--c-brand-lt); color: var(--c-brand); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
-.tb-name { font-weight: 500; color: var(--c-text-2); }
-
-/* CONTENT */
-.content { padding: 3rem; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; }
-
-.page-header { margin-bottom: 2.5rem; }
-.ph-title { font-size: 2rem; font-weight: 300; color: var(--c-text); margin-bottom: 8px; letter-spacing: -1px; }
-.ph-title strong { font-weight: 700; }
-.ph-sub { font-size: 1rem; color: var(--c-text-muted); }
-
-/* MASSIVE CARDS */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
-.stat-card {
-    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column; position: relative; overflow: hidden;
-}
-.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--c-brand); opacity: 0; transition: 0.2s; }
-.stat-card:hover::before { opacity: 1; }
-.stat-val { font-size: 2.5rem; font-weight: 300; color: var(--c-text); margin-bottom: 5px; letter-spacing: -1px; }
-.stat-lbl { font-size: 0.85rem; font-weight: 500; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 1px; }
-.stat-icon { position: absolute; right: 2rem; top: 2.2rem; color: var(--c-border); opacity: 0.5; }
-.stat-icon i { width: 40px; height: 40px; }
-
-/* DATA TABLES */
-.panel { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 2rem; }
-.panel-head { padding: 1.5rem 2rem; border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; }
-.panel-title { font-size: 1.1rem; font-weight: 500; color: var(--c-text); }
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table th { text-align: left; padding: 1rem 2rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-muted); border-bottom: 1px solid var(--c-border); background: #F8FAFC; }
-.data-table td { padding: 1.25rem 2rem; font-size: 0.95rem; border-bottom: 1px solid var(--c-border); color: var(--c-text-2); }
-.data-table tr:last-child td { border-bottom: none; }
-
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 0.9rem; font-weight: 500; border-radius: 4px; cursor: pointer; transition: 0.2s; border: none; }
-.btn-primary { background: var(--c-brand); color: #fff; }
-.btn-primary:hover { background: var(--c-brand-d); }
-.btn-outline { background: transparent; border: 1px solid var(--c-border); color: var(--c-text-2); }
-.btn-outline:hover { border-color: var(--c-brand); color: var(--c-brand); }
-
-.sec { display: none; }
-.sec.active { display: block; }
-</style>
+    <link rel="stylesheet" href="../assets/css/premium.css">
 </head>
 <body>
 <div class="app">
@@ -327,16 +237,6 @@ a { text-decoration: none; color: inherit; }
     </div>
 </div>
 
-<script>
-lucide.createIcons();
-function showSec(id, el) {
-    document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
-    const sec = document.getElementById('sec-' + id);
-    if (sec) sec.classList.add('active');
-    
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    if (el) el.classList.add('active');
-}
-</script>
+<script src="../assets/js/portal_empresa.js"></script>
 </body>
 </html>

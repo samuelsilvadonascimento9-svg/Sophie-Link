@@ -1,0 +1,109 @@
+/* ================================================================
+   LOGIN AVA — TEMA E-LEARNING
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --c-primary:    #FF6B00;
+    --c-primary-d:  #D95A00;
+    --c-bg:         #FAFAFA;
+    --c-surface:    #FFFFFF;
+    --c-border:     #E5E7EB;
+    --c-text:       #111827;
+    --c-text-muted: #6B7280;
+    --c-error:      #EF4444;
+    --radius:       24px;
+    --f-body:       'Inter', sans-serif;
+    --f-display:    'Syne', sans-serif;
+}
+html { font-size: 16px; }
+body {
+    font-family: var(--f-body);
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+
+.ava-navbar {
+    height: 80px; padding: 0 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.ava-brand { display: flex; align-items: center; gap: 12px; }
+.ava-brand img { height: 40px; }
+.ava-brand-text { font-family: var(--f-display); font-size: 1.2rem; font-weight: 800; }
+.ava-back { font-size: 0.85rem; font-weight: 600; color: var(--c-text-muted); display: flex; align-items: center; gap: 6px; }
+.ava-back:hover { color: var(--c-primary); }
+
+.ava-main {
+    flex: 1; display: grid; grid-template-columns: 1.2fr 1fr;
+    max-width: 1300px; margin: 0 auto; width: 100%;
+}
+
+.ava-left {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 2rem 4rem 2rem 0;
+}
+.ava-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-primary); background: rgba(255,107,0,0.1); padding: 6px 12px; border-radius: 20px; margin-bottom: 1.5rem; width: fit-content; }
+.ava-title { font-family: var(--f-display); font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; }
+.ava-title span { color: var(--c-primary); }
+.ava-desc { font-size: 1.1rem; color: var(--c-text-muted); line-height: 1.6; max-width: 480px; margin-bottom: 3rem; }
+
+.ava-features { display: flex; gap: 2rem; }
+.ava-feat { display: flex; align-items: flex-start; gap: 12px; }
+.ava-feat i { width: 24px; height: 24px; color: var(--c-primary); flex-shrink: 0; margin-top: 2px; }
+.ava-feat-t { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+.ava-feat-d { font-size: 0.85rem; color: var(--c-text-muted); }
+
+.ava-right {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 2rem 0;
+}
+.ava-form-box {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+}
+
+.ava-fb-title { font-size: 1.5rem; font-weight: 800; font-family: var(--f-display); margin-bottom: 2rem; text-align: center; }
+
+.lb-error {
+    background: #FEF2F2; border-left: 3px solid var(--c-error);
+    padding: 12px; font-size: 0.85rem; color: var(--c-error); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;
+}
+
+.av-field { margin-bottom: 1.5rem; }
+.av-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--c-text); margin-bottom: 8px; }
+.av-input {
+    width: 100%; background: #F9FAFB; border: 1.5px solid var(--c-border);
+    border-radius: 12px; padding: 14px 16px;
+    font-family: var(--f-body); font-size: 0.95rem; color: var(--c-text);
+    transition: all 0.2s; outline: none;
+}
+.av-input:focus { border-color: var(--c-primary); background: #fff; box-shadow: 0 0 0 3px rgba(255,107,0,0.1); }
+
+.av-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; }
+.av-check { font-size: 0.85rem; color: var(--c-text-muted); display: flex; align-items: center; gap: 8px; cursor: pointer;}
+.av-check input { accent-color: var(--c-primary); width: 16px; height: 16px; }
+.av-forgot { font-size: 0.85rem; color: var(--c-primary); font-weight: 600; }
+
+.av-submit {
+    width: 100%; background: var(--c-primary); color: #fff;
+    border: none; border-radius: 12px; padding: 16px;
+    font-family: var(--f-body); font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 4px 12px rgba(255,107,0,0.25);
+}
+.av-submit:hover { background: var(--c-primary-d); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,107,0,0.3); }
+
+@media (max-width: 1000px) {
+    .ava-navbar { padding: 0 2rem; }
+    .ava-main { grid-template-columns: 1fr; padding: 0 2rem; }
+    .ava-left { padding: 2rem 0; text-align: center; align-items: center; }
+    .ava-desc { margin: 0 auto 3rem; }
+    .ava-features { display: none; }
+    .ava-right { padding: 0 0 4rem; }
+}
