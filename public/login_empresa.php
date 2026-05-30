@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['force_logout']) || iss
     session_destroy();
     
     if (isset($_GET['force_logout'])) {
-        header("Location: login.php");
+        header("Location: login_empresa.php");
         exit;
     }
 }
@@ -40,6 +40,10 @@ if (isset($_SESSION['usuario_id'])) {
     exit;
 }
 
+$niveis_esperados = ['empresa'];
+$tituloLogin = 'Portal da Empresa';
+$prefillEmail = 'vale@sophielink.com.br';
+
 $erro = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -50,8 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$email || !$senha) {
         $erro = 'Preencha todos os campos.';
     } else {
-        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ? AND deleted_at IS NULL LIMIT 1");
-        $stmt->execute([$email]);
+        // Agora busca filtrando pelo nível esperado
+        $placeholders = implode(',', array_fill(0, count($niveis_esperados), '?'));
+        $sql = "SELECT * FROM usuarios WHERE email = ? AND nivel IN ($placeholders) AND deleted_at IS NULL LIMIT 1";
+        
+        $params = array_merge([$email], $niveis_esperados);
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($senha, $user['senha'])) {
@@ -90,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             exit;
         } else {
-            $erro = 'E-mail ou senha inválidos.';
+            $erro = 'E-mail ou senha inválidos para este portal.';
         }
     }
 }
@@ -371,30 +381,6 @@ a { text-decoration: none; color: inherit; }
 </style>
 </head>
 <?php
-$tipo = $_GET['tipo'] ?? '';
-$tituloLogin = 'Entrar na plataforma';
-$prefillEmail = '';
-
-switch ($tipo) {
-    case 'aluno':
-    case 'ava':
-        $tituloLogin = 'Portal do Aluno';
-        $prefillEmail = 'aluno@sophielink.com.br';
-        break;
-    case 'professor':
-        $tituloLogin = 'Portal do Professor';
-        $prefillEmail = 'carlos@sophielink.com.br';
-        break;
-    case 'empresa':
-        $tituloLogin = 'Portal da Empresa';
-        $prefillEmail = 'vale@sophielink.com.br';
-        break;
-    case 'admin':
-        $tituloLogin = 'Área Administrativa';
-        $prefillEmail = 'admin@sophielink.com.br';
-        break;
-}
-
 $emailValue = htmlspecialchars($_POST['email'] ?? $prefillEmail);
 $senhaValue = $prefillEmail ? '123456' : '';
 ?>
@@ -453,7 +439,7 @@ $senhaValue = $prefillEmail ? '123456' : '';
             </a>
 
             <div class="lb-title"><?= htmlspecialchars($tituloLogin) ?></div>
-            <div class="lb-sub">Acesso para <em>Alunos, Professores, Empresas e Administrativo</em></div>
+            <div class="lb-sub">Acesso exclusivo para <em><?= htmlspecialchars('Empresa') ?></em></div>
 
             <?php if ($erro): ?>
             <div class="lb-error">
@@ -463,47 +449,44 @@ $senhaValue = $prefillEmail ? '123456' : '';
             <?php endif; ?>
 
             <form method="POST" action="" class="lb-form" id="login-form">
-
-                <div class="lb-field">
-                    <label class="lb-label" for="email">E-mail</label>
-                    <div class="lb-input-wrap">
-                        <div class="lb-input-icon"><i data-lucide="mail"></i></div>
-                        <input type="text" id="email" name="email"
-                               class="lb-input <?= $erro ? 'err' : '' ?>"
-                               placeholder="seu@email.com"
-                               value="<?= $emailValue ?>"
-                               required autocomplete="username">
+                    <div class="lb-field">
+                        <label class="lb-label" for="email">E-mail</label>
+                        <div class="lb-input-wrap">
+                            <div class="lb-input-icon"><i data-lucide="mail"></i></div>
+                            <input type="text" id="email" name="email"
+                                   class="lb-input <?= $erro ? 'err' : '' ?>"
+                                   placeholder="seu@email.com"
+                                   value="<?= $emailValue ?>"
+                                   required autocomplete="username">
+                        </div>
                     </div>
-                </div>
 
-                <div class="lb-field">
-                    <label class="lb-label" for="senha">Senha</label>
-                    <div class="lb-input-wrap">
-                        <div class="lb-input-icon"><i data-lucide="lock"></i></div>
-                        <input type="password" id="senha" name="senha"
-                               class="lb-input <?= $erro ? 'err' : '' ?>"
-                               value="<?= $senhaValue ?>"
-                               placeholder="••••••••" required autocomplete="current-password">
-                        <button type="button" class="lb-eye" id="toggle-eye">
-                            <i data-lucide="eye" id="eye-icon"></i>
-                        </button>
+                    <div class="lb-field">
+                        <label class="lb-label" for="senha">Senha</label>
+                        <div class="lb-input-wrap">
+                            <div class="lb-input-icon"><i data-lucide="lock"></i></div>
+                            <input type="password" id="senha" name="senha"
+                                   class="lb-input <?= $erro ? 'err' : '' ?>"
+                                   value="<?= $senhaValue ?>"
+                                   placeholder="••••••••" required autocomplete="current-password">
+                            <button type="button" class="lb-eye" id="toggle-eye">
+                                <i data-lucide="eye" id="eye-icon"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="lb-row">
-                    <label class="lb-check">
-                        <input type="checkbox" name="lembrar"> Lembrar-me
-                    </label>
-                    <a href="esqueci_senha.php" class="lb-forgot">Esqueceu a senha?</a>
-                </div>
+                    <div class="lb-row">
+                        <label class="lb-check">
+                            <input type="checkbox" name="lembrar"> Lembrar-me
+                        </label>
+                        <a href="esqueci_senha.php" class="lb-forgot">Esqueceu a senha?</a>
+                    </div>
 
-                <button type="submit" class="lb-submit" id="login-btn">
-                    <i data-lucide="log-in"></i> Entrar
-                </button>
+                    <button type="submit" class="lb-submit" id="login-btn">
+                        <i data-lucide="log-in"></i> Entrar
+                    </button>
 
-            </form>
-
-
+                </form>
 
             <div class="lb-footer">
                 <a href="index.php">← Início</a> &nbsp;·&nbsp; © <?= date('Y') ?> Sophie Link

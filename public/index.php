@@ -428,7 +428,7 @@ a { text-decoration: none; color: inherit; }
         <a href="#cursos" class="nav-link-btn"><i data-lucide="book-open"></i> Cursos</a>
         <a href="#portais" class="nav-link-btn"><i data-lucide="layout-grid"></i> Portais</a>
         <a href="#contato" class="nav-link-btn"><i data-lucide="map-pin"></i> Contato</a>
-        <a href="login.php" class="nav-cta"><i data-lucide="user"></i> Fazer Login</a>
+        <a href="#portais" class="nav-cta"><i data-lucide="user"></i> Fazer Login</a>
         <button class="menu-btn" id="menuOpen"><i data-lucide="menu"></i> Menu</button>
     </div>
 </nav>
@@ -458,7 +458,7 @@ a { text-decoration: none; color: inherit; }
         <i data-lucide="chevron-down"></i>
     </button>
     <div class="sm-acc-body">
-        <a href="login.php" class="sm-sub-link">Acessar Portais</a>
+        <a href="#portais" class="sm-sub-link" onclick="toggleMenu()">Acessar Portais</a>
     </div>
 
     <!-- Accordion: Sou Professor -->
@@ -467,7 +467,7 @@ a { text-decoration: none; color: inherit; }
         <i data-lucide="chevron-down"></i>
     </button>
     <div class="sm-acc-body">
-        <a href="login.php" class="sm-sub-link">Acessar Portais</a>
+        <a href="#portais" class="sm-sub-link" onclick="toggleMenu()">Acessar Portais</a>
     </div>
 
     <!-- Accordion: Sou Colaborador -->
@@ -476,7 +476,7 @@ a { text-decoration: none; color: inherit; }
         <i data-lucide="chevron-down"></i>
     </button>
     <div class="sm-acc-body">
-        <a href="login.php" class="sm-sub-link">Painel Administrativo</a>
+        <a href="#portais" class="sm-sub-link" onclick="toggleMenu()">Painel Administrativo</a>
     </div>
 
     <!-- Accordion: Nossos Cursos -->
@@ -510,7 +510,7 @@ a { text-decoration: none; color: inherit; }
     <h1>Formando Profissionais para o <span>Mercado Industrial</span></h1>
     <p>A Sophie Link prepara jovens para os setores de mineração, indústria e serviços — com cursos técnicos reconhecidos e parcerias com a Vale e Sotreq.</p>
     <div class="hero-actions">
-        <a href="login.php" class="btn-primary"><i data-lucide="layout-grid"></i> Fazer Login</a>
+        <a href="#portais" class="btn-primary"><i data-lucide="layout-grid"></i> Fazer Login</a>
         <a href="#cursos" class="btn-secondary"><i data-lucide="book-open"></i> Ver Cursos</a>
     </div>
     <div class="hero-stats">
@@ -641,31 +641,37 @@ a { text-decoration: none; color: inherit; }
         <div class="sec-title">Portais de Acesso</div>
         <div class="sec-sub">Selecione o ambiente adequado ao seu perfil para acessar os serviços da Sophie Link.</div>
         <div class="portals-grid">
-            <a href="login.php?tipo=aluno" class="portal-card">
+            <a href="login_aluno.php" class="portal-card">
                 <div class="pc-icon"><i data-lucide="graduation-cap"></i></div>
                 <div class="pc-title">Portal do Aluno</div>
                 <p class="pc-desc">Acompanhe notas, frequência, histórico escolar e financeiro.</p>
                 <span class="pc-btn">Acessar <i data-lucide="arrow-right"></i></span>
             </a>
-            <a href="login.php?tipo=ava" class="portal-card">
+            <a href="login_ava.php" class="portal-card">
                 <div class="pc-icon"><i data-lucide="monitor-play"></i></div>
                 <div class="pc-title">Ambiente Virtual (AVA)</div>
                 <p class="pc-desc">Sala de aula digital com atividades e fóruns das disciplinas teóricas.</p>
                 <span class="pc-btn">Acessar <i data-lucide="arrow-right"></i></span>
             </a>
-            <a href="login.php?tipo=professor" class="portal-card">
+            <a href="login_professor.php" class="portal-card">
                 <div class="pc-icon"><i data-lucide="book-open"></i></div>
                 <div class="pc-title">Portal do Professor</div>
                 <p class="pc-desc">Lançamento de notas, frequências, planos de ensino e diário de classe.</p>
                 <span class="pc-btn">Acessar <i data-lucide="arrow-right"></i></span>
             </a>
-            <a href="login.php?tipo=empresa" class="portal-card">
+            <a href="login_colaborador.php" class="portal-card">
+                <div class="pc-icon"><i data-lucide="briefcase"></i></div>
+                <div class="pc-title">Portal do Colaborador</div>
+                <p class="pc-desc">Acesso restrito para funcionários e equipe de apoio.</p>
+                <span class="pc-btn">Acessar <i data-lucide="arrow-right"></i></span>
+            </a>
+            <a href="login_empresa.php" class="portal-card">
                 <div class="pc-icon"><i data-lucide="building"></i></div>
                 <div class="pc-title">Portal da Empresa</div>
                 <p class="pc-desc">Acompanhamento de aprendizes, aprovação de relatórios e faturamento.</p>
                 <span class="pc-btn">Acessar <i data-lucide="arrow-right"></i></span>
             </a>
-            <a href="login.php?tipo=admin" class="portal-card">
+            <a href="login_admin.php" class="portal-card">
                 <div class="pc-icon"><i data-lucide="shield"></i></div>
                 <div class="pc-title">Área Administrativa</div>
                 <p class="pc-desc">Gestão escolar (Secretaria e Coordenação) e Dashboard Gerencial.</p>
@@ -753,9 +759,9 @@ a { text-decoration: none; color: inherit; }
         <div class="footer-col">
             <h4>Sistemas</h4>
             <ul>
-                <li><a href="login.php?force_logout=1">Portal do Aluno</a></li>
-                <li><a href="login.php?force_logout=1">Ambiente Virtual (AVA)</a></li>
-                <li><a href="login.php?force_logout=1">Área Administrativa</a></li>
+                <li><a href="login_aluno.php">Portal do Aluno</a></li>
+                <li><a href="login_ava.php">Ambiente Virtual (AVA)</a></li>
+                <li><a href="login_admin.php">Área Administrativa</a></li>
             </ul>
         </div>
         <div class="footer-col">

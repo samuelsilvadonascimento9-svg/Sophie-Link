@@ -4,12 +4,13 @@ USE sophie_link;
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     nivel ENUM('admin', 'coordenadora', 'professor', 'empresa', 'colaborador', 'aluno') NOT NULL,
     empresa_id INT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    UNIQUE KEY unique_email_nivel (email, nivel)
 );
 
 -- Inserindo admin padrão (login: admin, senha: admin)
