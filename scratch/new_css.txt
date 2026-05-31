@@ -1,0 +1,205 @@
+/* ================================================================
+   HERO - CARROSSEL PREMIUM (ESTILO UNIAENE)
+   ================================================================ */
+.hero-carousel {
+    position: relative;
+    top: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    background-color: #0f172a;
+}
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.carousel-item {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease-in-out, visibility 0.8s;
+    z-index: 1;
+}
+.carousel-item.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
+}
+
+/* Background Image Layer */
+.bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left bottom;
+    display: block;
+}
+
+/* Banner Overlay */
+.banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Banner Strip */
+.banner-strip {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 45%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    padding: 0 4rem;
+}
+
+@media (max-width: 1024px) {
+    .banner-strip { width: 55%; padding: 0 3rem; }
+}
+
+@media (max-width: 768px) {
+    .banner-strip {
+        width: 100%;
+        height: auto;
+        bottom: 0;
+        top: auto;
+        padding: 4rem 2rem 3rem 2rem;
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.6) 80%, transparent 100%);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+}
+
+/* Text Layer */
+.banner-text {
+    width: 100%;
+    color: #fff;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+@media (max-width: 768px) {
+    .banner-text {
+        text-align: center;
+        align-items: center;
+    }
+}
+
+/* Animations */
+.animate-text {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.carousel-item.active .animate-text {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.2s;
+}
+
+/* Typography and Buttons */
+.hero-tag {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 6px 16px; border-radius: 30px;
+    background: rgba(255, 255, 255, 0.1); color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 1.5rem; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+}
+.hero-tag i { width: 16px; height: 16px; color: var(--c-primary); }
+
+.banner-text h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 4vw, 4.5rem);
+    font-weight: 800; line-height: 1.1;
+    color: #FFF;
+    margin-bottom: 1rem; text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+.banner-text h1 .cursive { 
+    display: block;
+    color: var(--c-primary);
+    font-family: var(--font-cursive);
+    text-transform: none;
+    font-size: 1.3em;
+    font-weight: 700;
+    margin-top: -0.2em;
+    text-shadow: none;
+}
+.banner-text p {
+    font-size: 1.15rem; color: #D1D5DB;
+    font-weight: 400; max-width: 480px; margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+/* Buttons Container */
+.hero-actions {
+    display: flex; gap: 15px; margin-bottom: 3.5rem;
+}
+@media (max-width: 768px) {
+    .hero-actions { flex-direction: column; width: 100%; margin-bottom: 2.5rem; }
+    .hero-actions .btn-primary, .hero-actions .btn-secondary { width: 100%; justify-content: center; }
+}
+
+/* Globais Btn (Sobrescrevendo pop-art) */
+.btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--c-primary); color: #FFF;
+    padding: 14px 32px; border-radius: 30px;
+    font-size: 1rem; font-weight: 700; text-transform: uppercase;
+    transition: all 0.3s ease; border: none;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(249, 115, 22, 0.5); background: var(--c-primary-d); }
+.btn-primary i { width: 18px; height: 18px; color: #FFF; }
+
+.btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(255, 255, 255, 0.1); color: #FFF;
+    padding: 14px 32px; border-radius: 30px;
+    font-size: 1rem; font-weight: 700; text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease; backdrop-filter: blur(5px);
+}
+.btn-secondary:hover { background: #FFF; color: #111; transform: translateY(-3px); }
+.btn-secondary i { width: 18px; height: 18px; }
+
+/* Arrows */
+.carousel-nav-arrows {
+    display: flex; gap: 12px;
+}
+.nav-prev, .nav-next {
+    pointer-events: auto;
+    width: 48px; height: 48px;
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s ease;
+    border-radius: 50%; color: #fff; backdrop-filter: blur(5px);
+}
+.nav-prev:hover, .nav-next:hover {
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
+.nav-prev i, .nav-next i { width: 22px; height: 22px; }
+
+/* Barra de Progresso Autoplay */
+.carousel-progress {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    height: 4px; background: rgba(0,0,0,0.3); z-index: 10;
+}
+.progress-bar {
+    height: 100%; width: 0%; background: var(--c-primary);
+}

@@ -1,6 +1,7 @@
 <?php
 // esqueci_senha.php — Recuperação de Senha | Sophie Link
 require_once '../includes/db.php';
+$pdo = \Core\Connect::getInstance();
 
 $mensagem = '';
 $linkMock = '';
