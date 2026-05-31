@@ -124,23 +124,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
 
 
 
-    <section class="hero-carousel">
+    <section class="hero-carousel" id="heroCarousel">
         <div class="carousel-container">
             <!-- Item 1 -->
             <div class="carousel-item active" data-index="0">
-                <div class="bg-layer">
-                    <div class="shape-geo mega-text mega-text-outline" style="bottom: 5%; right: -2%;">SL</div>
-                    <div class="shape-geo shape-diamond geo-white" style="top: 30%; right: 45%;"></div>
-                    <div class="shape-geo shape-square geo-black" style="bottom: 20%; right: 15%;"></div>
-                    <div class="shape-geo shape-rect geo-white" style="top: 15%; right: 25%; opacity:0.8;"></div>
-                </div>
-
-                <div class="person-layer animate-img">
-                    <img src="assets/images/group_workers_hero.png" alt="Profissionais Sophie Link">
-                </div>
-
-                <div class="overlay-container container" style="height: 100%;">
-                    <div class="text-layer animate-text">
+                <img class="bg-image" src="assets/images/ava_hero.png" alt="Profissionais Sophie Link" style="background-color: #1a202c; object-position: center bottom;">
+                <div class="banner-overlay"></div>
+                <div class="banner-strip">
+                    <div class="banner-text animate-text">
                         <div class="hero-tag"><i data-lucide="zap"></i> PRÁTICA</div>
                         <h1>Hoje é dia de <span class="cursive">Transformação</span></h1>
                         <p>O talento de quem transforma o mundo com seu trabalho. Prepare-se para o mercado com quem entende de prática.</p>
@@ -149,25 +140,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                             <a href="#cursos" class="btn-primary">Ver Cursos</a>
                             <a href="#portais" class="btn-secondary">Acessar Portal</a>
                         </div>
+                        <div class="carousel-nav-arrows">
+                            <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
+                            <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Item 2 -->
             <div class="carousel-item" data-index="1">
-                <div class="bg-layer">
-                    <div class="shape-geo mega-text geo-black" style="bottom: 0%; right: -5%;">TECH</div>
-                    <div class="shape-geo shape-square geo-white" style="top: 25%; right: 40%; transform: rotate(15deg);"></div>
-                    <div class="shape-geo shape-diamond geo-black" style="bottom: 30%; right: 10%;"></div>
-                    <div class="shape-geo shape-rect geo-black" style="top: 15%; right: 20%;"></div>
-                </div>
-
-                <div class="person-layer animate-img">
-                    <img src="assets/images/tech_student_hero.png" alt="Aluna de Tecnologia">
-                </div>
-
-                <div class="overlay-container container" style="height: 100%;">
-                    <div class="text-layer animate-text">
+                <img class="bg-image" src="assets/images/tech_student_hero.png" alt="Aluna de Tecnologia" style="background-color: #0f172a; object-position: center bottom;">
+                <div class="banner-overlay"></div>
+                <div class="banner-strip">
+                    <div class="banner-text animate-text">
                         <div class="hero-tag"><i data-lucide="code"></i> INOVAÇÃO</div>
                         <h1>Conecte-se ao <span class="cursive">Futuro</span></h1>
                         <p>Domine as tecnologias mais exigidas pelas grandes indústrias e destaque-se no polo tecnológico da região.</p>
@@ -176,25 +162,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                             <a href="#cursos" class="btn-primary">Ver Cursos</a>
                             <a href="#portais" class="btn-secondary">Acessar Portal</a>
                         </div>
+                        <div class="carousel-nav-arrows">
+                            <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
+                            <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Item 3 -->
             <div class="carousel-item" data-index="2">
-                <div class="bg-layer">
-                    <div class="shape-geo mega-text mega-text-outline" style="top: 20%; right: 5%; font-size: 400px;">OP</div>
-                    <div class="shape-geo shape-diamond geo-black" style="bottom: 40%; right: 38%;"></div>
-                    <div class="shape-geo shape-square geo-white" style="top: 35%; right: 15%;"></div>
-                    <div class="shape-geo shape-rect geo-white" style="bottom: 15%; right: 25%;"></div>
-                </div>
-
-                <div class="person-layer animate-img">
-                    <img src="assets/images/operator_hero.png" alt="Operador de Máquinas">
-                </div>
-
-                <div class="overlay-container container" style="height: 100%;">
-                    <div class="text-layer animate-text">
+                <img class="bg-image" src="assets/images/hero_aprendiz.png" alt="Operador de Máquinas" style="background-color: #27272a; object-position: center bottom;">
+                <div class="banner-overlay"></div>
+                <div class="banner-strip">
+                    <div class="banner-text animate-text">
                         <div class="hero-tag"><i data-lucide="hard-hat"></i> INDÚSTRIA</div>
                         <h1>Força que move <span class="cursive">Resultados</span></h1>
                         <p>Treinamentos pesados e certificações com foco absoluto em segurança e alta produtividade operacional.</p>
@@ -203,28 +184,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                             <a href="#cursos" class="btn-primary">Ver Cursos</a>
                             <a href="#portais" class="btn-secondary">Acessar Portal</a>
                         </div>
+                        <div class="carousel-nav-arrows">
+                            <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
+                            <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Controles -->
-        <div class="carousel-nav">
-            <button class="nav-prev"><i data-lucide="chevron-left"></i></button>
-            <button class="nav-next"><i data-lucide="chevron-right"></i></button>
-        </div>
-
-        <!-- Indicadores -->
-        <div class="carousel-indicators">
-            <div class="indicator active" data-target="0"></div>
-            <div class="indicator" data-target="1"></div>
-            <div class="indicator" data-target="2"></div>
-        </div>
-
         <!-- Barra de Progresso do Autoplay -->
         <div class="carousel-progress">
-            <div class="progress-bar"></div>
+            <div class="progress-bar" id="heroProgress"></div>
         </div>
+
+        <!-- Script inline do Carousel -->
+        <script>
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('#heroCarousel .carousel-item');
+            const totalSlides = slides.length;
+            const progressBar = document.getElementById('heroProgress');
+            let slideInterval;
+            const intervalTime = 6000;
+
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                if (index >= totalSlides) currentSlide = 0;
+                else if (index < 0) currentSlide = totalSlides - 1;
+                else currentSlide = index;
+                
+                slides[currentSlide].classList.add('active');
+                resetProgress();
+            }
+
+            function nextSlide() { showSlide(currentSlide + 1); }
+            function prevSlide() { showSlide(currentSlide - 1); }
+
+            function resetProgress() {
+                clearInterval(slideInterval);
+                progressBar.style.transition = 'none';
+                progressBar.style.width = '0%';
+                
+                setTimeout(() => {
+                    progressBar.style.transition = `width ${intervalTime}ms linear`;
+                    progressBar.style.width = '100%';
+                }, 50);
+
+                slideInterval = setInterval(nextSlide, intervalTime);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                resetProgress();
+            });
+        </script>
     </section>
 
     <!-- Wrapper para o Efeito de Cortina Sobre o Hero -->

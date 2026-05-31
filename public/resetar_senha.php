@@ -1,6 +1,7 @@
 <?php
 // resetar_senha.php — Definição de Nova Senha | Sophie Link
 require_once '../includes/db.php';
+$pdo = \Core\Connect::getInstance();
 
 $erro = '';
 $sucesso = '';
