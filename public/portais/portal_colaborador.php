@@ -2,7 +2,7 @@
 // portal_colaborador.php — Portal da Secretaria / Colaborador | Sophie Link
 session_start();
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'colaborador') {
-    header("Location: ../login_aluno.php");
+    header("Location: ../login.php");
     exit;
 }
 require_once '../../includes/db.php';

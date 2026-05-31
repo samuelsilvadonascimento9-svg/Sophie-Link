@@ -2,7 +2,7 @@
 // dashboard.php — Painel Admin CMS | Sophie Link (Vercel/Stripe Style)
 session_start();
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'admin') {
-    header("Location: ../login.php");
+    header("Location: ../login_aluno.php");
     exit;
 }
 require_once '../../includes/db.php';

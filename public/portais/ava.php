@@ -3,7 +3,7 @@
 session_start();
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../login_aluno.php?redirect=ava.php");
+    header("Location: ../login.php?redirect=ava.php");
     exit;
 }
 

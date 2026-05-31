@@ -2,7 +2,7 @@
 // portal_empresa.php — Portal da Empresa | Sophie Link (Corporate Banking Theme)
 session_start();
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'empresa') {
-    header("Location: ../login_aluno.php");
+    header("Location: ../login.php");
     exit;
 }
 require_once '../../includes/db.php';

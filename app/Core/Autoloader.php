@@ -1,5 +1,5 @@
 <?php
-// backend/Core/Autoloader.php
+// app/Core/Autoloader.php
 
 /**
  * Autoloader PSR-4 Nativo (Não exige Composer)
@@ -10,7 +10,7 @@ class Autoloader
     protected static $prefixes = [];
 
     /**
-     * Registra o autoloader na pilha do SPL
+     * Registra o autoloader na pilha do SPL.
      */
     public static function register()
     {
@@ -20,26 +20,21 @@ class Autoloader
     /**
      * Adiciona um prefixo de namespace base apontando para um diretório
      */
-    public static function addNamespace(string $prefix, string $base_dir)
+    public static function addNamespace($prefix, $base_dir)
     {
-        // Normaliza o namespace
         $prefix = trim($prefix, '\\') . '\\';
-        
-        // Normaliza o diretório
         $base_dir = rtrim($base_dir, DIRECTORY_SEPARATOR) . '/';
-        
-        // Inicializa o array se necessário
-        if (isset(self::$prefixes[$prefix]) === false) {
+
+        if (!isset(self::$prefixes[$prefix])) {
             self::$prefixes[$prefix] = [];
         }
-
         array_push(self::$prefixes[$prefix], $base_dir);
     }
 
     /**
      * Tenta carregar a classe
      */
-    public static function loadClass(string $class)
+    public static function loadClass($class)
     {
         $prefix = $class;
 
@@ -57,7 +52,7 @@ class Autoloader
         return false;
     }
 
-    protected static function loadMappedFile(string $prefix, string $relative_class)
+    protected static function loadMappedFile($prefix, $relative_class)
     {
         if (!isset(self::$prefixes[$prefix])) {
             return false;
@@ -73,7 +68,7 @@ class Autoloader
         return false;
     }
 
-    protected static function requireFile(string $file)
+    protected static function requireFile($file)
     {
         if (file_exists($file)) {
             require_once $file;
@@ -87,3 +82,8 @@ class Autoloader
 Autoloader::register();
 Autoloader::addNamespace('Models', __DIR__ . '/../Models');
 Autoloader::addNamespace('Core', __DIR__ . '/../Core');
+
+?>
+
+Autoloader::addNamespace('', __DIR__ . '/');
+

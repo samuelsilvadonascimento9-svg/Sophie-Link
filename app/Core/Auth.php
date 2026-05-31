@@ -1,8 +1,8 @@
 <?php
 // includes/auth.php
 
-require_once __DIR__ . '/../backend/Core/Autoloader.php';
-require_once __DIR__ . '/../backend/Core/Security.php';
+require_once __DIR__ . '/Autoloader.php';
+require_once __DIR__ . '/Security.php';
 
 // Inicia a sessão com configurações seguras se ainda não foi iniciada
 if (session_status() === PHP_SESSION_NONE) {
