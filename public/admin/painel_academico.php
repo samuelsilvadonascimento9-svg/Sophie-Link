@@ -2,7 +2,7 @@
 // painel_academico.php — Gestão Educacional e Financeira | Sophie Link
 session_start();
 if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['usuario_nivel'], ['admin', 'coordenadora'])) {
-    header("Location: ../login.php");
+    header("Location: ../login_aluno.php");
     exit;
 }
 require_once '../../includes/db.php';

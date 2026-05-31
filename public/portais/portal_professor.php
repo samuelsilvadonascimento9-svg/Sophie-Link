@@ -2,7 +2,7 @@
 // portal_professor.php — Portal do Professor | Sophie Link (Estilo AVA/Brightspace)
 session_start();
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'professor') {
-    header("Location: ../login_aluno.php?tipo=professor");
+    header("Location: ../login.php?tipo=professor");
     exit;
 }
 $nome = $_SESSION['usuario_nome'] ?? 'Professor';
