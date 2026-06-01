@@ -78,7 +78,7 @@ if (empty($token)) {
             <i data-lucide="alert-triangle" style="vertical-align:middle; width:18px; margin-bottom:4px;"></i><br>
             <?= htmlspecialchars($erro) ?>
         </div>
-        <a href="esqueci_senha.php" class="btn" style="margin-top:10px; background:#fff; color:#111827; border:1px solid #D1D5DB;">Voltar e tentar novamente</a>
+        <a href="auth/esqueci_senha.php" class="btn" style="margin-top:10px; background:#fff; color:#111827; border:1px solid #D1D5DB;">Voltar e tentar novamente</a>
     <?php elseif ($sucesso): ?>
         <div class="alert alert-success">
             <i data-lucide="check-circle" style="vertical-align:middle; width:24px; margin-bottom:8px;"></i><br>

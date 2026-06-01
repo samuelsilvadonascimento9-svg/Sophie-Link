@@ -226,7 +226,7 @@ $nivelLabel = ['admin' => 'Administrador', 'coordenadora' => 'Coordenadora', 'pr
                     <div class="user-name"><?= htmlspecialchars($nomeUsuario) ?></div>
                     <div class="user-role"><?= $nivelLabel[$nivelUsuario] ?? $nivelUsuario ?></div>
                 </div>
-                <a href="backend/api/auth/logout.php" class="logout-btn" title="Sair">
+                <a href="auth/logout.php" class="logout-btn" title="Sair">
                     <i data-lucide="log-out" style="width:18px;height:18px"></i>
                 </a>
             </div>

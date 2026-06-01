@@ -169,7 +169,7 @@ $chartValuesJson = json_encode($chartValues);
         <div class="tab" onclick="showSec('alunos', this)">Alunos</div>
         <div class="tab" onclick="showSec('financeiro', this)">Financeiro</div>
         <div class="tab" onclick="showSec('settings', this)">Settings</div>
-        <a href="../logout.php" class="tab" style="margin-left:auto; color:var(--danger-color);">Logout</a>
+        <a href="../auth/logout.php" class="tab" style="margin-left:auto; color:var(--danger-color);">Logout</a>
     </div>
 </header>
 

@@ -173,7 +173,7 @@ foreach ($freqDb as $f) {
             <a href="ava.php" class="nav-link"><i data-lucide="monitor-play"></i> Acesso ao AVA</a>
 
             <div class="sb-footer">
-                <a href="../logout.php"><i data-lucide="log-out"></i> Sair</a>
+                <a href="../auth/logout.php"><i data-lucide="log-out"></i> Sair</a>
             </div>
         </aside>
 
