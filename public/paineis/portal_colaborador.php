@@ -119,7 +119,7 @@ foreach ($aprendizes as $a) {
                     <div class="sb-uname"><?= htmlspecialchars($primeiroNome) ?></div>
                     <div class="sb-urole">Apoio Administrativo</div>
                 </div>
-                <a href="../logout.php" style="margin-left:auto; color:var(--c-text-muted);"><i data-lucide="log-out" style="width:18px;"></i></a>
+                <a href="../auth/logout.php" style="margin-left:auto; color:var(--c-text-muted);"><i data-lucide="log-out" style="width:18px;"></i></a>
             </div>
         </aside>
 
@@ -223,7 +223,7 @@ foreach ($aprendizes as $a) {
                         <div class="panel-head">
                             <div class="panel-title">Nova Declaração</div>
                         </div>
-                        <form action="declaracao_print.php" method="GET" target="_blank" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                        <form action="../reports/declaracao_print.php" method="GET" target="_blank" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
                             <div>
                                 <label style="font-size:13px; font-weight:500; display:block; margin-bottom:6px;">Selecionar Aluno</label>
                                 <select name="aluno_id" class="form-control" required>

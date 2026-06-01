@@ -130,7 +130,7 @@ $alertas = $pdo->query("
         <?php endif; ?>
 
         <div class="sb-footer">
-            <a href="../logout.php"><i data-lucide="log-out"></i> Sair</a>
+            <a href="../auth/logout.php"><i data-lucide="log-out"></i> Sair</a>
         </div>
     </aside>
 

@@ -75,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <i data-lucide="chevron-down"></i>
         </button>
         <div class="sm-acc-body">
-            <a href="login_aluno.php" class="sm-sub-link">Acessar Portal do Aluno</a>
-            <a href="login_ava.php" class="sm-sub-link">Acessar Ambiente Virtual (AVA)</a>
+            <a href="auth/login_aluno.php" class="sm-sub-link">Acessar Portal do Aluno</a>
+            <a href="auth/login_ava.php" class="sm-sub-link">Acessar Ambiente Virtual (AVA)</a>
         </div>
 
         <!-- Accordion: Sou Professor -->
@@ -85,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <i data-lucide="chevron-down"></i>
         </button>
         <div class="sm-acc-body">
-            <a href="login_professor.php" class="sm-sub-link">Acessar Portal do Professor</a>
-            <a href="login_ava.php" class="sm-sub-link">Acessar Ambiente Virtual (AVA)</a>
+            <a href="auth/login_professor.php" class="sm-sub-link">Acessar Portal do Professor</a>
+            <a href="auth/login_ava.php" class="sm-sub-link">Acessar Ambiente Virtual (AVA)</a>
         </div>
 
         <!-- Accordion: Sou Colaborador -->
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <i data-lucide="chevron-down"></i>
         </button>
         <div class="sm-acc-body">
-            <a href="login_colaborador.php" class="sm-sub-link">Painel do Colaborador</a>
+            <a href="auth/login_colaborador.php" class="sm-sub-link">Painel do Colaborador</a>
         </div>
 
         <!-- Accordion: Sou Empresa -->
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <i data-lucide="chevron-down"></i>
         </button>
         <div class="sm-acc-body">
-            <a href="login_empresa.php" class="sm-sub-link">Acessar Portal da Empresa</a>
+            <a href="auth/login_empresa.php" class="sm-sub-link">Acessar Portal da Empresa</a>
         </div>
 
         <!-- Accordion: Área Administrativa -->
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <i data-lucide="chevron-down"></i>
         </button>
         <div class="sm-acc-body">
-            <a href="login_admin.php" class="sm-sub-link">Acesso Gerencial</a>
+            <a href="auth/login_admin.php" class="sm-sub-link">Acesso Gerencial</a>
         </div>
 
         <!-- Accordion: Nossos Cursos -->
@@ -393,9 +393,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                 <div class="footer-col">
                     <h4>Sistemas</h4>
                     <ul>
-                        <li><a href="login_aluno.php">Portal do Aluno</a></li>
-                        <li><a href="login_ava.php">Ambiente Virtual (AVA)</a></li>
-                        <li><a href="login_admin.php">Área Administrativa</a></li>
+                        <li><a href="auth/login_aluno.php">Portal do Aluno</a></li>
+                        <li><a href="auth/login_ava.php">Ambiente Virtual (AVA)</a></li>
+                        <li><a href="auth/login_admin.php">Área Administrativa</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">

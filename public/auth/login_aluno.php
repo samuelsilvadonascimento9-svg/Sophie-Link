@@ -23,16 +23,16 @@ if (isset($_SESSION['usuario_id'])) {
             header('Location: ../admin/painel_academico.php');
             break;
         case 'empresa':
-            header('Location: ../portais/portal_empresa.php');
+            header('Location: ../paineis/portal_empresa.php');
             break;
         case 'professor':
-            header('Location: ../portais/portal_professor.php');
+            header('Location: ../paineis/portal_professor.php');
             break;
         case 'colaborador':
-            header('Location: ../portais/portal_colaborador.php');
+            header('Location: ../paineis/portal_colaborador.php');
             break;
         case 'aluno':
-            header('Location: ../portais/portal_aluno.php');
+            header('Location: ../paineis/portal_aluno.php');
             break;
         default:
             header('Location: ../index.php');
@@ -83,16 +83,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: ../admin/painel_academico.php');
                     break;
                 case 'empresa':
-                    header('Location: ../portais/portal_empresa.php');
+                    header('Location: ../paineis/portal_empresa.php');
                     break;
                 case 'professor':
-                    header('Location: ../portais/portal_professor.php');
+                    header('Location: ../paineis/portal_professor.php');
                     break;
                 case 'colaborador':
-                    header('Location: ../portais/portal_colaborador.php');
+                    header('Location: ../paineis/portal_colaborador.php');
                     break;
                 case 'aluno':
-                    header('Location: ../portais/portal_aluno.php');
+                    header('Location: ../paineis/portal_aluno.php');
                     break;
                 default:
                     header('Location: ../index.php');
