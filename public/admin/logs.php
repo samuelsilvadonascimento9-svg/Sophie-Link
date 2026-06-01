@@ -14,7 +14,7 @@ try {
         SELECT l.*, u.nome, u.email 
         FROM logs_auditoria l 
         LEFT JOIN usuarios u ON l.usuario_id = u.id 
-        ORDER BY l.criado_em DESC 
+        ORDER BY l.data_hora DESC 
         LIMIT 100
     ");
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -79,11 +79,11 @@ try {
                         <?php foreach($logs as $log): ?>
                         <tr>
                             <td class="td-mono">#<?= $log['id'] ?></td>
-                            <td class="td-mono"><?= date('d/m/Y H:i:s', strtotime($log['criado_em'])) ?></td>
+                            <td class="td-mono"><?= date('d/m/Y H:i:s', strtotime($log['data_hora'])) ?></td>
                             <td style="font-weight:500;"><?= $log['nome'] ? htmlspecialchars($log['nome']) : 'Sistema' ?> <br> <small style="color:var(--text-muted);"><?= htmlspecialchars($log['email'] ?? '') ?></small></td>
                             <td><span class="h-team-badge" style="background:#E5E7EB; color:#374151;"><?= htmlspecialchars($log['acao']) ?></span></td>
                             <td><?= htmlspecialchars($log['descricao']) ?></td>
-                            <td class="td-mono"><?= htmlspecialchars($log['ip']) ?></td>
+                            <td class="td-mono">-</td>
                         </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

@@ -12,3 +12,23 @@ function showSec(id, el) {
     if (tb) tb.textContent = titles[id] || 'Portal do Aluno';
 }
 
+
+function filtrarFaturas(status, el) {
+    if (el) {
+        document.querySelectorAll('.finance-tab').forEach(btn => btn.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    const linhas = document.querySelectorAll('.fatura-row');
+    linhas.forEach(linha => {
+        if (status === 'todas') {
+            linha.style.display = '';
+        } else {
+            if (linha.getAttribute('data-status') === status) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        }
+    });
+}

@@ -9,6 +9,9 @@ require_once '../../includes/db.php';
 require_once '../../backend/Models/Empresa.php';
 require_once '../../backend/Models/Aprendiz.php';
 require_once '../../backend/Models/Turma.php';
+require_once '../../app/Core/Security.php';
+
+$csrfToken = Security::generateCsrfToken();
 
 $empresaModel = new \Models\Empresa();
 $aprendizModel = new \Models\Aprendiz();
@@ -39,6 +42,11 @@ $erro = '';
 
 // Lógica CRUD: Usuários
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
+    
+    // CSRF Validation
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = "Requisição inválida (Falha de Segurança CSRF). Tente novamente.";
+    } else {
     
     // Adicionar Usuário
     if ($_POST['acao'] === 'add_user') {
@@ -107,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         $stmtBaixa = $pdo->prepare("UPDATE financeiro SET status = 'pago', data_pagamento = CURRENT_DATE() WHERE id = ?");
         $stmtBaixa->execute([$fatura_id]);
         $sucesso = "Baixa financeira realizada com sucesso!";
+    }
     }
 }
 
@@ -464,6 +473,7 @@ $chartValuesJson = json_encode($chartValues);
         </div>
         <form method="POST">
             <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                 <input type="hidden" name="acao" value="add_user">
                 
                 <div class="form-group">
@@ -509,6 +519,7 @@ $chartValuesJson = json_encode($chartValues);
         </div>
         <form method="POST">
             <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                 <input type="hidden" name="acao" value="add_empresa">
                 
                 <div class="form-group">
@@ -548,6 +559,7 @@ $chartValuesJson = json_encode($chartValues);
         </div>
         <form method="POST">
             <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                 <input type="hidden" name="acao" value="add_aluno">
                 
                 <div class="form-group">

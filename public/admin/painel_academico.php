@@ -52,10 +52,12 @@ $inadimplentes = $pdo->query("SELECT COALESCE(SUM(valor),0) FROM financeiro WHER
 
 // 2. Aprendizes e Contratos (JOIN)
 $aprendizes = $pdo->query("
-    SELECT a.*, c.data_fim, e.nome as empresa_nome 
+    SELECT a.*, c.data_fim, e.nome as empresa_nome, cur.nome as curso_nome 
     FROM aprendizes a 
     LEFT JOIN contratos c ON a.id = c.aprendiz_id 
     LEFT JOIN empresas e ON c.empresa_id = e.id
+    LEFT JOIN turmas t ON a.turma_id = t.id
+    LEFT JOIN cursos cur ON t.curso_id = cur.id
     ORDER BY a.nome
 ")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -217,7 +219,7 @@ $alertas = $pdo->query("
                             <tr>
                                 <td class="td-bold"><?= htmlspecialchars($a['nome']) ?></td>
                                 <td><?= htmlspecialchars($a['cpf']) ?></td>
-                                <td><?= htmlspecialchars($a['curso']) ?></td>
+                                <td><?= htmlspecialchars($a['curso_nome'] ?? 'Sem Curso') ?></td>
                                 <td><?= htmlspecialchars($a['empresa_nome'] ?? 'Sem Vínculo') ?></td>
                                 <td><span class="pill pill-green"><?= htmlspecialchars($a['situacao_aluno']) ?></span></td>
                                 <td>
