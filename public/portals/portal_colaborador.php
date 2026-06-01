@@ -1,11 +1,10 @@
 <?php
 // portal_colaborador.php — Portal da Secretaria / Colaborador | Sophie Link
 session_start();
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'colaborador') {
-    header("Location: ../login_aluno.php");
-    exit;
-}
+require_once '../../includes/auth.php';
+protect_page(['colaborador']);
 require_once '../../includes/db.php';
+/** @var PDO $pdo */
 
 $nome = $_SESSION['usuario_nome'] ?? 'Secretaria';
 $primeiroNome = explode(' ', $nome)[0];
@@ -46,6 +45,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             $sucesso = "Aluno matriculado com sucesso!";
         } catch (PDOException $e) {
             $erro = "Erro ao cadastrar aluno no banco de dados. " . $e->getMessage();
+        }
+    }
+}
+
+// Lógica de CRUD: Justificar Falta
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'justificar_falta') {
+    $frequencia_id = (int)$_POST['frequencia_id'];
+    if ($frequencia_id > 0) {
+        try {
+            $stmt = $pdo->prepare("UPDATE frequencia SET status = 'justificada' WHERE id = ?");
+            $stmt->execute([$frequencia_id]);
+            $sucesso = "Falta justificada com sucesso!";
+        } catch (PDOException $e) {
+            $erro = "Erro ao justificar falta. " . $e->getMessage();
         }
     }
 }
@@ -95,6 +108,7 @@ foreach ($aprendizes as $a) {
                 <div class="sb-lbl">Gestão</div>
                 <div class="nav-link active" onclick="showSec('alunos', this)"><i data-lucide="users"></i> Buscar Alunos</div>
                 <div class="nav-link" onclick="showSec('documentos', this)"><i data-lucide="file-check"></i> Emitir Declaração</div>
+                <div class="nav-link" onclick="showSec('faltas', this)"><i data-lucide="user-x"></i> Justificar Faltas</div>
 
                 <div class="sb-lbl" style="margin-top: 20px;">Agenda</div>
                 <div class="nav-link" onclick="showSec('calendario', this)"><i data-lucide="calendar"></i> Calendário Letivo</div>
@@ -231,6 +245,58 @@ foreach ($aprendizes as $a) {
                         </form>
                     </div>
                 </div>
+                <!-- SEC: FALTAS -->
+                <div id="sec-faltas" class="sec">
+                    <h1 class="page-title">Justificar Faltas</h1>
+                    <p class="page-desc">Exclusivo da Secretaria: visualize ausências e aplique justificativas (atestados, despensas).</p>
+                    
+                    <div class="panel">
+                        <div class="panel-head">
+                            <div class="panel-title">Faltas Pendentes</div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Aluno</th>
+                                        <th>Disciplina</th>
+                                        <th>Status Atual</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    $stmtFaltas = $pdo->query("
+                                        SELECT f.id, f.data_registro, f.status, a.nome AS aluno_nome, d.nome AS disc_nome
+                                        FROM frequencia f
+                                        JOIN aprendizes a ON f.aprendiz_id = a.id
+                                        LEFT JOIN disciplinas d ON f.disciplina_id = d.id
+                                        WHERE f.status = 'falta'
+                                        ORDER BY f.data_registro DESC LIMIT 20
+                                    ");
+                                    while ($f = $stmtFaltas->fetch(PDO::FETCH_ASSOC)):
+                                    ?>
+                                    <tr>
+                                        <td><?= date('d/m/Y', strtotime($f['data_registro'])) ?></td>
+                                        <td style="font-weight:600;"><?= htmlspecialchars($f['aluno_nome']) ?></td>
+                                        <td><?= htmlspecialchars($f['disc_nome'] ?? 'Geral') ?></td>
+                                        <td><span class="badge badge-yellow">Falta</span></td>
+                                        <td>
+                                            <form method="POST" style="margin:0;">
+                                                <input type="hidden" name="acao" value="justificar_falta">
+                                                <input type="hidden" name="frequencia_id" value="<?= $f['id'] ?>">
+                                                <button type="submit" class="qa-btn" style="color:var(--c-brand); border-color:var(--c-brand);">Justificar (Atestado)</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>

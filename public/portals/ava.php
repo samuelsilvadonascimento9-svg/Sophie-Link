@@ -2,10 +2,8 @@
 // ava.php — Ambiente Virtual de Aprendizagem | Sophie Link (Estilo Brightspace)
 session_start();
 
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../login_aluno.php?redirect=ava.php");
-    exit;
-}
+require_once '../../includes/auth.php';
+protect_page(['aluno', 'professor', 'admin']);
 
 require_once '../../includes/db.php';
 
@@ -59,7 +57,7 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
      ================================================================ -->
 <nav class="topnav">
     <a href="../index.php" class="tn-logo" style="gap: 8px;">
-        <img src="../assets/images/image-removebg-preview (1).png" alt="Sophie Link Logo" style="height: 38px; object-fit: contain;">
+        <img src="../assets/images/logo_hd.png" alt="Sophie Link Logo" style="height: 38px; object-fit: contain;">
         <div class="tn-logo-text">
             <div class="tn-logo-name">SOPHIE LINK</div>
             <div class="tn-logo-sub">Centro Técnico Profissionalizante</div>

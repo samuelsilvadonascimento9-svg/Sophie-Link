@@ -33,10 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="assets/css/toast.css?v=12">
-    <link rel="stylesheet" href="assets/css/index.css?v=12">
+    <link rel="stylesheet" href="assets/css/toast.css?v=18">
+    <link rel="stylesheet" href="assets/css/index.css?v=18">
 
-    <link rel="stylesheet" href="assets/css/premium.css?v=12">
+    <link rel="stylesheet" href="assets/css/premium.css?v=18">
 </head>
 
 <body>
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
     <!-- NAV -->
     <nav class="nav">
         <a href="index.php" class="nav-brand">
-            <img src="assets/images/logoNome.png" alt="Sophie Link">
+            <img src="assets/images/logoNome.png" alt="Sophie Link" style="width: 250px; object-fit: contain;">
         </a>
         <div class="nav-actions">
             <button class="menu-btn" id="menuOpen"><i data-lucide="menu"></i> Menu</button>
@@ -65,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         <div class="sm-section">Navegação</div>
         <a href="#institucional" class="sm-link" onclick="toggleMenu()"><i data-lucide="info"></i> Institucional</a>
         <a href="#cursos" class="sm-link" onclick="toggleMenu()"><i data-lucide="book-open"></i> Nossos Cursos</a>
-        <a href="#portais" class="sm-link" onclick="toggleMenu()"><i data-lucide="layout-grid"></i> Portais de Acesso</a>
         <a href="#contato" class="sm-link" onclick="toggleMenu()"><i data-lucide="map-pin"></i> Contato</a>
 
         <div class="sm-section">Portais</div>
@@ -99,6 +98,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <a href="login_colaborador.php" class="sm-sub-link">Painel do Colaborador</a>
         </div>
 
+        <!-- Accordion: Sou Empresa -->
+        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+            <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="building" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Empresa</span>
+            <i data-lucide="chevron-down"></i>
+        </button>
+        <div class="sm-acc-body">
+            <a href="login_empresa.php" class="sm-sub-link">Acessar Portal da Empresa</a>
+        </div>
+
+        <!-- Accordion: Área Administrativa -->
+        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+            <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="shield" style="width:16px;height:16px;color:var(--c-text-light);"></i> Área Administrativa</span>
+            <i data-lucide="chevron-down"></i>
+        </button>
+        <div class="sm-acc-body">
+            <a href="login_admin.php" class="sm-sub-link">Acesso Gerencial</a>
+        </div>
+
         <!-- Accordion: Nossos Cursos -->
         <button class="sm-acc-btn" onclick="toggleAcc(this)">
             <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="book-open" style="width:16px;height:16px;color:var(--c-text-light);"></i> Nossos Cursos</span>
@@ -126,75 +143,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
 
     <section class="hero-carousel" id="heroCarousel">
 
+        <!-- Fundo Estático Geométrico (Estilo UNIAENE) -->
+        <div class="hero-static-bg">
+            <div class="geo-rect-1"></div>
+            <div class="geo-rect-2"></div>
+            <div class="geo-rect-3"></div>
+            
+            <!-- Elementos Flutuantes -->
+            <div class="float-box float-box-1">
+                <i data-lucide="star" style="width: 50px; height: 50px;"></i>
+            </div>
+            <div class="float-box float-box-2">
+                <i data-lucide="book-open" style="width: 40px; height: 40px;"></i>
+            </div>
+            <div class="float-box float-box-3">
+                <span style="font-family: var(--font-display); font-size: 3.5rem; font-weight: 800;">SL</span>
+            </div>
+        </div>
+
         <div class="carousel-container">
             <!-- Item 1 -->
             <div class="carousel-item active" data-index="0">
-                <img class="bg-image" src="assets/images/ava_hero.png" alt="Profissionais Sophie Link" style="background-color: #1a202c; object-position: center bottom;">
-                <div class="banner-overlay"></div>
-                <div class="banner-strip" style="overflow: hidden;">
-                    <div class="hero-shapes">
-                        <div class="shape-blob blob-1"></div>
-                        <div class="shape-blob blob-2"></div>
-                        <div class="shape-dots"></div>
-                        <div class="shape-ring"></div>
-                    </div>
-                    <div class="banner-text animate-text" style="position: relative; z-index: 10;">
+                <div class="slide-layout">
+                    <div class="slide-text animate-text">
                         <div class="hero-tag"><i data-lucide="zap"></i> PRÁTICA</div>
-                        <h1>Hoje é dia de <span class="cursive">Transformação</span></h1>
-                        <p>O talento de quem transforma o mundo com seu trabalho. Prepare-se para o mercado com quem entende de prática.</p>
+                        
+                        <h1 class="hero-title-uniaene">
+                            <span class="text-white">HOJE É</span> 
+                            <span class="text-highlight">DIA DE</span><br>
+                            <span class="text-white">TRANSFORMAÇÃO!</span>
+                        </h1>
+                        <p class="hero-subtitle-uniaene">O talento de quem transforma o mundo com seu trabalho. Prepare-se para o mercado com quem entende de prática.</p>
 
                         <div class="hero-actions">
-                            <a href="#cursos" class="btn-primary">Ver Cursos</a>
-                            <a href="#portais" class="btn-secondary">Acessar Portal</a>
+                            <a href="#cursos" class="btn-primary" style="background: var(--c-dark); color: #fff; border-radius: 50px; font-weight: 800; padding: 16px 36px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">VER CURSOS</a>
+                            <a href="javascript:toggleMenu()" class="btn-secondary" style="border-color: #1F2937; color: #1F2937; background: transparent; border-radius: 50px; font-weight: 800; padding: 16px 36px;">ACESSAR PORTAL</a>
                         </div>
                         <div class="carousel-nav-arrows">
                             <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
                             <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
                         </div>
+                    </div>
+                    <div class="slide-image-wrapper animate-image">
+                        <img src="assets/images/ava_hero.png" alt="Profissionais Sophie Link">
                     </div>
                 </div>
             </div>
 
             <!-- Item 2 -->
             <div class="carousel-item" data-index="1">
-                <img class="bg-image" src="assets/images/tech_student_hero.png" alt="Aluna de Tecnologia" style="background-color: #0f172a; object-position: center bottom;">
-                <div class="banner-overlay"></div>
-                <div class="banner-left">
-                    <div class="banner-text animate-text" style="position: relative; z-index: 10;">
+                <div class="slide-layout">
+                    <div class="slide-text animate-text">
                         <div class="hero-tag"><i data-lucide="code"></i> INOVAÇÃO</div>
-                        <h1>Conecte-se ao <span class="cursive">Futuro</span></h1>
-                        <p>Domine as tecnologias mais exigidas pelas grandes indústrias e destaque-se no polo tecnológico da região.</p>
+                        
+                        <h1 class="hero-title-uniaene">
+                            <span class="text-white">CONECTE-SE</span> 
+                            <span class="text-highlight">AO</span><br>
+                            <span class="text-white">FUTURO!</span>
+                        </h1>
+                        <p class="hero-subtitle-uniaene">Domine as tecnologias mais exigidas pelas grandes indústrias e destaque-se no polo tecnológico da região.</p>
 
                         <div class="hero-actions">
-                            <a href="#cursos" class="btn-primary">Ver Cursos</a>
-                            <a href="#portais" class="btn-secondary">Acessar Portal</a>
+                            <a href="#cursos" class="btn-primary" style="background: var(--c-dark); color: #fff; border-radius: 50px; font-weight: 800; padding: 16px 36px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">VER CURSOS</a>
+                            <a href="javascript:toggleMenu()" class="btn-secondary" style="border-color: #1F2937; color: #1F2937; background: transparent; border-radius: 50px; font-weight: 800; padding: 16px 36px;">ACESSAR PORTAL</a>
                         </div>
                         <div class="carousel-nav-arrows">
                             <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
                             <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
                         </div>
                     </div>
+                    <div class="slide-image-wrapper animate-image">
+                        <img src="assets/images/tech_student_hero-removebg-preview.png" alt="Aluno de Tecnologia">
+                    </div>
                 </div>
             </div>
 
             <!-- Item 3 -->
             <div class="carousel-item" data-index="2">
-                <img class="bg-image" src="assets/images/hero_aprendiz.png" alt="Operador de Máquinas" style="background-color: #27272a; object-position: center bottom;">
-                <div class="banner-overlay"></div>
-                <div class="banner-center">
-                    <div class="banner-text animate-text" style="position: relative; z-index: 10;">
+                <div class="slide-layout">
+                    <div class="slide-text animate-text">
                         <div class="hero-tag"><i data-lucide="hard-hat"></i> INDÚSTRIA</div>
-                        <h1>Força que move <span class="cursive">Resultados</span></h1>
-                        <p>Treinamentos pesados e certificações com foco absoluto em segurança e alta produtividade operacional.</p>
+                        
+                        <h1 class="hero-title-uniaene">
+                            <span class="text-white">FORÇA QUE</span> 
+                            <span class="text-highlight">MOVE</span><br>
+                            <span class="text-white">RESULTADOS!</span>
+                        </h1>
+                        <p class="hero-subtitle-uniaene">Treinamentos pesados e certificações com foco absoluto em segurança e alta produtividade operacional.</p>
 
                         <div class="hero-actions">
-                            <a href="#cursos" class="btn-primary">Ver Cursos</a>
-                            <a href="#portais" class="btn-secondary">Acessar Portal</a>
+                            <a href="#cursos" class="btn-primary" style="background: var(--c-dark); color: #fff; border-radius: 50px; font-weight: 800; padding: 16px 36px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">VER CURSOS</a>
+                            <a href="javascript:toggleMenu()" class="btn-secondary" style="border-color: #1F2937; color: #1F2937; background: transparent; border-radius: 50px; font-weight: 800; padding: 16px 36px;">ACESSAR PORTAL</a>
                         </div>
                         <div class="carousel-nav-arrows">
                             <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
                             <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
                         </div>
+                    </div>
+                    <div class="slide-image-wrapper animate-image">
+                        <img src="assets/images/hero_aprendiz-removebg-preview.png" alt="Operador de Máquinas">
                     </div>
                 </div>
             </div>
@@ -269,78 +316,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         </div>
         </section>
 
-        <!-- ================================================================
-     PORTAIS
-     ================================================================ -->
-        <section class="section portais-bg" id="portais">
-            <div class="container">
-                <div class="sec-tag">Acesso Restrito</div>
-                <div class="sec-title">Nossos Portais</div>
-                <div class="sec-sub">Sistemas dedicados para gestão acadêmica, corporativa e E-learning.</div>
 
-                <div class="portais-grid">
-                    <!-- Aluno -->
-                    <div class="course-card portal-card-center">
-                        <div class="portal-icon pi-aluno">
-                            <i data-lucide="graduation-cap" class="lucide-md"></i>
-                        </div>
-                        <h3 class="portal-card-title">Portal do Aluno</h3>
-                        <p class="portal-card-desc">Acompanhe suas notas, faltas, boletins e emita seus documentos escolares.</p>
-                        <a href="login_aluno.php" class="btn btn-aluno">Acessar Portal</a>
-                    </div>
-
-                    <!-- Professor -->
-                    <div class="course-card portal-card-center">
-                        <div class="portal-icon pi-prof">
-                            <i data-lucide="book-open" class="lucide-md"></i>
-                        </div>
-                        <h3 class="portal-card-title">Portal do Professor</h3>
-                        <p class="portal-card-desc">Lançamento de diários, frequências, notas e acompanhamento de turmas.</p>
-                        <a href="login_professor.php" class="btn btn-prof">Acessar Portal</a>
-                    </div>
-
-                    <!-- Empresa -->
-                    <div class="course-card portal-card-center">
-                        <div class="portal-icon pi-emp">
-                            <i data-lucide="building" class="lucide-md"></i>
-                        </div>
-                        <h3 class="portal-card-title">Portal da Empresa</h3>
-                        <p class="portal-card-desc">Acompanhamento de aprendizes, frequências, avaliações e faturamento.</p>
-                        <a href="login_empresa.php" class="btn btn-emp">Acessar Portal</a>
-                    </div>
-
-                    <!-- Colaborador -->
-                    <div class="course-card portal-card-center">
-                        <div class="portal-icon pi-colab">
-                            <i data-lucide="users" class="lucide-md"></i>
-                        </div>
-                        <h3 class="portal-card-title">Portal do Colaborador</h3>
-                        <p class="portal-card-desc">Acesso interno para gestão acadêmica e administrativa da Sophie Link.</p>
-                        <a href="login_colaborador.php" class="btn btn-colab">Acessar Portal</a>
-                    </div>
-
-                    <!-- Admin -->
-                    <div class="course-card portal-card-center">
-                        <div class="portal-icon pi-admin">
-                            <i data-lucide="shield" class="lucide-md"></i>
-                        </div>
-                        <h3 class="portal-card-title">Área Administrativa</h3>
-                        <p class="portal-card-desc">Acesso gerencial exclusivo da diretoria e TI do Centro Técnico.</p>
-                        <a href="login_admin.php" class="btn btn-admin">Acessar Portal</a>
-                    </div>
-
-                    <!-- AVA -->
-                    <div class="course-card portal-card-center">
-                        <div class="portal-icon pi-ava">
-                            <i data-lucide="monitor-play" class="lucide-md"></i>
-                        </div>
-                        <h3 class="portal-card-title">Ambiente Virtual (AVA)</h3>
-                        <p class="portal-card-desc">Acesso às aulas online, fóruns de discussão e materiais didáticos.</p>
-                        <a href="login_ava.php" class="btn btn-ava">Acessar Portal</a>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- ================================================================
      PARCEIROS

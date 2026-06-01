@@ -1,10 +1,8 @@
 <?php
 // portal_empresa.php — Portal da Empresa | Sophie Link (Corporate Banking Theme)
 session_start();
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'empresa') {
-    header("Location: ../login_aluno.php");
-    exit;
-}
+require_once '../../includes/auth.php';
+protect_page(['empresa']);
 require_once '../../includes/db.php';
 
 $usuario_id = $_SESSION['usuario_id'];
@@ -61,6 +59,19 @@ foreach ($listaFin as $f) {
 }
 $sitFin = $totalPendentes > 0 ? 'Pendente' : 'Em dia';
 $sitFinColor = $totalPendentes > 0 ? '#DC2626' : '#16A34A'; // Red or Green
+
+// 5. Estimativa de Faturamento Atual
+$valorPorAprendiz = 250.00; // Valor fixo do contrato fictício
+$qtdAtivos = count($listaAprendizes);
+$estimativaFatura = $qtdAtivos * $valorPorAprendiz;
+
+// 6. Dados para Gráfico Chart.js
+$nomesChart = [];
+$freqsChart = [];
+foreach ($listaAprendizes as $a) {
+    $nomesChart[] = explode(' ', $a['nome'])[0];
+    $freqsChart[] = $a['freq_perc'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -72,6 +83,7 @@ $sitFinColor = $totalPendentes > 0 ? '#DC2626' : '#16A34A'; // Red or Green
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="../assets/css/portal_empresa.css">
 
     <link rel="stylesheet" href="../assets/css/premium.css">
@@ -144,11 +156,27 @@ $sitFinColor = $totalPendentes > 0 ? '#DC2626' : '#16A34A'; // Red or Green
 
                 <div class="panel">
                     <div class="panel-head">
-                        <div class="panel-title">Ações Rápidas</div>
+                        <div class="panel-title">Ações Rápidas & Faturamento</div>
                     </div>
-                    <div style="padding: 2rem; display: flex; gap: 1rem;">
-                        <a href="relatorio_empresa_print.php" target="_blank" class="btn btn-primary"><i data-lucide="printer"></i> Imprimir Relatório Oficial</a>
-                        <button class="btn btn-outline" onclick="showSec('financeiro', document.querySelectorAll('.nav-link')[3])"><i data-lucide="file-text"></i> Visualizar Faturas</button>
+                    <div style="padding: 2rem; display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                        <div style="flex:1;">
+                            <div style="font-size: 0.85rem; color: var(--c-text-muted); font-weight: 600; text-transform: uppercase;">Estimativa Próxima Fatura</div>
+                            <div style="font-size: 1.8rem; font-weight: 800; color: var(--c-text);">R$ <?= number_format($estimativaFatura, 2, ',', '.') ?></div>
+                            <div style="font-size: 0.85rem; color: var(--c-text-muted);">(<?= $qtdAtivos ?> aprendizes x R$ <?= number_format($valorPorAprendiz, 2, ',', '.') ?>)</div>
+                        </div>
+                        <div style="display:flex; gap: 10px;">
+                            <a href="relatorio_empresa_print.php" target="_blank" class="btn btn-primary"><i data-lucide="printer"></i> Emitir Nota / Fatura</a>
+                            <button class="btn btn-outline" onclick="showSec('financeiro', document.querySelectorAll('.nav-link')[3])"><i data-lucide="file-text"></i> Visualizar Extrato</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top: 1.5rem;">
+                    <div class="panel-head">
+                        <div class="panel-title">Frequência por Aprendiz</div>
+                    </div>
+                    <div style="padding: 2rem;">
+                        <canvas id="freqChart" height="80"></canvas>
                     </div>
                 </div>
             </div>
@@ -238,5 +266,31 @@ $sitFinColor = $totalPendentes > 0 ? '#DC2626' : '#16A34A'; // Red or Green
 </div>
 
 <script src="../assets/js/portal_empresa.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('freqChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: <?= json_encode($nomesChart) ?>,
+            datasets: [{
+                label: 'Frequência Atual (%)',
+                data: <?= json_encode($freqsChart) ?>,
+                backgroundColor: '#4C1D95',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+});
+</script>
 </body>
 </html>

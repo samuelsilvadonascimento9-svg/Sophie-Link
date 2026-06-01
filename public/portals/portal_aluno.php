@@ -2,17 +2,18 @@
 // portal_aluno.php — Portal do Aluno | Centro Técnico Profissionalizante Sophie Link
 session_start();
 
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'aluno') {
-    header("Location: ../login_aluno.php");
-    exit;
-}
+require_once '../../includes/auth.php';
+protect_page(['aluno']);
 
 require_once '../../includes/db.php';
+/** @var PDO $pdo */
 
 // Busca o aluno logado
-$stmtAluno = $pdo->prepare("SELECT a.*, e.nome AS empresa_nome 
+$stmtAluno = $pdo->prepare("SELECT a.*, e.nome AS empresa_nome, t.nome AS turma_nome, c_curso.nome AS curso_nome, t.curso_id 
                           FROM aprendizes a 
-                          LEFT JOIN contratos c ON a.id = c.aprendiz_id 
+                          LEFT JOIN turmas t ON t.id = a.turma_id
+                          LEFT JOIN cursos c_curso ON c_curso.id = t.curso_id
+                          LEFT JOIN contratos c ON a.id = c.aprendiz_id AND c.status = 'ativo'
                           LEFT JOIN empresas e ON c.empresa_id = e.id 
                           JOIN usuarios u ON u.email = a.email
                           WHERE u.id = ? LIMIT 1");
@@ -20,10 +21,12 @@ $stmtAluno->execute([$_SESSION['usuario_id']]);
 $aluno = $stmtAluno->fetch();
 
 if (!$aluno) {
-    // Tenta pelo nome se o email não bater (pois a tabela de seed pode estar zoada)
-    $stmtAluno = $pdo->prepare("SELECT a.*, e.nome AS empresa_nome 
+    // Tenta pelo nome se o email não bater
+    $stmtAluno = $pdo->prepare("SELECT a.*, e.nome AS empresa_nome, t.nome AS turma_nome, c_curso.nome AS curso_nome, t.curso_id 
                               FROM aprendizes a 
-                              LEFT JOIN contratos c ON a.id = c.aprendiz_id 
+                              LEFT JOIN turmas t ON t.id = a.turma_id
+                              LEFT JOIN cursos c_curso ON c_curso.id = t.curso_id
+                              LEFT JOIN contratos c ON a.id = c.aprendiz_id AND c.status = 'ativo'
                               LEFT JOIN empresas e ON c.empresa_id = e.id 
                               JOIN usuarios u ON u.nome = a.nome
                               WHERE u.id = ? LIMIT 1");
@@ -47,8 +50,14 @@ $aluno_id = $aluno['id'];
 $_SESSION['usuario_nome'] = $aluno['nome'];
 $_SESSION['usuario_tipo'] = 'aluno';
 
-// Buscar Notas
-$stmtNotas = $pdo->prepare("SELECT * FROM notas WHERE aprendiz_id = ? ORDER BY data_registro DESC");
+// Buscar Notas com Disciplina
+$stmtNotas = $pdo->prepare("
+    SELECT n.*, d.nome AS disciplina_nome 
+    FROM notas n 
+    LEFT JOIN disciplinas d ON d.id = n.disciplina_id
+    WHERE n.aprendiz_id = ? 
+    ORDER BY n.data_registro DESC
+");
 $stmtNotas->execute([$aluno_id]);
 $notasDb = $stmtNotas->fetchAll();
 
@@ -58,6 +67,14 @@ $stmtFreq->execute([$aluno_id]);
 $freqDb = $stmtFreq->fetchAll();
 
 $totalAulas = count($freqDb);
+
+// Disciplinas do curso do aluno
+$disciplinasCurso = [];
+if (!empty($aluno['curso_id'])) {
+    $stmtD = $pdo->prepare("SELECT * FROM disciplinas WHERE curso_id = ? ORDER BY nome ASC");
+    $stmtD->execute([$aluno['curso_id']]);
+    $disciplinasCurso = $stmtD->fetchAll();
+}
 
 // Exportar CSV
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
@@ -83,8 +100,29 @@ $somaNotas = 0;
 foreach($notasDb as $n) { $somaNotas += $n['valor_nota']; }
 $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 1, '.', '') : '0.0';
 
-// Agrupar faltas por disciplina (Simplificado: as faltas no BD atual não têm disciplina vinculada, 
-// então vamos usar um valor padrão baseado nas totais)
+// Prepara o Boletim Detalhado
+$boletim = [];
+foreach ($disciplinasCurso as $d) {
+    $boletim[$d['id']] = [
+        'nome' => $d['nome'],
+        'soma_notas' => 0,
+        'qtd_notas' => 0,
+        'faltas' => 0
+    ];
+}
+foreach ($notasDb as $n) {
+    $did = $n['disciplina_id'];
+    if ($did && isset($boletim[$did])) {
+        $boletim[$did]['soma_notas'] += $n['valor_nota'];
+        $boletim[$did]['qtd_notas']++;
+    }
+}
+foreach ($freqDb as $f) {
+    $did = $f['disciplina_id'];
+    if ($did && isset($boletim[$did]) && $f['status'] === 'falta') {
+        $boletim[$did]['faltas']++;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -97,9 +135,8 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-<link rel="stylesheet" href="../assets/css/portal_aluno.css">
-
-    <link rel="stylesheet" href="../assets/css/premium.css">
+    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=3">
+    <link rel="stylesheet" href="../assets/css/premium.css?v=3">
 </head>
 <body>
 
@@ -108,14 +145,14 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sb-brand">
-            <img src="../assets/images/image-removebg-preview (1).png" alt="Sophie Link" style="height: 32px; object-fit: contain;">
+            <img src="../assets/images/logo_hd.png" alt="Sophie Link Logo" style="height: 38px; object-fit: contain;">
         </div>
 
         <div class="sb-user">
             <div class="sb-avatar"><?= strtoupper(substr($aluno['nome'], 0, 1)) ?></div>
             <div>
                 <div class="sb-uname"><?= htmlspecialchars($aluno['nome']) ?></div>
-                <div class="sb-urole"><?= htmlspecialchars($aluno['curso']) ?></div>
+                <div class="sb-urole"><?= htmlspecialchars($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Curso Genérico') ?></div>
                 <div class="sb-ra">ID: <?= str_pad($aluno['id'], 6, '0', STR_PAD_LEFT) ?></div>
             </div>
         </div>
@@ -124,9 +161,9 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
         <a href="#" class="nav-link active" onclick="showSec('inicio',this)"><i data-lucide="layout-dashboard"></i> Início</a>
         <a href="#" class="nav-link" onclick="showSec('notas',this)"><i data-lucide="bar-chart-2"></i> Notas & Frequência</a>
         <a href="#" class="nav-link" onclick="showSec('financeiro',this)"><i data-lucide="credit-card"></i> Financeiro</a>
-        <a href="#" class="nav-link"><i data-lucide="calendar"></i> Quadro de Horários</a>
-        <a href="#" class="nav-link"><i data-lucide="file-text"></i> Histórico Escolar</a>
-        <a href="#" class="nav-link"><i data-lucide="folder-open"></i> Secretaria</a>
+        <a href="#" class="nav-link" onclick="showSec('horarios',this)"><i data-lucide="calendar"></i> Quadro de Horários</a>
+        <a href="#" class="nav-link" onclick="showSec('historico',this)"><i data-lucide="file-text"></i> Histórico Escolar</a>
+        <a href="#" class="nav-link" onclick="showSec('secretaria',this)"><i data-lucide="folder-open"></i> Secretaria</a>
         <a href="ava.php" class="nav-link"><i data-lucide="monitor-play"></i> Acesso ao AVA</a>
 
         <div class="sb-footer">
@@ -147,16 +184,6 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
         </header>
 
         <div class="workspace-content">
-            <!-- Boletim Section -->
-            <div id="boletim" class="portal-section active">
-                <div class="section-header">
-                    <h2>Boletim Escolar</h2>
-                    <div class="header-actions">
-                        <a href="?export=csv" class="btn btn-secondary"><i data-lucide="download"></i> Exportar CSV</a>
-                        <button class="btn btn-secondary" onclick="window.print()"><i data-lucide="printer"></i> Imprimir</button>
-                    </div>
-                </div>
-
         <!-- CONTENT -->
         <main class="content">
 
@@ -165,9 +192,9 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
 
                 <div class="page-hdr">
                     <div>
-                        <div class="ph-tag">2026 · 1º Semestre</div>
+                        <div class="ph-tag"><?= htmlspecialchars($aluno['turma_nome'] ?? 'Sem Turma') ?></div>
                         <div class="ph-title">Olá, <?= htmlspecialchars(explode(' ', $aluno['nome'])[0]) ?>! 👋</div>
-                        <div class="ph-sub"><?= htmlspecialchars($aluno['curso']) ?> — Centro Técnico Profissionalizante Sophie Link</div>
+                        <div class="ph-sub"><?= htmlspecialchars($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Curso Genérico') ?> — Centro Técnico Profissionalizante Sophie Link</div>
                     </div>
                     <div class="ph-stats">
                         <div class="ph-stat"><div class="ph-val" style="color:var(--c-green)"><?= $mediaGeral ?></div><div class="ph-lbl">Média Geral</div></div>
@@ -207,7 +234,7 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
                                             $status = $n['valor_nota'] >= 7 ? 'Aprovado' : ($n['valor_nota'] >= 5 ? 'Recuperação' : 'Reprovado');
                                         ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($n['atividade']) ?></td>
+                                            <td><?= htmlspecialchars($n['disciplina_nome'] ?? $n['atividade']) ?></td>
                                             <td><?= date('d/m/Y', strtotime($n['data_registro'])) ?></td>
                                             <td class="grade-val" style="color:<?= $cor ?>"><?= number_format($n['valor_nota'], 1, '.', '') ?></td>
                                             <td><span class="pill <?= $pill ?>"><?= $status ?></span></td>
@@ -230,7 +257,7 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
                             </div>
                             <div class="fin-item">
                                 <div><div class="fin-label">Mensalidade — Parcela 05/12</div><div class="fin-date">Vencimento: 10/05/2026</div></div>
-                                <div style="text-align:right"><div class="fin-val">R$ 250,00</div><a href="boleto_print.php?mes=Maio&valor=250,00" target="_blank" class="fin-btn" style="text-decoration:none; display:inline-block;">Imprimir Boleto</a></div>
+                                <div style="text-align:right"><div class="fin-val">R$ 250,00</div><a href="../reports/boleto_print.php?mes=Maio&valor=250,00" target="_blank" class="fin-btn" style="text-decoration:none; display:inline-block;">Imprimir Boleto</a></div>
                             </div>
                         </div>
                     </div>
@@ -300,12 +327,34 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
                 <div class="card">
                     <div class="card-head"><div class="card-title"><i data-lucide="bar-chart-2"></i> Boletim 2026/1</div></div>
                     <table class="grade-table">
-                        <thead><tr><th>Disciplina</th><th>Nota 1</th><th>Nota 2</th><th>Média</th><th>Faltas</th><th>Situação</th></tr></thead>
+                        <thead><tr><th>Disciplina</th><th>Média</th><th>Faltas</th><th>Situação</th></tr></thead>
                         <tbody>
-                            <tr><td>Manutenção Eletromecânica I</td><td class="grade-val">8.0</td><td class="grade-val">9.0</td><td class="grade-val" style="color:var(--c-green)">8.5</td><td>2</td><td><span class="pill pill-green">Aprovado</span></td></tr>
-                            <tr><td>Gestão da Qualidade</td><td class="grade-val">9.0</td><td class="grade-val">9.0</td><td class="grade-val" style="color:var(--c-green)">9.0</td><td>0</td><td><span class="pill pill-green">Aprovado</span></td></tr>
-                            <tr><td>Saúde e Segurança (Mineração)</td><td class="grade-val">6.0</td><td class="grade-val">7.0</td><td class="grade-val" style="color:var(--c-amber)">6.5</td><td>4</td><td><span class="pill pill-amber">Recuperação</span></td></tr>
-                            <tr><td>Logística Aplicada</td><td class="grade-val">—</td><td class="grade-val">—</td><td class="grade-val">—</td><td>0</td><td><span class="pill pill-gray">Em andamento</span></td></tr>
+                            <?php if(empty($boletim)): ?>
+                                <tr><td colspan="4" style="text-align:center;">Nenhuma disciplina vinculada à sua turma.</td></tr>
+                            <?php else: ?>
+                                <?php foreach($boletim as $discId => $d): 
+                                    $media = $d['qtd_notas'] > 0 ? $d['soma_notas'] / $d['qtd_notas'] : null;
+                                    
+                                    if ($media === null) {
+                                        $mediaStr = '—';
+                                        $cor = 'var(--c-text-muted)';
+                                        $pill = 'pill-gray';
+                                        $status = 'Em andamento';
+                                    } else {
+                                        $mediaStr = number_format($media, 1, '.', '');
+                                        $cor = $media >= 7 ? 'var(--c-green)' : ($media >= 5 ? 'var(--c-amber)' : 'var(--c-red)');
+                                        $pill = $media >= 7 ? 'pill-green' : ($media >= 5 ? 'pill-amber' : 'pill-red');
+                                        $status = $media >= 7 ? 'Aprovado' : ($media >= 5 ? 'Recuperação' : 'Reprovado');
+                                    }
+                                ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($d['nome']) ?></td>
+                                    <td class="grade-val" style="color:<?= $cor ?>"><?= $mediaStr ?></td>
+                                    <td><?= $d['faltas'] ?></td>
+                                    <td><span class="pill <?= $pill ?>"><?= $status ?></span></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -328,10 +377,147 @@ $mediaGeral = count($notasDb) > 0 ? number_format($somaNotas / count($notasDb), 
                     </div>
                     <div class="fin-item">
                         <div><div class="fin-label">Mensalidade Aprendizagem — Parcela 05/12</div><div class="fin-date">Vencimento: 10/05/2026</div></div>
-                        <div style="text-align:right"><div class="fin-val">R$ 250,00</div><a href="boleto_print.php?mes=Maio&valor=250,00" target="_blank" class="fin-btn" style="text-decoration:none; display:inline-block;">Imprimir Boleto PDF</a></div>
+                        <div style="text-align:right"><div class="fin-val">R$ 250,00</div><a href="../reports/boleto_print.php?mes=Maio&valor=250,00" target="_blank" class="fin-btn" style="text-decoration:none; display:inline-block;">Imprimir Boleto PDF</a></div>
                     </div>
                 </div>
             </div><!-- /sec-financeiro -->
+
+            <!-- ==================== HORARIOS ==================== -->
+            <div id="sec-horarios" class="sec">
+                <div class="page-hdr">
+                    <div>
+                        <div class="ph-tag">Cronograma</div>
+                        <div class="ph-title">Quadro de Horários</div>
+                        <div class="ph-sub">Veja os dias e horários das suas aulas semanais.</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><div class="card-title"><i data-lucide="calendar"></i> Agenda Semanal</div></div>
+                    <div class="table-wrap">
+                        <table class="grade-table">
+                            <thead><tr><th>Dia da Semana</th><th>Horário</th><th>Disciplina</th><th>Local</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight:600;">Segunda-feira</td>
+                                    <td>19:00 às 22:30</td>
+                                    <td>Elementos de Máquinas</td>
+                                    <td><span class="pill pill-blue">Sala 104</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:600;">Terça-feira</td>
+                                    <td>19:00 às 22:30</td>
+                                    <td>Elementos de Máquinas</td>
+                                    <td><span class="pill pill-blue">Sala 104</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:600;">Sexta-feira</td>
+                                    <td>08:00 às 17:00</td>
+                                    <td>Treinamento Prático</td>
+                                    <td><span class="pill pill-amber">Empresa</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== HISTÓRICO ==================== -->
+            <div id="sec-historico" class="sec">
+                <div class="page-hdr">
+                    <div>
+                        <div class="ph-tag">Documento Oficial</div>
+                        <div class="ph-title">Histórico Escolar</div>
+                        <div class="ph-sub">Resumo de todas as disciplinas já cursadas.</div>
+                    </div>
+                    <div class="ph-stats">
+                        <a href="?export=csv" class="btn btn-secondary"><i data-lucide="download"></i> Gerar PDF</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><div class="card-title"><i data-lucide="file-text"></i> Grade Curricular Cumprida</div></div>
+                    <div class="table-wrap">
+                        <table class="grade-table">
+                            <thead><tr><th>Período</th><th>Disciplina</th><th>Carga Horária</th><th>Situação</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="td-mono">2026/1</td>
+                                    <td style="font-weight:600;">Elementos de Máquinas</td>
+                                    <td>60h</td>
+                                    <td><span class="pill pill-gray">Em Andamento</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-mono">2025/2</td>
+                                    <td style="font-weight:600;">Desenho Técnico</td>
+                                    <td>40h</td>
+                                    <td><span class="pill pill-green">Concluído</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-mono">2025/2</td>
+                                    <td style="font-weight:600;">Matemática Aplicada</td>
+                                    <td>40h</td>
+                                    <td><span class="pill pill-green">Concluído</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== SECRETARIA ==================== -->
+            <div id="sec-secretaria" class="sec">
+                <div class="page-hdr">
+                    <div>
+                        <div class="ph-tag">Atendimento</div>
+                        <div class="ph-title">Secretaria Online</div>
+                        <div class="ph-sub">Abra requerimentos ou envie documentos exigidos.</div>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <!-- Novo Requerimento -->
+                    <div class="card">
+                        <div class="card-head"><div class="card-title"><i data-lucide="folder-plus"></i> Novo Requerimento</div></div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Sua solicitação foi enviada para a secretaria!'); this.reset();">
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label class="form-label">Tipo de Solicitação</label>
+                                    <select class="form-control" style="width:100%;">
+                                        <option>Declaração de Matrícula</option>
+                                        <option>Atestado de Frequência</option>
+                                        <option>Envio de Folha de Ponto (Empresa)</option>
+                                        <option>Justificativa de Falta (Atestado Médico)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label class="form-label">Observações</label>
+                                    <textarea class="form-control" style="width:100%; height:80px; resize:none;" placeholder="Descreva sua solicitação..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width:100%;">Enviar Solicitação</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Meus Pedidos -->
+                    <div class="card">
+                        <div class="card-head"><div class="card-title"><i data-lucide="inbox"></i> Meus Pedidos</div></div>
+                        <div class="table-wrap">
+                            <table class="grade-table">
+                                <thead><tr><th>Protocolo</th><th>Data</th><th>Status</th></tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="td-mono">#99201</td>
+                                        <td>02/05/2026</td>
+                                        <td><span class="pill pill-green">Concluído</span></td>
+                                    </tr>
+                                    <tr><td colspan="3" style="text-align:center; font-size: 13px; color:var(--c-text-muted);">Nenhum pedido aberto no momento.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /sec-secretaria -->
+
+
 
         </main>
     </div>

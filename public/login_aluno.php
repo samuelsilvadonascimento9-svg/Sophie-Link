@@ -44,6 +44,7 @@ if (isset($_SESSION['usuario_id'])) {
 $niveis_esperados = ['aluno'];
 $tituloLogin = 'Portal do Aluno';
 $prefillEmail = 'admin';
+$prefillSenha = 'admin';
 
 $erro = '';
 
@@ -124,14 +125,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <?php
 $emailValue = htmlspecialchars($_POST['email'] ?? $prefillEmail);
-$senhaValue = $prefillEmail ? 'admin' : '';
+$senhaValue = $prefillSenha ?? '';
 ?>
 <body>
     <div class="login-container">
         <!-- BRANDING (Left) -->
         <div class="login-branding">
             <div class="brand-top">
-                <div class="brand-logo"><img src="assets/images/image-removebg-preview (1).png" alt="Sophie Link"></div>
+                <div class="brand-logo"><img src="assets/images/logoNome.png" alt="Sophie Link" style="height: 40px; object-fit: contain;"></div>
                 <h1 class="brand-title">O seu futuro<br>começa aqui.</h1>
                 <p class="brand-desc">Acompanhe suas notas, frequências, histórico escolar e boletos em um só lugar. Tudo focado no seu aprendizado.</p>
             </div>

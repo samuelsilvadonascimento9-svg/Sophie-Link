@@ -11,13 +11,15 @@ class Aprendiz {
         $this->pdo = Connect::getInstance();
     }
 
-    /** Lista aprendizes com nome da empresa */
-    public function listar(string $busca = '', int $empresaId = 0, string $situacao = ''): array {
+    /** Lista aprendizes com nome da turma e empresa atual (se houver contrato ativo) */
+    public function listar(string $busca = '', int $turmaId = 0, string $situacao = ''): array {
         $sql = "
-            SELECT a.*, e.nome AS empresa_nome
+            SELECT a.*, t.nome AS turma_nome, e.nome AS empresa_nome
             FROM aprendizes a
-            LEFT JOIN empresas e ON e.id = a.empresa_id
-            WHERE 1=1
+            LEFT JOIN turmas t ON t.id = a.turma_id
+            LEFT JOIN contratos c ON c.aprendiz_id = a.id AND c.status = 'ativo'
+            LEFT JOIN empresas e ON e.id = c.empresa_id
+            WHERE a.deleted_at IS NULL
         ";
         $params = [];
 
@@ -25,9 +27,9 @@ class Aprendiz {
             $sql .= " AND (a.nome LIKE :busca OR a.cpf LIKE :busca OR a.email LIKE :busca)";
             $params['busca'] = "%{$busca}%";
         }
-        if ($empresaId) {
-            $sql .= " AND a.empresa_id = :empresa_id";
-            $params['empresa_id'] = $empresaId;
+        if ($turmaId) {
+            $sql .= " AND a.turma_id = :turma_id";
+            $params['turma_id'] = $turmaId;
         }
         if ($situacao) {
             $sql .= " AND a.situacao_aluno = :situacao";
@@ -43,10 +45,12 @@ class Aprendiz {
     /** Busca aprendiz por ID */
     public function buscarPorId(int $id): array|false {
         $stmt = $this->pdo->prepare("
-            SELECT a.*, e.nome AS empresa_nome
+            SELECT a.*, t.nome AS turma_nome, e.nome AS empresa_nome, c.id AS contrato_id
             FROM aprendizes a
-            LEFT JOIN empresas e ON e.id = a.empresa_id
-            WHERE a.id = :id LIMIT 1
+            LEFT JOIN turmas t ON t.id = a.turma_id
+            LEFT JOIN contratos c ON c.aprendiz_id = a.id AND c.status = 'ativo'
+            LEFT JOIN empresas e ON e.id = c.empresa_id
+            WHERE a.id = :id AND a.deleted_at IS NULL LIMIT 1
         ");
         $stmt->execute(['id' => $id]);
         return $stmt->fetch();
@@ -57,12 +61,10 @@ class Aprendiz {
         $stmt = $this->pdo->prepare("
             INSERT INTO aprendizes
                 (nome, cpf, rg, data_nascimento, telefone, email, endereco,
-                 nome_mae, nome_pai, empresa_id, curso, data_entrada, data_termino,
-                 status_contrato, situacao_aluno, observacoes)
+                 nome_mae, nome_pai, turma_id, tipo, situacao_aluno, observacoes)
             VALUES
                 (:nome, :cpf, :rg, :data_nascimento, :telefone, :email, :endereco,
-                 :nome_mae, :nome_pai, :empresa_id, :curso, :data_entrada, :data_termino,
-                 :status_contrato, :situacao_aluno, :observacoes)
+                 :nome_mae, :nome_pai, :turma_id, :tipo, :situacao_aluno, :observacoes)
         ");
         $stmt->execute([
             'nome'            => $d['nome'],
@@ -74,11 +76,8 @@ class Aprendiz {
             'endereco'        => $d['endereco'] ?? '',
             'nome_mae'        => $d['nome_mae'] ?? '',
             'nome_pai'        => $d['nome_pai'] ?? '',
-            'empresa_id'      => $d['empresa_id'] ?: null,
-            'curso'           => $d['curso'] ?? '',
-            'data_entrada'    => $d['data_entrada'] ?: null,
-            'data_termino'    => $d['data_termino'] ?: null,
-            'status_contrato' => $d['status_contrato'] ?? 'ativo',
+            'turma_id'        => $d['turma_id'] ?: null,
+            'tipo'            => $d['tipo'] ?? 'aprendiz',
             'situacao_aluno'  => $d['situacao_aluno'] ?? 'cursando',
             'observacoes'     => $d['observacoes'] ?? '',
         ]);
@@ -98,11 +97,8 @@ class Aprendiz {
                 endereco        = :endereco,
                 nome_mae        = :nome_mae,
                 nome_pai        = :nome_pai,
-                empresa_id      = :empresa_id,
-                curso           = :curso,
-                data_entrada    = :data_entrada,
-                data_termino    = :data_termino,
-                status_contrato = :status_contrato,
+                turma_id        = :turma_id,
+                tipo            = :tipo,
                 situacao_aluno  = :situacao_aluno,
                 observacoes     = :observacoes
             WHERE id = :id
@@ -118,19 +114,16 @@ class Aprendiz {
             'endereco'        => $d['endereco'] ?? '',
             'nome_mae'        => $d['nome_mae'] ?? '',
             'nome_pai'        => $d['nome_pai'] ?? '',
-            'empresa_id'      => $d['empresa_id'] ?: null,
-            'curso'           => $d['curso'] ?? '',
-            'data_entrada'    => $d['data_entrada'] ?: null,
-            'data_termino'    => $d['data_termino'] ?: null,
-            'status_contrato' => $d['status_contrato'] ?? 'ativo',
+            'turma_id'        => $d['turma_id'] ?: null,
+            'tipo'            => $d['tipo'] ?? 'aprendiz',
             'situacao_aluno'  => $d['situacao_aluno'] ?? 'cursando',
             'observacoes'     => $d['observacoes'] ?? '',
         ]);
     }
 
-    /** Exclui aprendiz */
+    /** Exclui aprendiz logicamente */
     public function excluir(int $id): bool {
-        $stmt = $this->pdo->prepare("DELETE FROM aprendizes WHERE id = :id");
+        $stmt = $this->pdo->prepare("UPDATE aprendizes SET deleted_at = NOW() WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
 }
