@@ -135,8 +135,8 @@ foreach ($freqDb as $f) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=6">
-    <link rel="stylesheet" href="../assets/css/premium.css?v=6">
+    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=8">
+    <link rel="stylesheet" href="../assets/css/premium.css?v=8">
 </head>
 <body>
 
@@ -189,122 +189,131 @@ foreach ($freqDb as $f) {
 
             <!-- ==================== INÍCIO ==================== -->
             <div id="sec-inicio" class="sec active">
-
                 <div class="page-hdr">
                     <div>
                         <div class="ph-tag"><?= htmlspecialchars($aluno['turma_nome'] ?? 'Sem Turma') ?></div>
-                        <div class="ph-title">Olá, <?= htmlspecialchars(explode(' ', $aluno['nome'])[0]) ?>! 👋</div>
-                        <div class="ph-sub"><?= htmlspecialchars($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Curso Genérico') ?> — Centro Técnico Profissionalizante Sophie Link</div>
+                        <div class="ph-title">Painel do Estudante</div>
+                        <div class="ph-sub">Visão Acadêmica — Centro Técnico Profissionalizante Sophie Link</div>
                     </div>
-                    <div class="ph-stats">
-                        <div class="ph-stat"><div class="ph-val" style="color:var(--c-green)"><?= $mediaGeral ?></div><div class="ph-lbl">Média Geral</div></div>
-                        <div class="ph-stat"><div class="ph-val" style="color:var(--c-primary)"><?= $frequenciaPercentual ?>%</div><div class="ph-lbl">Frequência</div></div>
-                        <div class="ph-stat"><div class="ph-val" style="color:var(--c-amber)">0</div><div class="ph-lbl">Pendências</div></div>
+                </div>
+
+                <!-- Carteirinha do Aluno (Premium Institutional) -->
+                <div class="inst-banner">
+                    <div class="inst-banner-bg"></div>
+                    <div class="inst-student">
+                        <div class="inst-avatar">
+                            <?= htmlspecialchars(substr(explode(' ', $aluno['nome'])[0], 0, 1) . (count(explode(' ', $aluno['nome'])) > 1 ? substr(explode(' ', $aluno['nome'])[1], 0, 1) : '')) ?>
+                        </div>
+                        <div class="inst-info">
+                            <div class="inst-badge">MATRÍCULA ATIVA</div>
+                            <h2><?= htmlspecialchars($aluno['nome']) ?></h2>
+                            <div class="inst-details">
+                                <span><i data-lucide="hash"></i> RA: <?= htmlspecialchars($aluno['ra'] ?? date('Y') . str_pad($aluno['id'], 4, '0', STR_PAD_LEFT)) ?></span>
+                                <span><i data-lucide="book-open"></i> <?= htmlspecialchars($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Aprendizagem') ?></span>
+                                <span><i data-lucide="users"></i> <?= htmlspecialchars($aluno['turma_nome'] ?? 'Sem Turma') ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumo Acadêmico -->
+                <div class="inst-metrics">
+                    <div class="metric-box">
+                        <div class="metric-icon" style="background: #EFF6FF; color: #2563EB;"><i data-lucide="bar-chart-2"></i></div>
+                        <div class="metric-data">
+                            <div class="metric-lbl">Média Global</div>
+                            <div class="metric-val"><?= $mediaGeral ?></div>
+                        </div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-icon" style="background: #F0FDF4; color: #16A34A;"><i data-lucide="check-circle"></i></div>
+                        <div class="metric-data">
+                            <div class="metric-lbl">Frequência Geral</div>
+                            <div class="metric-val"><?= $frequenciaPercentual ?>%</div>
+                        </div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-icon" style="background: #F8FAFC; color: #475569;"><i data-lucide="calendar"></i></div>
+                        <div class="metric-data">
+                            <div class="metric-lbl">Período Atual</div>
+                            <div class="metric-val">2º Sem. 2026</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="grid-2">
-                    <div>
-                        <!-- Aviso -->
-                        <div class="card" style="margin-bottom: 1.25rem; border-left: 4px solid var(--c-primary);">
-                            <div class="card-body" style="display:flex;align-items:center;gap:12px;">
-                                <i data-lucide="megaphone" style="width:22px;height:22px;color:var(--c-primary);flex-shrink:0;"></i>
-                                <div>
-                                    <div style="font-size:0.85rem;font-weight:700;color:var(--c-text);margin-bottom:3px;">Entrega de Documentos</div>
-                                    <div style="font-size:0.78rem;color:var(--c-text-muted);">Prazo para entrega do relatório mensal na empresa: <strong>dia 10</strong>. Acesse a Secretaria para enviar.</div>
+                    <!-- COLUNA ESQUERDA: Avisos & Financeiro -->
+                    <div class="inst-col">
+                        <!-- Avisos -->
+                        <div class="inst-card">
+                            <div class="inst-card-header">
+                                <i data-lucide="bell" class="inst-icon"></i> Avisos da Secretaria
+                            </div>
+                            <div class="inst-list">
+                                <div class="inst-list-item">
+                                    <div class="inst-list-icon warning"><i data-lucide="alert-triangle"></i></div>
+                                    <div class="inst-list-content">
+                                        <h4>Entrega de Documentos</h4>
+                                        <p>Prazo para entrega do relatório mensal na empresa: dia 10.</p>
+                                    </div>
+                                </div>
+                                <div class="inst-list-item">
+                                    <div class="inst-list-icon info"><i data-lucide="file-text"></i></div>
+                                    <div class="inst-list-content">
+                                        <h4>Folha de Ponto</h4>
+                                        <p>Assine a folha de ponto na empresa semanalmente.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Notas recentes -->
-                        <div class="card" style="margin-bottom: 1.25rem;">
-                            <div class="card-head">
-                                <div class="card-title"><i data-lucide="bar-chart-2"></i> Notas Recentes</div>
-                                <a href="#" class="card-link" onclick="showSec('notas', document.querySelector('[onclick*=notas]'))">Ver boletim →</a>
+                        <!-- Próxima Mensalidade -->
+                        <div class="inst-card highlight-card">
+                            <div class="inst-card-header borderless">
+                                <i data-lucide="credit-card" class="inst-icon"></i> Próxima Mensalidade
                             </div>
-                            <table class="grade-table">
-                                <thead><tr><th>Atividade / Disciplina</th><th>Data</th><th>Nota</th><th>Situação</th></tr></thead>
+                            <div class="finance-block">
+                                <div class="finance-due">Vencimento: <strong>10/05/2026</strong></div>
+                                <div class="finance-amount">R$ 250,00</div>
+                                <div class="finance-status"><span class="pill pill-amber">A Vencer</span></div>
+                                <a href="../reports/boleto_print.php?mes=Maio&valor=250,00" target="_blank" class="inst-btn-primary"><i data-lucide="printer"></i> Imprimir Boleto</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA DIREITA: Últimas Notas -->
+                    <div class="inst-col">
+                        <div class="inst-card">
+                            <div class="inst-card-header">
+                                <div><i data-lucide="award" class="inst-icon"></i> Últimas Avaliações</div>
+                                <a href="#" class="inst-link" onclick="showSec('notas', document.querySelector('[onclick*=notas]'))">Ver Histórico →</a>
+                            </div>
+                            <table class="inst-table">
+                                <thead>
+                                    <tr>
+                                        <th>Disciplina / Atividade</th>
+                                        <th style="text-align:center;">Situação</th>
+                                        <th style="text-align:right;">Nota Final</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                     <?php if(empty($notasDb)): ?>
-                                        <tr><td colspan="4" style="text-align:center;">Nenhuma nota lançada.</td></tr>
+                                        <tr><td colspan="3" style="text-align:center; padding: 2rem; color: #94A3B8;">Nenhuma avaliação registrada no período.</td></tr>
                                     <?php else: ?>
-                                        <?php foreach (array_slice($notasDb, 0, 4) as $n): 
-                                            $cor = $n['valor_nota'] >= 7 ? 'var(--c-green)' : ($n['valor_nota'] >= 5 ? 'var(--c-amber)' : 'var(--c-red)');
-                                            $pill = $n['valor_nota'] >= 7 ? 'pill-green' : ($n['valor_nota'] >= 5 ? 'pill-amber' : 'pill-red');
-                                            $status = $n['valor_nota'] >= 7 ? 'Aprovado' : ($n['valor_nota'] >= 5 ? 'Recuperação' : 'Reprovado');
+                                        <?php foreach (array_slice($notasDb, 0, 5) as $n): 
+                                            $aprovado = $n['valor_nota'] >= 7;
                                         ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($n['disciplina_nome'] ?? $n['atividade']) ?></td>
-                                            <td><?= date('d/m/Y', strtotime($n['data_registro'])) ?></td>
-                                            <td class="grade-val" style="color:<?= $cor ?>"><?= number_format($n['valor_nota'], 1, '.', '') ?></td>
-                                            <td><span class="pill <?= $pill ?>"><?= $status ?></span></td>
+                                            <td class="td-primary"><?= htmlspecialchars($n['disciplina_nome'] ?? $n['atividade']) ?></td>
+                                            <td style="text-align:center;">
+                                                <span class="inst-status <?= $aprovado ? 'status-ok' : 'status-warn' ?>"><?= $aprovado ? 'Aprovado' : 'Atenção' ?></span>
+                                            </td>
+                                            <td class="td-score <?= $aprovado ? 'score-good' : 'score-bad' ?>"><?= number_format($n['valor_nota'], 1, '.', '') ?></td>
                                         </tr>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
-                        </div>
-
-                        <!-- Financeiro resumo -->
-                        <div class="card">
-                            <div class="card-head">
-                                <div class="card-title"><i data-lucide="credit-card"></i> Extrato Financeiro</div>
-                                <a href="#" class="card-link" onclick="showSec('financeiro', document.querySelector('[onclick*=financeiro]'))">Ver tudo →</a>
-                            </div>
-                            <div class="fin-item">
-                                <div><div class="fin-label">Mensalidade — Parcela 04/12</div><div class="fin-date">Vencimento: 10/04/2026</div></div>
-                                <div><div class="fin-val">R$ 250,00</div><span class="pill pill-green" style="margin-top:5px">Pago</span></div>
-                            </div>
-                            <div class="fin-item">
-                                <div><div class="fin-label">Mensalidade — Parcela 05/12</div><div class="fin-date">Vencimento: 10/05/2026</div></div>
-                                <div style="text-align:right"><div class="fin-val">R$ 250,00</div><a href="../reports/boleto_print.php?mes=Maio&valor=250,00" target="_blank" class="fin-btn" style="text-decoration:none; display:inline-block;">Imprimir Boleto</a></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- COLUNA DIREITA -->
-                    <div>
-                        <!-- Frequência -->
-                        <div class="card" style="margin-bottom: 1.25rem;">
-                            <div class="card-head"><div class="card-title"><i data-lucide="percent"></i> Frequência</div></div>
-                            <div class="ring-wrap">
-                                <div class="ring">
-                                    <svg width="80" height="80" viewBox="0 0 80 80">
-                                        <circle cx="40" cy="40" r="33" fill="none" stroke="#E5E7EB" stroke-width="7"/>
-                                        <circle cx="40" cy="40" r="33" fill="none" stroke="#FF6B00" stroke-width="7"
-                                                stroke-dasharray="207.3" stroke-dashoffset="12.44" stroke-linecap="round"/>
-                                    </svg>
-                                    <div class="ring-val">94%<small>Freq.</small></div>
-                                </div>
-                                <span class="ring-lbl">Mínimo exigido: 75%</span>
-                            </div>
-                            <div class="mini-grid">
-                                <div class="mini-stat"><div class="mini-val" style="color:var(--c-green)">8.4</div><div class="mini-lbl">Média</div></div>
-                                <div class="mini-stat"><div class="mini-val" style="color:var(--c-amber)">2</div><div class="mini-lbl">Pendentes</div></div>
-                            </div>
-                        </div>
-
-                        <!-- Progresso Contrato -->
-                        <div class="card" style="margin-bottom: 1.25rem;">
-                            <div class="card-head"><div class="card-title"><i data-lucide="target"></i> Contrato de Aprendizagem</div></div>
-                            <div class="prog-wrap">
-                                <div class="prog-row"><span>Carga Horária Cumprida</span><span>65%</span></div>
-                                <div class="prog-bar"><div class="prog-fill" style="width:65%"></div></div>
-                                <div class="prog-note">Faltam 140 horas teóricas para o término do programa.</div>
-                            </div>
-                        </div>
-
-                        <!-- Avisos -->
-                        <div class="card">
-                            <div class="card-head"><div class="card-title"><i data-lucide="megaphone"></i> Avisos</div></div>
-                            <div class="aviso-item" style="border-left: 3px solid var(--c-primary); background: var(--c-primary-lt);">
-                                <div class="aviso-title">📋 Folha de Ponto</div>
-                                <div class="aviso-text">Assine a folha de ponto na empresa semanalmente.</div>
-                            </div>
-                            <div class="aviso-item" style="border-left: 3px solid var(--c-blue); background: var(--c-blue-lt);">
-                                <div class="aviso-title">📅 Reposição de Aula</div>
-                                <div class="aviso-text">Aula de 22/05 reagendada para 03/06 (terça-feira).</div>
-                            </div>
                         </div>
                     </div>
                 </div>
