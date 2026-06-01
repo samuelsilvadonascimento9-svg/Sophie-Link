@@ -162,7 +162,152 @@ a { text-decoration: none; color: inherit; }
 .ph-lbl { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--c-text-muted); margin-top: 4px; }
 
 /* Grid */
-.grid-2 { display: grid; grid-template-columns: 1fr 280px; gap: 1.25rem; align-items: start; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+
+/* =========================================================================
+   PREMIUM INSTITUTIONAL UI (HOME DASHBOARD)
+   ========================================================================= */
+
+/* 1. Profile Banner */
+.inst-banner {
+    position: relative;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+.inst-banner-bg {
+    height: 80px;
+    background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+}
+.inst-student {
+    padding: 0 1.5rem 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+}
+.inst-avatar {
+    width: 80px; height: 80px;
+    background: #FFFFFF;
+    border: 4px solid #FFFFFF;
+    border-radius: 50%;
+    margin-top: -40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; font-weight: 800; color: #1E293B;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+.inst-info {
+    margin-top: 1rem;
+    flex: 1;
+}
+.inst-badge {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    background: #DCFCE7; color: #16A34A;
+    font-size: 0.75rem; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+.inst-info h2 {
+    font-size: 1.5rem; font-weight: 800; color: var(--c-text);
+    margin-bottom: 8px; letter-spacing: -0.02em;
+}
+.inst-details {
+    display: flex; gap: 1.5rem;
+    font-size: 0.85rem; color: var(--c-text-muted);
+}
+.inst-details span {
+    display: flex; align-items: center; gap: 6px;
+}
+.inst-details i { width: 14px; height: 14px; }
+
+/* 2. Metrics */
+.inst-metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem; margin-bottom: 1.5rem;
+}
+.metric-box {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex; align-items: center; gap: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+.metric-icon {
+    width: 48px; height: 48px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+}
+.metric-icon i { width: 24px; height: 24px; }
+.metric-data { flex: 1; }
+.metric-lbl { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--c-text-muted); letter-spacing: 0.5px; margin-bottom: 2px;}
+.metric-val { font-size: 1.4rem; font-weight: 800; color: var(--c-text); line-height: 1; }
+
+/* 3. Cards & Structure */
+.inst-col { display: flex; flex-direction: column; gap: 1.25rem; }
+.inst-card {
+    background: var(--c-surface); border: 1px solid var(--c-border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+.inst-card-header {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--c-border-lt);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.95rem; font-weight: 700; color: var(--c-text);
+}
+.inst-card-header.borderless { border-bottom: none; padding-bottom: 0; }
+.inst-icon { width: 18px; height: 18px; color: var(--c-text-muted); margin-right: 8px; }
+.inst-link { font-size: 0.8rem; font-weight: 600; color: var(--c-text-muted); transition: color 0.2s; }
+.inst-link:hover { color: #1E293B; }
+
+/* 4. Lists & Alerts */
+.inst-list-item {
+    display: flex; gap: 1rem; padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--c-border-lt);
+}
+.inst-list-item:last-child { border-bottom: none; }
+.inst-list-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.inst-list-icon.warning { background: #FEF3C7; color: #D97706; }
+.inst-list-icon.info { background: #EFF6FF; color: #2563EB; }
+.inst-list-icon i { width: 18px; height: 18px; }
+.inst-list-content h4 { font-size: 0.9rem; font-weight: 700; color: var(--c-text); margin-bottom: 4px; }
+.inst-list-content p { font-size: 0.8rem; color: var(--c-text-muted); line-height: 1.5; }
+
+/* 5. Highlight / Finance Card */
+.highlight-card { border: 2px solid #E2E8F0; }
+.finance-block { padding: 1.5rem; text-align: center; }
+.finance-due { font-size: 0.85rem; color: var(--c-text-muted); margin-bottom: 8px; }
+.finance-amount { font-size: 2.5rem; font-weight: 800; color: #1E293B; margin-bottom: 12px; letter-spacing: -1px; }
+.finance-status { margin-bottom: 1.5rem; }
+.inst-btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 12px; background: #1E293B; color: #FFFFFF;
+    border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem;
+    transition: background 0.2s;
+}
+.inst-btn-primary:hover { background: #0F172A; }
+
+/* 6. Premium Tables */
+.inst-table { width: 100%; border-collapse: collapse; }
+.inst-table th {
+    background: #F8FAFC; color: var(--c-text-muted); font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem 1.5rem;
+    border-bottom: 2px solid var(--c-border); text-align: left;
+}
+.inst-table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--c-border-lt); }
+.inst-table tr:hover td { background: #F8FAFC; }
+.td-primary { font-weight: 600; font-size: 0.9rem; color: var(--c-text); }
+.td-score { font-family: var(--f-body); font-size: 1rem; font-weight: 800; }
+.score-good { color: #16A34A; }
+.score-bad { color: #DC2626; }
+.inst-status { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+.status-ok { background: #F0FDF4; color: #16A34A; }
+.status-warn { background: #FEF2F2; color: #DC2626; }
 
 /* Cards */
 .card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
