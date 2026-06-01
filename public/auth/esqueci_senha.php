@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     <?php endif; ?>
     
-    <a href="login.php" class="back-link">Voltar para o Login</a>
+    <a href="login_aluno.php" class="back-link">Voltar para o Login</a>
 </div>
 
 <script>
