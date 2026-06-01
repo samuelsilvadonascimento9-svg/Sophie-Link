@@ -9,12 +9,13 @@ $erro = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
+    $nivel = trim($_POST['nivel'] ?? '');
     
-    if (empty($email)) {
-        $erro = "Por favor, digite seu e-mail.";
+    if (empty($email) || empty($nivel)) {
+        $erro = "Por favor, preencha todos os campos.";
     } else {
-        $stmt = $pdo->prepare("SELECT id, nome FROM usuarios WHERE email = ?");
-        $stmt->execute([$email]);
+        $stmt = $pdo->prepare("SELECT id, nome FROM usuarios WHERE email = ? AND nivel = ?");
+        $stmt->execute([$email, $nivel]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($usuario) {
@@ -97,8 +98,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php else: ?>
         <form method="POST">
             <div class="form-group">
+                <label class="form-label">Tipo de Conta</label>
+                <select name="nivel" class="form-control" required>
+                    <option value="">Selecione...</option>
+                    <option value="aluno">Aluno</option>
+                    <option value="professor">Professor</option>
+                    <option value="colaborador">Colaborador / Secretaria</option>
+                    <option value="coordenadora">Coordenação</option>
+                    <option value="empresa">Empresa Parceira</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label class="form-label">E-mail de Cadastro</label>
-                <input type="email" name="email" class="form-control" required placeholder="exemplo@sophielink.com.br" autofocus>
+                <input type="email" name="email" class="form-control" required placeholder="exemplo@sophielink.com.br">
             </div>
             <button type="submit" class="btn">Enviar Link de Recuperação</button>
         </form>

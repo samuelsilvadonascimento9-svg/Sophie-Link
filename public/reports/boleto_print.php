@@ -124,6 +124,33 @@ $aluno = $_SESSION['usuario_nome'] ?? 'Aluno Exemplo';
         
         <div class="barcode"></div>
     </div>
-    <script>window.print();</script>
+
+    <!-- Tela de Carregamento -->
+    <div id="loading" style="position: fixed; top:0; left:0; width:100%; height:100%; background:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:9999;">
+        <div style="font-size: 24px; color: #0ea5e9; margin-bottom: 16px;">Gerando PDF...</div>
+        <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const element = document.querySelector('.boleto-container');
+            const noPrint = document.querySelector('.no-print');
+            if(noPrint) noPrint.style.display = 'none';
+
+            const opt = {
+                margin:       10,
+                filename:     'boleto.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).outputPdf('bloburl').then(function(pdfUrl) {
+                window.location.replace(pdfUrl);
+            });
+        });
+    </script>
 </body>
 </html>

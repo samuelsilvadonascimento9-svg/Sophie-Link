@@ -6,6 +6,8 @@ protect_page(['colaborador']);
 require_once '../../includes/db.php';
 /** @var \PDO $pdo */
 /** @var PDO $pdo */
+require_once '../../app/Core/Security.php';
+$csrfToken = Security::generateCsrfToken();
 
 $nome = $_SESSION['usuario_nome'] ?? 'Secretaria';
 $primeiroNome = explode(' ', $nome)[0];
@@ -19,7 +21,14 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
     fputcsv($output, ['ID', 'Nome', 'CPF', 'RG', 'Curso', 'Situação', 'Criado Em'], ';');
     
-    $stmt = $pdo->query("SELECT id, nome, cpf, rg, curso, situacao_aluno, criado_em FROM aprendizes WHERE deleted_at IS NULL ORDER BY nome ASC");
+    $stmt = $pdo->query("
+        SELECT a.id, a.nome, a.cpf, a.rg, c.nome as curso, a.situacao_aluno, a.criado_em 
+        FROM aprendizes a 
+        LEFT JOIN turmas t ON a.turma_id = t.id 
+        LEFT JOIN cursos c ON t.curso_id = c.id 
+        WHERE a.deleted_at IS NULL 
+        ORDER BY a.nome ASC
+    ");
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         fputcsv($output, $row, ';');
     }
@@ -32,27 +41,34 @@ $sucesso = '';
 
 // Lógica de CRUD: Matricular novo aluno
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'matricular') {
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = "Requisição inválida (Falha de Segurança CSRF). Tente novamente.";
+    } else {
     $novo_nome = trim($_POST['nome']);
     $novo_cpf = trim($_POST['cpf']);
     $novo_rg = trim($_POST['rg']);
-    $novo_curso = trim($_POST['curso']);
+    $novo_turma_id = (int)$_POST['turma_id'];
 
-    if (empty($novo_nome) || empty($novo_cpf) || empty($novo_rg) || empty($novo_curso)) {
+    if (empty($novo_nome) || empty($novo_cpf) || empty($novo_rg) || empty($novo_turma_id)) {
         $erro = "Todos os campos são obrigatórios.";
     } else {
         try {
-            $stmt = $pdo->prepare("INSERT INTO aprendizes (nome, cpf, rg, curso, situacao_aluno) VALUES (?, ?, ?, ?, 'cursando')");
-            $stmt->execute([$novo_nome, $novo_cpf, $novo_rg, $novo_curso]);
+            $stmt = $pdo->prepare("INSERT INTO aprendizes (nome, cpf, rg, turma_id, situacao_aluno) VALUES (?, ?, ?, ?, 'cursando')");
+            $stmt->execute([$novo_nome, $novo_cpf, $novo_rg, $novo_turma_id]);
             $sucesso = "Aluno matriculado com sucesso!";
         } catch (PDOException $e) {
             $erro = "Erro ao cadastrar aluno no banco de dados. " . $e->getMessage();
         }
     }
+    }
 }
 
 // Lógica de CRUD: Justificar Falta
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'justificar_falta') {
-    $frequencia_id = (int)$_POST['frequencia_id'];
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = "Requisição inválida (Falha de Segurança CSRF). Tente novamente.";
+    } else {
+        $frequencia_id = (int)$_POST['frequencia_id'];
     if ($frequencia_id > 0) {
         try {
             $stmt = $pdo->prepare("UPDATE frequencia SET status = 'justificada' WHERE id = ?");
@@ -62,17 +78,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             $erro = "Erro ao justificar falta. " . $e->getMessage();
         }
     }
+    }
 }
 
 // Buscar todos os aprendizes para a lista (CRM Style)
 $stmt = $pdo->query("
-    SELECT a.*, e.nome AS empresa_nome 
+    SELECT a.*, e.nome AS empresa_nome, c.nome AS curso_nome 
     FROM aprendizes a 
-    LEFT JOIN contratos c ON a.id = c.aprendiz_id 
-    LEFT JOIN empresas e ON c.empresa_id = e.id
+    LEFT JOIN contratos cont ON a.id = cont.aprendiz_id 
+    LEFT JOIN empresas e ON cont.empresa_id = e.id
+    LEFT JOIN turmas t ON a.turma_id = t.id
+    LEFT JOIN cursos c ON t.curso_id = c.id
     ORDER BY a.nome ASC
 ");
 $aprendizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Buscar turmas ativas para o select
+$turmasDb = $pdo->query("SELECT t.id, t.nome, c.nome as curso_nome FROM turmas t JOIN cursos c ON t.curso_id = c.id ORDER BY c.nome, t.nome")->fetchAll(PDO::FETCH_ASSOC);
 
 // Métricas Rápidas
 $totalAlunos = count($aprendizes);
@@ -285,6 +307,7 @@ foreach ($aprendizes as $a) {
                                         <td><span class="badge badge-yellow">Falta</span></td>
                                         <td>
                                             <form method="POST" style="margin:0;">
+                                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                                                 <input type="hidden" name="acao" value="justificar_falta">
                                                 <input type="hidden" name="frequencia_id" value="<?= $f['id'] ?>">
                                                 <button type="submit" class="qa-btn" style="color:var(--c-brand); border-color:var(--c-brand);">Justificar (Atestado)</button>
@@ -311,6 +334,7 @@ foreach ($aprendizes as $a) {
             </div>
             <form method="POST">
                 <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                     <input type="hidden" name="acao" value="matricular">
                     
                     <div class="form-group">
@@ -330,13 +354,12 @@ foreach ($aprendizes as $a) {
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Curso Inicial</label>
-                        <select name="curso" class="form-control" required>
-                            <option value="">Selecione um curso...</option>
-                            <option value="Eletromecânica">Eletromecânica</option>
-                            <option value="Logística">Logística</option>
-                            <option value="Administração">Administração</option>
-                            <option value="Segurança do Trabalho">Segurança do Trabalho</option>
+                        <label class="form-label">Turma Inicial</label>
+                        <select name="turma_id" class="form-control" required>
+                            <option value="">Selecione uma turma...</option>
+                            <?php foreach ($turmasDb as $t): ?>
+                                <option value="<?= $t['id'] ?>"><?= htmlspecialchars($t['curso_nome'] . ' - ' . $t['nome']) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
