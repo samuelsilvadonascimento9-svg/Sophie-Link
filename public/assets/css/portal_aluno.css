@@ -174,7 +174,7 @@ a { text-decoration: none; color: inherit; }
     position: relative;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
-    border-radius: var(--radius);
+    border-radius: 0px; /* Caixas principais quadradas */
     overflow: hidden;
     margin-bottom: 1.5rem;
     box-shadow: var(--shadow-sm);
@@ -231,7 +231,7 @@ a { text-decoration: none; color: inherit; }
 .metric-box {
     background: var(--c-surface);
     border: 1px solid var(--c-border);
-    border-radius: var(--radius);
+    border-radius: 0px; /* Caixas principais quadradas */
     padding: 1.25rem;
     display: flex; align-items: center; gap: 1rem;
     box-shadow: var(--shadow-sm);
@@ -249,7 +249,7 @@ a { text-decoration: none; color: inherit; }
 .inst-col { display: flex; flex-direction: column; gap: 1.25rem; }
 .inst-card {
     background: var(--c-surface); border: 1px solid var(--c-border);
-    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+    border-radius: 0px; /* Caixas principais quadradas */ box-shadow: var(--shadow-sm);
     overflow: hidden;
 }
 .inst-card-header {
@@ -310,7 +310,7 @@ a { text-decoration: none; color: inherit; }
 .status-warn { background: #FEF2F2; color: #DC2626; }
 
 /* Cards */
-.card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+.card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 0px; box-shadow: var(--shadow-sm); }
 .card-head { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--c-border-lt); display: flex; align-items: center; justify-content: space-between; }
 .card-title { font-size: 0.95rem; font-weight: 700; color: var(--c-text); display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
 .card-title i { display: none; } /* Remover ícones por padrão para visual mais clean */
