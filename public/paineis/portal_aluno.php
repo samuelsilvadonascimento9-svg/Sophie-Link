@@ -6,6 +6,7 @@ require_once '../../includes/auth.php';
 protect_page(['aluno']);
 
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 /** @var PDO $pdo */
 
 // Busca o aluno logado

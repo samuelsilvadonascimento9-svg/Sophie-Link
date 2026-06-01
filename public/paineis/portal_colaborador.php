@@ -4,6 +4,7 @@ session_start();
 require_once '../../includes/auth.php';
 protect_page(['colaborador']);
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 /** @var PDO $pdo */
 
 $nome = $_SESSION['usuario_nome'] ?? 'Secretaria';

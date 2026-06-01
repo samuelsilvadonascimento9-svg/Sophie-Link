@@ -6,6 +6,7 @@ require_once '../../includes/auth.php';
 protect_page(['aluno', 'professor', 'admin']);
 
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 
 // Busca o aluno logado
 $stmtAluno = $pdo->prepare("SELECT a.* FROM aprendizes a 

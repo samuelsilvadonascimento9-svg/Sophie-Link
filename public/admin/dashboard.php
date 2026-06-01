@@ -4,6 +4,7 @@ session_start();
 require_once '../../includes/auth.php';
 protect_page(['admin']);
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 /** @var PDO $pdo */
 require_once '../../backend/Models/Empresa.php';
 require_once '../../backend/Models/Aprendiz.php';

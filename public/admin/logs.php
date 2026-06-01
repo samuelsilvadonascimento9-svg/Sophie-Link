@@ -6,6 +6,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'admin') {
     exit;
 }
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 
 // Tratar banco que ainda não tem a tabela logs_auditoria
 try {
