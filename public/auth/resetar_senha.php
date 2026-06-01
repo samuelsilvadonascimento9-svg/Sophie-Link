@@ -85,7 +85,7 @@ if (empty($token)) {
             <i data-lucide="check-circle" style="vertical-align:middle; width:24px; margin-bottom:8px;"></i><br>
             <?= htmlspecialchars($sucesso) ?>
         </div>
-        <a href="login.php" class="btn">Ir para o Login</a>
+        <a href="login_aluno.php" class="btn">Ir para o Login</a>
     <?php else: ?>
         <p style="font-size:14px; color:#6B7280; text-align:center; margin-bottom:24px;">Conta: <strong><?= htmlspecialchars($usuario['email']) ?></strong></p>
         <form method="POST">
