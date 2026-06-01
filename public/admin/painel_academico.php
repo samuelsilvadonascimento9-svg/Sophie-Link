@@ -6,6 +6,7 @@ if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['usuario_nivel'], ['a
     exit;
 }
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 
 $usuario_id = $_SESSION['usuario_id'];
 $nome       = $_SESSION['usuario_nome'] ?? 'Administrador';

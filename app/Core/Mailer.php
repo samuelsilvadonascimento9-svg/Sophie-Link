@@ -7,7 +7,7 @@ class Mailer {
      * Envia um e-mail. 
      * Simula o envio escrevendo num log se estiver no localhost ou não tiver SMTP configurado.
      */
-    public static function send($to, $subject, $body, $isHtml = true) {
+    public static function send(string $to, string $subject, string $body, bool $isHtml = true) {
         $headers = [];
         $headers[] = 'From: Sophie Link <noreply@sophielink.com.br>';
         $headers[] = 'Reply-To: suporte@sophielink.com.br';

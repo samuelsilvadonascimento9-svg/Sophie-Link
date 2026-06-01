@@ -14,7 +14,7 @@ class Connect
     ];
 
     /** @var \PDO|null */
-    private static $instance = null;
+    private static ?\PDO $instance = null;
 
     // Retorna a conexão existente ou cria uma nova se for a primeira chamada
     public static function getInstance(): \PDO

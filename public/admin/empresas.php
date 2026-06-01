@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario_id'])) { header("Location: ../index.php'); exit; }
+if (!isset($_SESSION['usuario_id'])) { header('Location: ../index.php'); exit; }
 $pageTitle = 'Empresas';
 $activeNav = 'empresas';
 require_once '../components/layout_header.php';

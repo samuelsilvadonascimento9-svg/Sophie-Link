@@ -8,7 +8,7 @@ use PDOStatement;
 
 class Model
 {
-    protected $pdo;           // Conexão PDO compartilhada
+    protected ?PDO $pdo;           // Conexão PDO compartilhada
     protected string $table = ''; // Nome da tabela — definido em cada Model filho
 
     public function __construct()

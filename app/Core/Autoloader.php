@@ -20,7 +20,7 @@ class Autoloader
     /**
      * Adiciona um prefixo de namespace base apontando para um diretório
      */
-    public static function addNamespace($prefix, $base_dir)
+    public static function addNamespace(string $prefix, string $base_dir)
     {
         $prefix = trim($prefix, '\\') . '\\';
         $base_dir = rtrim($base_dir, DIRECTORY_SEPARATOR) . '/';
@@ -34,7 +34,7 @@ class Autoloader
     /**
      * Tenta carregar a classe
      */
-    public static function loadClass($class)
+    public static function loadClass(string $class)
     {
         $prefix = $class;
 
@@ -52,7 +52,7 @@ class Autoloader
         return false;
     }
 
-    protected static function loadMappedFile($prefix, $relative_class)
+    protected static function loadMappedFile(string $prefix, string $relative_class)
     {
         if (!isset(self::$prefixes[$prefix])) {
             return false;
@@ -68,7 +68,7 @@ class Autoloader
         return false;
     }
 
-    protected static function requireFile($file)
+    protected static function requireFile(string $file)
     {
         if (file_exists($file)) {
             require_once $file;
@@ -82,8 +82,4 @@ class Autoloader
 Autoloader::register();
 Autoloader::addNamespace('Models', __DIR__ . '/../Models');
 Autoloader::addNamespace('Core', __DIR__ . '/../Core');
-
-?>
-
 Autoloader::addNamespace('', __DIR__ . '/');
-

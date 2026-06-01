@@ -18,7 +18,7 @@ new Chart(ctx, {
         labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
         datasets: [{
             label: 'Receitas (R$)',
-            data: [3400, 3400, 3400, 3400, <?= $receitaMes ?>],
+            data: [3400, 3400, 3400, 3400, window.receitaMes || 3400],
             backgroundColor: '#FF6B00',
             borderRadius: 4
         }]

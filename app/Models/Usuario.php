@@ -11,7 +11,7 @@ class Usuario extends Model
     /**
      * Autentica um usuário com base no e-mail, senha e nos níveis permitidos
      */
-    public static function autenticar($email, $senha, $niveis_esperados)
+    public static function autenticar(string $email, string $senha, array $niveis_esperados)
     {
         if (empty($email) || empty($senha) || empty($niveis_esperados)) {
             return false;
@@ -32,7 +32,7 @@ class Usuario extends Model
         return $instance->executarAutenticacao($email, $senha, $niveis_esperados);
     }
 
-    private function executarAutenticacao($email, $senha, $niveis_esperados)
+    private function executarAutenticacao(string $email, string $senha, array $niveis_esperados)
     {
         $placeholders = implode(',', array_fill(0, count($niveis_esperados), '?'));
         $sql = "SELECT * FROM {$this->table} WHERE email = ? AND nivel IN ($placeholders) AND deleted_at IS NULL LIMIT 1";

@@ -4,6 +4,7 @@ if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['usuario_nivel'], ['a
     die("Acesso negado.");
 }
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 $empresa_id = $_GET['emp_id'] ?? ($_SESSION['empresa_id'] ?? null);
 if (!$empresa_id) die("Empresa não especificada.");
 

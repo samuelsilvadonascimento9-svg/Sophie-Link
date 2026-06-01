@@ -4,6 +4,7 @@ session_start();
 require_once '../../includes/auth.php';
 protect_page(['empresa']);
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 
 $usuario_id = $_SESSION['usuario_id'];
 $empresa_id = $_SESSION['empresa_id'];

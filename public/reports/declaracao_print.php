@@ -5,6 +5,7 @@ if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['usuario_nivel'], ['c
     die("Acesso negado.");
 }
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 
 $aluno_id = $_GET['aluno_id'] ?? null;
 $tipo = $_GET['tipo'] ?? 'matricula';
@@ -55,7 +56,7 @@ if ($tipo === 'matricula') {
         /* CSS Otimizado para Impressão A4 */
         @page { size: A4; margin: 0; }
         * { box-sizing: border-box; }
-        body { font-family: 'Libre Baskerville', serif; margin: 0; padding: 0; background: #fff; color: #000; -webkit-print-color-adjust: exact; }
+        body { font-family: 'Libre Baskerville', serif; margin: 0; padding: 0; background: #fff; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         
         .a4-page {
             width: 210mm;

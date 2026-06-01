@@ -7,6 +7,7 @@ $nome = $_SESSION['usuario_nome'] ?? 'Professor';
 $primeiroNome = explode(' ', str_replace(['Prof. ','Dr. '], '', $nome))[0];
 
 require_once '../../includes/db.php';
+/** @var \PDO $pdo */
 $sucesso = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
