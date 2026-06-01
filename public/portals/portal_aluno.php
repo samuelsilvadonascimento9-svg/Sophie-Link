@@ -135,8 +135,8 @@ foreach ($freqDb as $f) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=5">
-    <link rel="stylesheet" href="../assets/css/premium.css?v=5">
+    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=6">
+    <link rel="stylesheet" href="../assets/css/premium.css?v=6">
 </head>
 <body>
 
