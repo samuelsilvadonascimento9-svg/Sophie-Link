@@ -15,28 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['force_logout']) || iss
 
 if (isset($_SESSION['usuario_id'])) {
     $nivel = $_SESSION['usuario_nivel'] ?? '';
-    switch ($nivel) {
-        case 'admin':
-            header('Location: admin/dashboard.php');
-            break;
-        case 'coordenadora':
-            header('Location: admin/painel_academico.php');
-            break;
-        case 'empresa':
-            header('Location: portals/portal_empresa.php');
-            break;
-        case 'professor':
-            header('Location: portals/portal_professor.php');
-            break;
-        case 'colaborador':
-            header('Location: portals/portal_colaborador.php');
-            break;
-        case 'aluno':
-            header('Location: portals/portal_aluno.php');
-            break;
-        default:
-            header('Location: index.php');
-            break;
+    if (in_array($nivel, ['aluno', 'professor', 'admin', 'coordenadora'])) {
+        header('Location: portals/ava.php');
+    } else if ($nivel === 'empresa') {
+        header('Location: portals/portal_empresa.php');
+    } else if ($nivel === 'colaborador') {
+        header('Location: portals/portal_colaborador.php');
+    } else {
+        header('Location: index.php');
     }
     exit;
 }
@@ -44,6 +30,7 @@ if (isset($_SESSION['usuario_id'])) {
 $niveis_esperados = ['aluno', 'professor'];
 $tituloLogin = 'Ambiente Virtual (AVA)';
 $prefillEmail = 'admin';
+$prefillSenha = 'admin';
 
 $erro = '';
 
@@ -75,28 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            switch ($user['nivel']) {
-                case 'admin':
-                    header('Location: admin/dashboard.php');
-                    break;
-                case 'coordenadora':
-                    header('Location: admin/painel_academico.php');
-                    break;
-                case 'empresa':
-                    header('Location: portals/portal_empresa.php');
-                    break;
-                case 'professor':
-                    header('Location: portals/portal_professor.php');
-                    break;
-                case 'colaborador':
-                    header('Location: portals/portal_colaborador.php');
-                    break;
-                case 'aluno':
-                    header('Location: portals/portal_aluno.php');
-                    break;
-                default:
-                    header('Location: index.php');
-                    break;
+            if (in_array($user['nivel'], ['aluno', 'professor', 'admin', 'coordenadora'])) {
+                header('Location: portals/ava.php');
+            } else if ($user['nivel'] === 'empresa') {
+                header('Location: portals/portal_empresa.php');
+            } else if ($user['nivel'] === 'colaborador') {
+                header('Location: portals/portal_colaborador.php');
+            } else {
+                header('Location: index.php');
             }
             exit;
         } else {
@@ -124,12 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <?php
 $emailValue = htmlspecialchars($_POST['email'] ?? $prefillEmail);
-$senhaValue = $prefillEmail ? 'admin' : '';
+$senhaValue = $prefillSenha ?? '';
 ?>
 <body>
     <header class="ava-navbar">
         <div class="ava-brand">
-            <img src="assets/images/image-removebg-preview (1).png" alt="Sophie Link">
+            <img src="assets/images/logoNome.png" alt="Sophie Link" style="height: 40px; object-fit: contain;">
             <span class="ava-brand-text">AVA</span>
         </div>
         <a href="index.php" class="ava-back"><i data-lucide="arrow-left" style="width:16px;"></i> Voltar ao portal principal</a>

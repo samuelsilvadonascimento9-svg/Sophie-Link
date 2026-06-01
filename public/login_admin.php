@@ -44,6 +44,7 @@ if (isset($_SESSION['usuario_id'])) {
 $niveis_esperados = ['admin', 'coordenadora'];
 $tituloLogin = 'Área Administrativa';
 $prefillEmail = 'admin';
+$prefillSenha = 'admin';
 
 $erro = '';
 
@@ -124,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <?php
 $emailValue = htmlspecialchars($_POST['email'] ?? $prefillEmail);
-$senhaValue = $prefillEmail ? 'admin' : '';
+$senhaValue = $prefillSenha ?? '';
 ?>
 <body>
     <div class="admin-box">
