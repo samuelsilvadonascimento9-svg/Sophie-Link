@@ -153,6 +153,98 @@ foreach ($faturas as $fat) {
         }
     }
 }
+
+// ================= LÓGICA DA SECRETARIA =================
+// Processar novo requerimento
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'novo_requerimento') {
+    $tipo = $_POST['tipo_solicitacao'] ?? '';
+    $obs = $_POST['observacoes'] ?? '';
+    if ($tipo) {
+        $protocolo = date('YmdHi') . rand(10,99);
+        $stmtReq = $pdo->prepare("INSERT INTO requerimentos (aprendiz_id, tipo, observacoes, protocolo) VALUES (?, ?, ?, ?)");
+        $stmtReq->execute([$aluno_id, $tipo, $obs, $protocolo]);
+        
+        header("Location: portal_aluno.php?req=sucesso#sec-secretaria");
+        exit;
+    }
+}
+
+// Buscar requerimentos do aluno
+$stmtReqList = $pdo->prepare("SELECT * FROM requerimentos WHERE aprendiz_id = ? ORDER BY data_solicitacao DESC");
+$stmtReqList->execute([$aluno_id]);
+$requerimentosDb = $stmtReqList->fetchAll(PDO::FETCH_ASSOC);
+
+// ================= LÓGICA DO MURAL DE AVISOS =================
+$stmtAvisos = $pdo->query("SELECT * FROM mural_avisos ORDER BY data_publicacao DESC LIMIT 10");
+$avisosDb = $stmtAvisos->fetchAll(PDO::FETCH_ASSOC);
+
+// ================= LÓGICA DE OPORTUNIDADES =================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'candidatar') {
+    $vaga_id = $_POST['vaga_id'] ?? null;
+    if ($vaga_id) {
+        try {
+            $stmtCand = $pdo->prepare("INSERT INTO candidaturas (oportunidade_id, aprendiz_id) VALUES (?, ?)");
+            $stmtCand->execute([$vaga_id, $aluno_id]);
+            header("Location: portal_aluno.php?cand=sucesso#sec-oportunidades");
+            exit;
+        } catch (PDOException $e) {
+            header("Location: portal_aluno.php?cand=erro#sec-oportunidades");
+            exit;
+        }
+    }
+}
+
+// Buscar vagas disponíveis
+$stmtVagas = $pdo->query("SELECT o.*, e.nome AS empresa_nome_rel 
+                          FROM oportunidades o 
+                          LEFT JOIN empresas e ON o.empresa_id = e.id 
+                          WHERE o.status = 'aberta' 
+                          ORDER BY o.data_publicacao DESC");
+$vagasDb = $stmtVagas->fetchAll(PDO::FETCH_ASSOC);
+
+// Buscar minhas candidaturas
+$stmtMinhasCand = $pdo->prepare("SELECT oportunidade_id FROM candidaturas WHERE aprendiz_id = ?");
+$stmtMinhasCand->execute([$aluno_id]);
+$minhasCandidaturas = $stmtMinhasCand->fetchAll(PDO::FETCH_COLUMN);
+
+// ================= LÓGICA DE HORÁRIOS =================
+$stmtHorarios = $pdo->prepare("SELECT h.*, d.nome AS disciplina_nome 
+                               FROM horarios_aulas h 
+                               JOIN disciplinas d ON h.disciplina_id = d.id 
+                               WHERE h.turma_id = ?");
+$stmtHorarios->execute([$aluno['turma_id']]);
+$horariosDb = $stmtHorarios->fetchAll(PDO::FETCH_ASSOC);
+
+// Mapear para quadro de horários
+$quadro = [];
+$turnos_labels = ['Manhã' => '08:00 - 11:59', 'Tarde' => '14:00 - 17:59', 'Noite' => '19:00 - 22:59'];
+foreach ($horariosDb as $h) {
+    $hora_int = (int)date('H', strtotime($h['hora_inicio']));
+    $turno = $hora_int < 12 ? 'Manhã' : ($hora_int < 18 ? 'Tarde' : 'Noite');
+    $quadro[$turno][$h['dia_semana']][] = $h;
+}
+
+// Gerar eventos para o FullCalendar
+$events_fc = [];
+$diasMap = ['Domingo'=>0, 'Segunda'=>1, 'Terça'=>2, 'Quarta'=>3, 'Quinta'=>4, 'Sexta'=>5, 'Sábado'=>6];
+$startDate = new DateTime('2026-06-01');
+$endDate = new DateTime('2026-06-30');
+foreach ($horariosDb as $h) {
+    $dia_alvo = $diasMap[$h['dia_semana']];
+    $current = clone $startDate;
+    while ($current <= $endDate) {
+        if ((int)$current->format('w') === $dia_alvo) {
+            $events_fc[] = [
+                'title' => $h['disciplina_nome'],
+                'start' => $current->format('Y-m-d') . 'T' . $h['hora_inicio'],
+                'end' => $current->format('Y-m-d') . 'T' . $h['hora_fim']
+            ];
+        }
+        $current->modify('+1 day');
+    }
+}
+$events_json = json_encode($events_fc);
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -217,17 +309,16 @@ foreach ($faturas as $fat) {
                             <i data-lucide="settings"></i>
                         </button>
                         <div id="configDropdown" style="display: none; position: absolute; right: 0; top: 45px; background: white; border: 1px solid #E2E8F0; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 220px; z-index: 1000; overflow: hidden; text-align: left;">
-                            <a href="#" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                            <a href="#" onclick="emBreve(); return false;" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
                                 <i data-lucide="user" style="width: 16px; height: 16px;"></i> Meu Perfil
                             </a>
-                            <a href="#" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                            <a href="#" onclick="emBreve(); return false;" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
                                 <i data-lucide="key" style="width: 16px; height: 16px;"></i> Alterar Senha
                             </a>
-                            <a href="#" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                            <a href="#" onclick="emBreve(); return false;" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <i data-lucide="moon" style="width: 16px; height: 16px;"></i> Modo Escuro
                                 </div>
-                                <!-- Toggle switch dummy -->
                                 <div style="width: 32px; height: 18px; background: #E2E8F0; border-radius: 9px; position: relative;">
                                     <div style="width: 14px; height: 14px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></div>
                                 </div>
@@ -383,7 +474,7 @@ foreach ($faturas as $fat) {
                             <div class="metric-box" style="flex: 1;">
                                 <div class="metric-icon" style="background: #EFF6FF; color: #2563EB;"><i data-lucide="bar-chart-2"></i></div>
                                 <div class="metric-data">
-                                    <div class="metric-lbl">Período 2026/1</div>
+                                    <div class="metric-lbl">Período Letivo</div>
                                     <div class="metric-val" style="font-size: 1.25rem;">Notas & Frequência</div>
                                 </div>
                             </div>
@@ -391,21 +482,24 @@ foreach ($faturas as $fat) {
                                 <div class="metric-icon" style="background: #F8FAFC; color: #475569;"><i data-lucide="target"></i></div>
                                 <div class="metric-data">
                                     <div class="metric-lbl">Média Geral</div>
-                                    <div class="metric-val">8.4</div>
+                                    <div class="metric-val"><?= $mediaGeral ?></div>
                                 </div>
                             </div>
                             <div class="metric-box">
                                 <div class="metric-icon" style="background: #F0FDF4; color: #16A34A;"><i data-lucide="check-circle"></i></div>
                                 <div class="metric-data">
                                     <div class="metric-lbl">Frequência</div>
-                                    <div class="metric-val">94%</div>
+                                    <div class="metric-val"><?= $frequenciaPercentual ?>%</div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="inst-card">
-                            <div class="inst-card-header">
+                            <div class="inst-card-header" style="display: flex; justify-content: space-between; align-items: center;">
                                 <div><i data-lucide="bar-chart-2" class="inst-icon"></i> Boletim Detalhado</div>
+                                <a href="?export=csv" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #10B981; font-weight: 600; text-decoration: none; border: 1px solid #A7F3D0; padding: 6px 12px; border-radius: 6px; background: #ECFDF5; transition: all 0.2s; cursor: pointer;">
+                                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> Baixar CSV
+                                </a>
                             </div>
                             <table class="inst-table">
                                 <thead>
@@ -413,7 +507,7 @@ foreach ($faturas as $fat) {
                                         <th>Disciplina</th>
                                         <th style="text-align:center;">Faltas</th>
                                         <th style="text-align:center;">Situação</th>
-                                        <th style="text-align:right;">Média</th>
+                                        <th style="text-align:right; width: 25%;">Média</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -438,10 +532,23 @@ foreach ($faturas as $fat) {
                                             }
                                         ?>
                                             <tr>
-                                                <td class="td-primary"><?= htmlspecialchars($d['nome']) ?></td>
-                                                <td style="text-align:center; color: var(--c-text-muted); font-weight: 500;"><?= $d['faltas'] ?></td>
+                                                <td class="td-primary" style="font-weight: 600;"><?= htmlspecialchars($d['nome']) ?></td>
+                                                <td style="text-align:center; color: var(--c-text-muted); font-weight: 500;">
+                                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: <?= $d['faltas'] > 0 ? '#FEF2F2' : '#F8FAFC' ?>; color: <?= $d['faltas'] > 0 ? '#EF4444' : '#64748B' ?>; border-radius: 50%; font-size: 0.8rem;"><?= $d['faltas'] ?></span>
+                                                </td>
                                                 <td style="text-align:center;"><span class="inst-status <?= $pillClass ?>"><?= $status ?></span></td>
-                                                <td class="td-score <?= $scoreClass ?>"><?= $mediaStr ?></td>
+                                                <td style="width: 25%;">
+                                                    <?php if ($media !== null): ?>
+                                                        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                                                            <div style="width: 60px; height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden;">
+                                                                <div style="height: 100%; background: <?= $media >= 7 ? '#10B981' : ($media >= 5 ? '#F59E0B' : '#EF4444') ?>; width: <?= min(100, $media * 10) ?>%;"></div>
+                                                            </div>
+                                                            <span class="td-score <?= $scoreClass ?>" style="min-width: 30px; text-align: right;"><?= $mediaStr ?></span>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div style="text-align: right;"><span class="td-score score-bad">—</span></div>
+                                                    <?php endif; ?>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -595,40 +702,28 @@ foreach ($faturas as $fat) {
                                             <th style="padding: 8px; text-align:center;">Quinta</th>
                                             <th style="padding: 8px; text-align:center;">Sexta</th>
                                             <th style="padding: 8px; text-align:center;">Sábado</th>
-                                            <th style="padding: 8px; text-align:center;">Domingo</th>
                                         </tr>
                                     </thead>
                                     <tbody style="color: #475569;">
+                                        <?php 
+                                        $dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                                        foreach (['Manhã', 'Tarde', 'Noite'] as $t_nome): 
+                                        ?>
                                         <tr>
-                                            <td style="padding: 8px; border: 1px solid #E2E8F0; background: #cbd5e1; text-align: center; color: #fff; font-weight: bold;">08:00<br>11:59</td>
-                                            <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;"><i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>Introdução à Administração<br>02/02/2026 - 18/06/2026</td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;"><i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>Informática Básica<br>02/02/2026 - 18/06/2026</td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0; background: #fecdd3;"></td>
+                                            <td style="padding: 8px; border: 1px solid #E2E8F0; background: #cbd5e1; text-align: center; color: #fff; font-weight: bold;"><?= str_replace(' - ', '<br>', $turnos_labels[$t_nome]) ?></td>
+                                            <?php foreach ($dias as $d): ?>
+                                                <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;">
+                                                    <?php 
+                                                    if (isset($quadro[$t_nome][$d])) {
+                                                        foreach ($quadro[$t_nome][$d] as $aula) {
+                                                            echo '<i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>' . htmlspecialchars($aula['disciplina_nome']) . '<br><span style="font-size:0.65rem;color:#94A3B8;">' . date('H:i', strtotime($aula['hora_inicio'])) . ' às ' . date('H:i', strtotime($aula['hora_fim'])) . '</span><br>';
+                                                        }
+                                                    }
+                                                    ?>
+                                                </td>
+                                            <?php endforeach; ?>
                                         </tr>
-                                        <tr>
-                                            <td style="padding: 8px; border: 1px solid #E2E8F0; background: #cbd5e1; text-align: center; color: #fff; font-weight: bold;">14:00<br>17:59</td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;"><i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>Comunicação Empresarial<br>02/02/2026 - 18/06/2026</td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;"><i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>Prática Profissional<br>02/02/2026 - 18/06/2026</td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 8px; border: 1px solid #E2E8F0; background: #cbd5e1; text-align: center; color: #fff; font-weight: bold;">19:00<br>22:59</td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;"><i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>Segurança do Trabalho<br>02/02/2026 - 18/06/2026</td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                            <td style="border: 1px solid #E2E8F0;"></td>
-                                        </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -645,36 +740,20 @@ foreach ($faturas as $fat) {
                             <div style="margin-bottom: 2rem;">
                                 <div style="font-weight: bold; color: #0ea5e9; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Disciplinas em Curso</div>
                                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
-                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid #0ea5e9;">
-                                        <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;">Introdução à Administração</div>
+                                    <?php 
+                                    $colors = ['#0ea5e9', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899'];
+                                    $ci = 0;
+                                    foreach ($horariosDb as $h): 
+                                        $color = $colors[$ci % count($colors)]; $ci++;
+                                    ?>
+                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid <?= $color ?>;">
+                                        <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;"><?= htmlspecialchars($h['disciplina_nome']) ?></div>
                                         <div style="font-size: 0.8rem; color: #64748B; display: flex; align-items: center; gap: 4px;">
-                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Segunda: 08:00 às 11:59
+                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> <?= $h['dia_semana'] ?>: <?= date('H:i', strtotime($h['hora_inicio'])) ?> às <?= date('H:i', strtotime($h['hora_fim'])) ?>
                                         </div>
                                     </div>
-                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid #10b981;">
-                                        <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;">Comunicação Empresarial</div>
-                                        <div style="font-size: 0.8rem; color: #64748B; display: flex; align-items: center; gap: 4px;">
-                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Terça: 14:00 às 17:59
-                                        </div>
-                                    </div>
-                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid #8b5cf6;">
-                                        <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;">Informática Básica</div>
-                                        <div style="font-size: 0.8rem; color: #64748B; display: flex; align-items: center; gap: 4px;">
-                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Quarta: 08:00 às 11:59
-                                        </div>
-                                    </div>
-                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid #f59e0b;">
-                                        <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;">Segurança do Trabalho</div>
-                                        <div style="font-size: 0.8rem; color: #64748B; display: flex; align-items: center; gap: 4px;">
-                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Quinta: 19:00 às 22:59
-                                        </div>
-                                    </div>
-                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid #ef4444;">
-                                        <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;">Prática Profissional</div>
-                                        <div style="font-size: 0.8rem; color: #64748B; display: flex; align-items: center; gap: 4px;">
-                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Sexta: 14:00 às 17:59
-                                        </div>
-                                    </div>
+                                    <?php endforeach; ?>
+                                    <?php if(empty($horariosDb)) echo "<div style='color:#94A3B8; font-size: 0.9rem;'>Nenhum horário cadastrado para a sua turma.</div>"; ?>
                                 </div>
                             </div>
 
@@ -697,7 +776,7 @@ foreach ($faturas as $fat) {
                         <div class="inst-card">
                             <div class="inst-card-header" style="display: flex; justify-content: space-between; align-items: center;">
                                 <div><i data-lucide="file-text" class="inst-icon"></i> Grade Curricular Cumprida</div>
-                                <a href="?export=pdf" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #0ea5e9; font-weight: 600; text-decoration: none; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; background: #f0f9ff; transition: all 0.2s; cursor: pointer;">
+                                <a href="../reports/historico_print.php?aluno_id=<?= $aluno['id'] ?>" target="_blank" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #0ea5e9; font-weight: 600; text-decoration: none; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; background: #f0f9ff; transition: all 0.2s; cursor: pointer;">
                                     <i data-lucide="download" style="width: 14px; height: 14px;"></i> Baixar PDF
                                 </a>
                             </div>
@@ -713,21 +792,33 @@ foreach ($faturas as $fat) {
                                 <tbody>
                                     <tr>
                                         <td style="font-weight: 500; color: var(--c-text-muted);">2025/2</td>
-                                        <td class="td-primary">Segurança do Trabalho</td>
-                                        <td style="text-align:center; font-weight: 500;">40h</td>
-                                        <td style="text-align:center;"><span class="inst-status status-ok">Concluído</span></td>
+                                        <td class="td-primary" style="font-weight: 600;">Segurança do Trabalho e EPIs</td>
+                                        <td style="text-align:center; font-weight: 500; color: var(--c-text-muted);">40h</td>
+                                        <td style="text-align:center;"><span class="inst-status status-ok" style="background: #ECFDF5; color: #059669; padding: 4px 10px; border-radius: 20px; font-weight: 700;">Concluído</span></td>
                                     </tr>
                                     <tr>
                                         <td style="font-weight: 500; color: var(--c-text-muted);">2025/2</td>
-                                        <td class="td-primary">Desenho Técnico</td>
-                                        <td style="text-align:center; font-weight: 500;">60h</td>
-                                        <td style="text-align:center;"><span class="inst-status status-ok">Concluído</span></td>
+                                        <td class="td-primary" style="font-weight: 600;">Desenho Técnico Mecânico</td>
+                                        <td style="text-align:center; font-weight: 500; color: var(--c-text-muted);">60h</td>
+                                        <td style="text-align:center;"><span class="inst-status status-ok" style="background: #ECFDF5; color: #059669; padding: 4px 10px; border-radius: 20px; font-weight: 700;">Concluído</span></td>
                                     </tr>
                                     <tr>
                                         <td style="font-weight: 500; color: var(--c-text-muted);">2026/1</td>
-                                        <td class="td-primary">Elementos de Máquinas</td>
-                                        <td style="text-align:center; font-weight: 500;">80h</td>
-                                        <td style="text-align:center;"><span class="inst-status status-warn" style="background: #EFF6FF; color: #2563EB;">Cursando</span></td>
+                                        <td class="td-primary" style="font-weight: 600;">Elementos de Máquinas</td>
+                                        <td style="text-align:center; font-weight: 500; color: var(--c-text-muted);">80h</td>
+                                        <td style="text-align:center;"><span class="inst-status" style="background: #EFF6FF; color: #2563EB; padding: 4px 10px; border-radius: 20px; font-weight: 700;">Cursando</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 500; color: var(--c-text-muted);">2026/1</td>
+                                        <td class="td-primary" style="font-weight: 600;">Informática Básica e Office</td>
+                                        <td style="text-align:center; font-weight: 500; color: var(--c-text-muted);">40h</td>
+                                        <td style="text-align:center;"><span class="inst-status" style="background: #EFF6FF; color: #2563EB; padding: 4px 10px; border-radius: 20px; font-weight: 700;">Cursando</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 500; color: var(--c-text-muted);">2026/1</td>
+                                        <td class="td-primary" style="font-weight: 600;">Relações Humanas no Trabalho</td>
+                                        <td style="text-align:center; font-weight: 500; color: var(--c-text-muted);">20h</td>
+                                        <td style="text-align:center;"><span class="inst-status" style="background: #EFF6FF; color: #2563EB; padding: 4px 10px; border-radius: 20px; font-weight: 700;">Cursando</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -758,19 +849,28 @@ foreach ($faturas as $fat) {
                                     <div><i data-lucide="folder-plus" class="inst-icon"></i> Novo Requerimento</div>
                                 </div>
                                 <div style="padding: 1.5rem;">
-                                    <form onsubmit="event.preventDefault(); alert('Sua solicitação foi enviada para a secretaria!'); this.reset();">
+                                    <?php if(isset($_GET['req']) && $_GET['req'] == 'sucesso'): ?>
+                                        <div style="background: #D1FAE5; color: #065F46; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">
+                                            Sua solicitação foi enviada com sucesso! Acompanhe em "Meus Pedidos".
+                                        </div>
+                                        <script>
+                                            setTimeout(() => { switchSecretariaTab('solicitados', document.querySelectorAll('.sec-tab')[1]); }, 2000);
+                                        </script>
+                                    <?php endif; ?>
+                                    <form method="POST" action="portal_aluno.php">
+                                        <input type="hidden" name="action" value="novo_requerimento">
                                         <div style="margin-bottom: 15px;">
                                             <label style="font-size: 0.85rem; font-weight: 500; color: #475569; display: block; margin-bottom: 6px;">Tipo de Solicitação</label>
-                                            <select style="width:100%; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 6px; outline: none; background: #fff; color: #1E293B; font-size: 0.9rem;">
-                                                <option>Declaração de Matrícula</option>
-                                                <option>Atestado de Frequência</option>
-                                                <option>Envio de Folha de Ponto (Empresa)</option>
-                                                <option>Justificativa de Falta (Atestado Médico)</option>
+                                            <select name="tipo_solicitacao" required style="width:100%; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 6px; outline: none; background: #fff; color: #1E293B; font-size: 0.9rem;">
+                                                <option value="Declaração de Matrícula">Declaração de Matrícula</option>
+                                                <option value="Atestado de Frequência">Atestado de Frequência</option>
+                                                <option value="Envio de Folha de Ponto (Empresa)">Envio de Folha de Ponto (Empresa)</option>
+                                                <option value="Justificativa de Falta (Atestado Médico)">Justificativa de Falta (Atestado Médico)</option>
                                             </select>
                                         </div>
                                         <div style="margin-bottom: 15px;">
                                             <label style="font-size: 0.85rem; font-weight: 500; color: #475569; display: block; margin-bottom: 6px;">Observações</label>
-                                            <textarea style="width:100%; height:80px; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 6px; outline: none; resize:none; font-family: inherit; font-size: 0.9rem;" placeholder="Descreva sua solicitação..."></textarea>
+                                            <textarea name="observacoes" style="width:100%; height:80px; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 6px; outline: none; resize:none; font-family: inherit; font-size: 0.9rem;" placeholder="Descreva sua solicitação..."></textarea>
                                         </div>
                                         <button type="submit" style="width:100%; display: flex; align-items: center; justify-content: center; background: #0ea5e9; border: none; padding: 12px; border-radius: 6px; color: #fff; font-weight: 500; cursor: pointer; transition: background 0.2s;">
                                             Enviar Solicitação
@@ -790,19 +890,32 @@ foreach ($faturas as $fat) {
                                     <thead>
                                         <tr>
                                             <th>Protocolo</th>
+                                            <th>Solicitação</th>
                                             <th>Data</th>
                                             <th style="text-align:right;">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="td-primary">#99201</td>
-                                            <td style="color: #64748B;">02/05/2026</td>
-                                            <td style="text-align:right;"><span class="inst-status status-ok">Concluído</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" style="text-align:center; padding: 2rem; color: #94A3B8;">Nenhum outro pedido aberto no momento.</td>
-                                        </tr>
+                                        <?php if (empty($requerimentosDb)): ?>
+                                            <tr>
+                                                <td colspan="4" style="text-align:center; padding: 2rem; color: #94A3B8;">Nenhum pedido aberto no momento.</td>
+                                            </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($requerimentosDb as $req):
+                                                $statusClass = 'status-warn';
+                                                $statusText = 'Pendente';
+                                                if ($req['status'] === 'em_andamento') { $statusClass = 'status-warn'; $statusText = 'Em Andamento'; }
+                                                if ($req['status'] === 'concluido') { $statusClass = 'status-ok'; $statusText = 'Concluído'; }
+                                                if ($req['status'] === 'recusado') { $statusClass = 'status-warn'; $statusText = 'Recusado'; }
+                                            ?>
+                                                <tr>
+                                                    <td class="td-primary">#<?= htmlspecialchars($req['protocolo']) ?></td>
+                                                    <td style="color: #475569;"><?= htmlspecialchars($req['tipo']) ?></td>
+                                                    <td style="color: #64748B;"><?= date('d/m/Y', strtotime($req['data_solicitacao'])) ?></td>
+                                                    <td style="text-align:right;"><span class="inst-status <?= $statusClass ?>"><?= $statusText ?></span></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -819,27 +932,26 @@ foreach ($faturas as $fat) {
                             </div>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; background: #fff; border-left: 4px solid #0ea5e9;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                    <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem;">Abertura das Rematrículas</div>
-                                    <span style="font-size: 0.75rem; color: #64748B;">Há 2 horas</span>
+                            <?php if (empty($avisosDb)): ?>
+                                <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; background: #fff; text-align:center; color: #94A3B8;">
+                                    Nenhum aviso no mural no momento.
                                 </div>
-                                <p style="color: #475569; font-size: 0.9rem; line-height: 1.5;">O período de rematrícula para o próximo semestre começará no dia 15 de Junho. Fique atento aos prazos para não perder sua vaga.</p>
-                            </div>
-                            <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; background: #fff; border-left: 4px solid #10b981;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                    <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem;">Palestra: O Futuro da TI</div>
-                                    <span style="font-size: 0.75rem; color: #64748B;">Ontem</span>
-                                </div>
-                                <p style="color: #475569; font-size: 0.9rem; line-height: 1.5;">Nesta sexta-feira às 19h teremos uma palestra exclusiva no auditório principal com especialistas do mercado de tecnologia. Não perca!</p>
-                            </div>
-                            <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; background: #fff; border-left: 4px solid #ef4444;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                    <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem;">Feriado Municipal</div>
-                                    <span style="font-size: 0.75rem; color: #64748B;">28 de Maio</span>
-                                </div>
-                                <p style="color: #475569; font-size: 0.9rem; line-height: 1.5;">Informamos que não haverá aula na próxima quinta-feira devido ao feriado municipal. As atividades retornarão normalmente na sexta-feira.</p>
-                            </div>
+                            <?php else: ?>
+                                <?php foreach ($avisosDb as $aviso): 
+                                    $bColor = '#0ea5e9'; // info default
+                                    if ($aviso['tipo'] === 'evento') $bColor = '#10b981';
+                                    if ($aviso['tipo'] === 'urgente') $bColor = '#ef4444';
+                                    if ($aviso['tipo'] === 'alerta') $bColor = '#f59e0b';
+                                ?>
+                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; background: #fff; border-left: 4px solid <?= $bColor ?>;">
+                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                            <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem;"><?= htmlspecialchars($aviso['titulo']) ?></div>
+                                            <span style="font-size: 0.75rem; color: #64748B;"><?= date('d/m/Y H:i', strtotime($aviso['data_publicacao'])) ?></span>
+                                        </div>
+                                        <p style="color: #475569; font-size: 0.9rem; line-height: 1.5;"><?= nl2br(htmlspecialchars($aviso['conteudo'])) ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -860,77 +972,72 @@ foreach ($faturas as $fat) {
                         <div id="tab-vagas">
                             <div style="display: flex; gap: 24px; align-items: center; margin-bottom: 24px; font-size: 0.85rem; color: #475569;">
                                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="checkbox" checked style="accent-color: #0ea5e9; width: 16px; height: 16px;"> <span style="font-weight: 500;">Exibir todas as vagas</span>
+                                    <input type="radio" name="filtro_vagas" value="todas" onchange="filtrarOportunidades('todas')" checked style="accent-color: #0ea5e9; width: 16px; height: 16px;"> <span style="font-weight: 500;">Exibir todas as vagas</span>
                                 </label>
                                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="checkbox" style="accent-color: #0ea5e9; width: 16px; height: 16px;"> Vagas disponíveis
+                                    <input type="radio" name="filtro_vagas" value="disponiveis" onchange="filtrarOportunidades('disponiveis')" style="accent-color: #0ea5e9; width: 16px; height: 16px;"> Vagas disponíveis
                                 </label>
                                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="checkbox" style="accent-color: #0ea5e9; width: 16px; height: 16px;"> Vagas inscritas
+                                    <input type="radio" name="filtro_vagas" value="inscritas" onchange="filtrarOportunidades('inscritas')" style="accent-color: #0ea5e9; width: 16px; height: 16px;"> Vagas inscritas
                                 </label>
                             </div>
 
                             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
-                            <div style="border: 1px solid #E2E8F0; border-radius: 8px; background: #fff; overflow: hidden; display: flex; flex-direction: column;">
-                                <div style="padding: 20px; border-bottom: 1px solid #E2E8F0; flex-grow: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                        <div>
-                                            <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem; margin-bottom: 4px;">Estágio em Suporte TI</div>
-                                            <div style="font-size: 0.85rem; color: #64748B;"><i data-lucide="building" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Tech Solutions LTDA</div>
+                                <?php if (empty($vagasDb)): ?>
+                                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #94A3B8; background: #fff; border: 1px solid #E2E8F0; border-radius: 8px;">
+                                        Nenhuma vaga disponível no momento.
+                                    </div>
+                                <?php else: ?>
+                                    <?php if(isset($_GET['cand']) && $_GET['cand'] == 'sucesso'): ?>
+                                        <div style="grid-column: 1 / -1; background: #D1FAE5; color: #065F46; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
+                                            Candidatura realizada com sucesso! Boa sorte!
                                         </div>
-                                        <span style="background: #e0f2fe; color: #0284c7; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;">ESTÁGIO</span>
-                                    </div>
-                                    <div style="font-size: 0.85rem; color: #475569; margin-bottom: 16px; line-height: 1.4;">Atuação em suporte técnico N1, manutenção de computadores e atendimento aos usuários da rede corporativa.</div>
-                                    <div style="display: flex; gap: 12px; font-size: 0.8rem; color: #64748B;">
-                                        <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> Híbrido</div>
-                                        <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="dollar-sign" style="width: 14px; height: 14px;"></i> R$ 1.200,00</div>
-                                    </div>
-                                </div>
-                                <div style="padding: 12px 20px; background: #F8FAFC; display: flex; justify-content: flex-end;">
-                                    <button style="background: #0ea5e9; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500;">Candidatar-se</button>
-                                </div>
-                            </div>
-                            
-                            <div style="border: 1px solid #E2E8F0; border-radius: 8px; background: #fff; overflow: hidden; display: flex; flex-direction: column;">
-                                <div style="padding: 20px; border-bottom: 1px solid #E2E8F0; flex-grow: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                        <div>
-                                            <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem; margin-bottom: 4px;">Auxiliar Administrativo</div>
-                                            <div style="font-size: 0.85rem; color: #64748B;"><i data-lucide="building" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Grupo Alfa</div>
+                                    <?php elseif(isset($_GET['cand']) && $_GET['cand'] == 'erro'): ?>
+                                        <div style="grid-column: 1 / -1; background: #FEE2E2; color: #991B1B; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
+                                            Você já está inscrito nesta vaga.
                                         </div>
-                                        <span style="background: #dcfce7; color: #166534; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;">APRENDIZ</span>
-                                    </div>
-                                    <div style="font-size: 0.85rem; color: #475569; margin-bottom: 16px; line-height: 1.4;">Auxílio em rotinas de departamento pessoal, arquivo de documentos e controle de planilhas.</div>
-                                    <div style="display: flex; gap: 12px; font-size: 0.8rem; color: #64748B;">
-                                        <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> Presencial</div>
-                                        <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="dollar-sign" style="width: 14px; height: 14px;"></i> R$ 800,00</div>
-                                    </div>
-                                </div>
-                                <div style="padding: 12px 20px; background: #F8FAFC; display: flex; justify-content: flex-end;">
-                                    <button style="background: #0ea5e9; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500;">Candidatar-se</button>
-                                </div>
-                            </div>
-                            
-                            <div style="border: 1px solid #E2E8F0; border-radius: 8px; background: #fff; overflow: hidden; display: flex; flex-direction: column;">
-                                <div style="padding: 20px; border-bottom: 1px solid #E2E8F0; flex-grow: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                        <div>
-                                            <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem; margin-bottom: 4px;">Dev Front-end Jr.</div>
-                                            <div style="font-size: 0.85rem; color: #64748B;"><i data-lucide="building" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Inova Web</div>
+                                    <?php endif; ?>
+                                    
+                                    <?php foreach ($vagasDb as $vaga): 
+                                        $empresa = $vaga['empresa_nome_rel'] ?: $vaga['empresa_nome'];
+                                        $inscrito = in_array($vaga['id'], $minhasCandidaturas);
+                                        
+                                        $badgeBg = '#e0f2fe'; $badgeColor = '#0284c7'; $badgeText = 'ESTÁGIO';
+                                        if ($vaga['tipo'] === 'aprendiz') { $badgeBg = '#dcfce7'; $badgeColor = '#166534'; $badgeText = 'APRENDIZ'; }
+                                        if ($vaga['tipo'] === 'emprego') { $badgeBg = '#f3e8ff'; $badgeColor = '#7e22ce'; $badgeText = 'EMPREGO'; }
+                                    ?>
+                                    <div class="vaga-card" data-inscrito="<?= $inscrito ? 'true' : 'false' ?>" style="border: 1px solid <?= $inscrito ? '#A7F3D0' : '#E2E8F0' ?>; border-radius: 8px; background: #fff; overflow: hidden; display: flex; flex-direction: column;">
+                                        <div style="padding: 20px; border-bottom: 1px solid #E2E8F0; flex-grow: 1;">
+                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                                <div>
+                                                    <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem; margin-bottom: 4px;"><?= htmlspecialchars($vaga['titulo']) ?></div>
+                                                    <div style="font-size: 0.85rem; color: #64748B;"><i data-lucide="building" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> <?= htmlspecialchars($empresa) ?></div>
+                                                </div>
+                                                <span style="background: <?= $badgeBg ?>; color: <?= $badgeColor ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;"><?= $badgeText ?></span>
+                                            </div>
+                                            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 16px; line-height: 1.4;"><?= nl2br(htmlspecialchars($vaga['descricao'])) ?></div>
+                                            <div style="display: flex; gap: 12px; font-size: 0.8rem; color: #64748B;">
+                                                <div style="display: flex; align-items: center; gap: 4px; text-transform: capitalize;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> <?= htmlspecialchars($vaga['modalidade']) ?></div>
+                                                <?php if ($vaga['bolsa']): ?>
+                                                <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="dollar-sign" style="width: 14px; height: 14px;"></i> R$ <?= number_format($vaga['bolsa'], 2, ',', '.') ?></div>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
-                                        <span style="background: #f3e8ff; color: #7e22ce; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;">EMPREGO</span>
+                                        <div style="padding: 12px 20px; background: <?= $inscrito ? '#ECFDF5' : '#F8FAFC' ?>; display: flex; justify-content: flex-end;">
+                                            <?php if ($inscrito): ?>
+                                                <span style="color: #10B981; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;"><i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Inscrito</span>
+                                            <?php else: ?>
+                                                <form method="POST" action="portal_aluno.php">
+                                                    <input type="hidden" name="action" value="candidatar">
+                                                    <input type="hidden" name="vaga_id" value="<?= $vaga['id'] ?>">
+                                                    <button type="submit" style="background: #0ea5e9; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='#0ea5e9'">Candidatar-se</button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
-                                    <div style="font-size: 0.85rem; color: #475569; margin-bottom: 16px; line-height: 1.4;">Desenvolvimento de interfaces web com HTML, CSS e JavaScript básico. Vaga para quem acabou de se formar.</div>
-                                    <div style="display: flex; gap: 12px; font-size: 0.8rem; color: #64748B;">
-                                        <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> Remoto</div>
-                                        <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="dollar-sign" style="width: 14px; height: 14px;"></i> R$ 2.500,00</div>
-                                    </div>
-                                </div>
-                                <div style="padding: 12px 20px; background: #F8FAFC; display: flex; justify-content: flex-end;">
-                                    <button style="background: #0ea5e9; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500;">Candidatar-se</button>
-                                </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
-                        </div>
                     </div>
 
                 </main>
@@ -1152,18 +1259,7 @@ foreach ($faturas as $fat) {
                             month: 'mês',
                             week: 'semana'
                         },
-                        events: [
-                            { title: 'Introdução à Administração', start: '2026-06-01T08:00:00' },
-                            { title: 'Comunicação Empresarial', start: '2026-06-02T14:00:00' },
-                            { title: 'Informática Básica', start: '2026-06-03T08:00:00' },
-                            { title: 'Segurança do Trabalho', start: '2026-06-04T19:00:00' },
-                            { title: 'Prática Profissional', start: '2026-06-05T14:00:00' },
-                            { title: 'Introdução à Administração', start: '2026-06-08T08:00:00' },
-                            { title: 'Comunicação Empresarial', start: '2026-06-09T14:00:00' },
-                            { title: 'Informática Básica', start: '2026-06-10T08:00:00' },
-                            { title: 'Segurança do Trabalho', start: '2026-06-11T19:00:00' },
-                            { title: 'Prática Profissional', start: '2026-06-12T14:00:00' }
-                        ],
+                        events: <?= $events_json ?>,
                         eventContent: function(arg) {
                             return {
                                 html: '<div class="custom-fc-event"><strong>Aula:</strong> ' + arg.event.title + '</div>'
