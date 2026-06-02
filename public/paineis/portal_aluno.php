@@ -258,8 +258,10 @@ $events_json = json_encode($events_fc);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=12">
-    <link rel="stylesheet" href="../assets/css/premium.css?v=12">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/premium.css?v=<?= time() ?>">
 
         <style>
             /* Modo Escuro Premium */
@@ -307,6 +309,16 @@ $events_json = json_encode($events_fc);
             body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
                 background: #334155;
             }
+            .notas-tab {
+                background: none;
+                border: none;
+                padding: 10px 20px;
+                color: var(--premium-text-muted);
+                cursor: pointer;
+                font-weight: 500;
+                border-bottom: 2px solid transparent;
+            }
+            .notas-tab.active { color: #0EA5E9; border-bottom-color: #0EA5E9; }
         </style>
 </head>
 
@@ -338,7 +350,7 @@ $events_json = json_encode($events_fc);
             <a href="#" class="nav-link" onclick="showSec('oportunidades',this)"><i data-lucide="briefcase"></i> Oportunidades</a>
             <a href="#" class="nav-link" onclick="showSec('historico',this)"><i data-lucide="file-text"></i> Histórico Escolar</a>
             <a href="#" class="nav-link" onclick="showSec('secretaria',this)"><i data-lucide="folder-open"></i> Secretaria</a>
-                        <a href="ava.php" class="nav-link"><i data-lucide="monitor-play"></i> Acesso ao AVA</a>
+            <a href="../auth/login_ava.php" class="nav-link"><i data-lucide="monitor-play"></i> Acesso ao AVA</a>
             <a href="#" class="nav-link" onclick="toggleDarkMode()"><i data-lucide="moon"></i> Modo Escuro</a>
 
             <div class="sb-footer">
@@ -358,7 +370,7 @@ $events_json = json_encode($events_fc);
                             <i data-lucide="settings"></i>
                         </button>
                         <div id="configDropdown" style="display: none; position: absolute; right: 0; top: 45px; background: white; border: 1px solid #E2E8F0; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 220px; z-index: 1000; overflow: hidden; text-align: left;">
-                            <a href="#" onclick="emBreve(); return false;" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                            <a href="#" onclick="showSec('perfil', document.querySelector('.nav-link')); document.getElementById('configDropdown').style.display='none'; return false;" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
                                 <i data-lucide="user" style="width: 16px; height: 16px;"></i> Meu Perfil
                             </a>
                             <a href="#" onclick="emBreve(); return false;" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
@@ -525,94 +537,162 @@ $events_json = json_encode($events_fc);
                     <!-- ==================== NOTAS ==================== -->
                     <div id="sec-notas" class="sec">
 
-                        <div class="inst-metrics" style="margin-bottom: 1.5rem;">
-                            <div class="metric-box" style="flex: 1;">
-                                <div class="metric-icon" style="background: #EFF6FF; color: #2563EB;"><i data-lucide="bar-chart-2"></i></div>
-                                <div class="metric-data">
-                                    <div class="metric-lbl">Período Letivo</div>
-                                    <div class="metric-val" style="font-size: 1.25rem;">Notas & Frequência</div>
+                        <!-- Top Charts Container -->
+                        <div class="notas-charts-wrapper" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                            <!-- Chart 1 -->
+                            <div class="inst-card">
+                                <div class="inst-card-header borderless" style="padding-bottom: 12px;">
+                                    <div style="font-size: 1.05rem; font-weight: 700; color: #1E293B;">Notas por avaliação</div>
+                                </div>
+                                <div class="notas-filters" style="padding: 0 1.5rem; display: flex; flex-direction: column; gap: 16px;">
+                                    <!-- Premium Select 1 -->
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 0.7rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 2px;">Disciplina</label>
+                                        <div style="position: relative;">
+                                            <select id="filtroDisciplinaChart1" style="width: 100%; appearance: none; -webkit-appearance: none; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 36px 10px 14px; font-size: 0.9rem; font-weight: 600; color: #1E293B; outline: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#CBD5E1'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.04)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)';">
+                                                <option>Automação com python: Projeto integrador</option>
+                                            </select>
+                                            <i data-lucide="chevron-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #64748B; pointer-events: none;"></i>
+                                        </div>
+                                    </div>
+                                    <!-- Premium Select 2 -->
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 0.7rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 2px;">Etapa</label>
+                                        <div style="position: relative;">
+                                            <select id="filtroEtapaChart1" style="width: 100%; appearance: none; -webkit-appearance: none; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 36px 10px 14px; font-size: 0.9rem; font-weight: 600; color: #1E293B; outline: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#CBD5E1'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.04)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)';">
+                                                <option>Média</option>
+                                            </select>
+                                            <i data-lucide="chevron-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #64748B; pointer-events: none;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 1.5rem 1.5rem; height: 280px; position: relative;">
+                                    <canvas id="chartNotasAvaliacao"></canvas>
                                 </div>
                             </div>
-                            <div class="metric-box">
-                                <div class="metric-icon" style="background: #F8FAFC; color: #475569;"><i data-lucide="target"></i></div>
-                                <div class="metric-data">
-                                    <div class="metric-lbl">Média Geral</div>
-                                    <div class="metric-val"><?= $mediaGeral ?></div>
+                            
+                            <!-- Chart 2 -->
+                            <div class="inst-card">
+                                <div class="inst-card-header borderless" style="justify-content: space-between; align-items: center; padding-bottom: 12px;">
+                                    <div style="font-size: 1.05rem; font-weight: 700; color: #1E293B;">Notas por etapa</div>
+                                    <a href="#" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; color: #FFFFFF; text-decoration: none; padding: 8px 14px; background: #FF6B00; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(255, 107, 0, 0.2);" onmouseover="this.style.background='#EA580C'; this.style.boxShadow='0 4px 6px rgba(255, 107, 0, 0.3)';" onmouseout="this.style.background='#FF6B00'; this.style.boxShadow='0 2px 4px rgba(255, 107, 0, 0.2)';">
+                                        Ver Desempenho
+                                        <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                                    </a>
                                 </div>
-                            </div>
-                            <div class="metric-box">
-                                <div class="metric-icon" style="background: #F0FDF4; color: #16A34A;"><i data-lucide="check-circle"></i></div>
-                                <div class="metric-data">
-                                    <div class="metric-lbl">Frequência</div>
-                                    <div class="metric-val"><?= $frequenciaPercentual ?>%</div>
+                                <div class="notas-filters" style="padding: 0 1.5rem; display: flex; flex-direction: column; gap: 16px;">
+                                    <!-- Premium Select 1 -->
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 0.7rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 2px;">Disciplina</label>
+                                        <div style="position: relative;">
+                                            <select id="filtroDisciplinaChart2" style="width: 100%; appearance: none; -webkit-appearance: none; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 36px 10px 14px; font-size: 0.9rem; font-weight: 600; color: #1E293B; outline: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#CBD5E1'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.04)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)';">
+                                                <option>Automação com python: Projeto integrador</option>
+                                            </select>
+                                            <i data-lucide="chevron-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #64748B; pointer-events: none;"></i>
+                                        </div>
+                                    </div>
+                                    <div style="height: 64px;"></div> <!-- Spacer to align with chart 1 -->
+                                </div>
+                                <div style="padding: 1rem 1.5rem 1.5rem; height: 280px; position: relative;">
+                                    <canvas id="chartNotasEtapa"></canvas>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="inst-card">
-                            <div class="inst-card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                                <div><i data-lucide="bar-chart-2" class="inst-icon"></i> Boletim Detalhado</div>
-                                <a href="?export=csv" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #10B981; font-weight: 600; text-decoration: none; border: 1px solid #A7F3D0; padding: 6px 12px; border-radius: 6px; background: #ECFDF5; transition: all 0.2s; cursor: pointer;">
-                                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> Baixar CSV
-                                </a>
-                            </div>
-                            <table class="inst-table">
-                                <thead>
-                                    <tr>
-                                        <th>Disciplina</th>
-                                        <th style="text-align:center;">Faltas</th>
-                                        <th style="text-align:center;">Situação</th>
-                                        <th style="text-align:right; width: 25%;">Média</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($boletim)): ?>
-                                        <tr>
-                                            <td colspan="4" style="text-align:center; padding: 2rem; color: #94A3B8;">Nenhuma disciplina vinculada à sua turma.</td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <?php foreach ($boletim as $discId => $d):
-                                            $media = $d['qtd_notas'] > 0 ? $d['soma_notas'] / $d['qtd_notas'] : null;
+                        <!-- Main Table Section -->
+                        <div class="notas-table-section" style="margin-top: 1.5rem;">
+                            <!-- Controles Modernos -->
+                            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; background: #FFFFFF; padding: 16px 20px; border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="font-weight: 700; color: #1E293B; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                                        <i data-lucide="calendar" style="width: 18px; height: 18px; color: #FF6B00;"></i> Período:
+                                    </div>
+                                    <select style="padding: 8px 16px; border-radius: 8px; border: 1px solid #CBD5E1; font-weight: 600; color: #0F172A; background: #F8FAFC; outline: none; cursor: pointer;">
+                                        <option>2026-1S</option>
+                                    </select>
+                                </div>
 
-                                            if ($media === null) {
-                                                $mediaStr = '—';
-                                                $scoreClass = 'score-bad';
-                                                $pillClass = 'status-warn';
-                                                $status = 'Em andamento';
-                                            } else {
-                                                $mediaStr = number_format($media, 1, '.', '');
-                                                $scoreClass = $media >= 7 ? 'score-good' : 'score-bad';
-                                                $pillClass = $media >= 7 ? 'status-ok' : ($media >= 5 ? 'status-warn' : 'status-warn');
-                                                $status = $media >= 7 ? 'Aprovado' : ($media >= 5 ? 'Recuperação' : 'Reprovado');
-                                            }
-                                        ?>
+                                <!-- Segmented Tabs -->
+                                <div style="display: inline-flex; background: #F1F5F9; padding: 4px; border-radius: 10px; border: 1px solid #E2E8F0;">
+                                    <button class="notas-tab active" onclick="switchNotasTab('etapas', this)" style="padding: 8px 20px; border: none; background: transparent; border-radius: 6px; font-weight: 600; font-size: 0.85rem; color: #64748B; cursor: pointer; transition: all 0.2s;">Visão por Etapas</button>
+                                    <button class="notas-tab" onclick="switchNotasTab('avaliacoes', this)" style="padding: 8px 20px; border: none; background: transparent; border-radius: 6px; font-weight: 600; font-size: 0.85rem; color: #64748B; cursor: pointer; transition: all 0.2s;">Histórico de Avaliações</button>
+                                    <style>
+                                        .notas-tab.active { background: #FFFFFF !important; color: #FF6B00 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                                        .notas-tab:hover:not(.active) { color: #1E293B !important; }
+                                    </style>
+                                </div>
+                            </div>
+
+                            <!-- Tab 1: Notas por Etapas -->
+                            <div id="tab-notas-etapas" class="notas-tab-content active">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                                    <span style="font-size: 0.85rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Filtrar Disciplina:</span>
+                                    <select style="padding: 8px 16px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 0.85rem; font-weight: 600; color: #1E293B; min-width: 200px; outline: none; cursor: pointer;">
+                                        <option>TODAS AS DISCIPLINAS</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="overflow-x: auto; padding-bottom: 10px;">
+                                    <table style="min-width: 800px; width: 100%; border-spacing: 0 10px; border-collapse: separate;">
+                                        <thead>
                                             <tr>
-                                                <td class="td-primary" style="font-weight: 600;"><?= htmlspecialchars($d['nome']) ?></td>
-                                                <td style="text-align:center; color: var(--c-text-muted); font-weight: 500;">
-                                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: <?= $d['faltas'] > 0 ? '#FEF2F2' : '#F8FAFC' ?>; color: <?= $d['faltas'] > 0 ? '#EF4444' : '#64748B' ?>; border-radius: 50%; font-size: 0.8rem;"><?= $d['faltas'] ?></span>
-                                                </td>
-                                                <td style="text-align:center;"><span class="inst-status <?= $pillClass ?>"><?= $status ?></span></td>
-                                                <td style="width: 25%;">
-                                                    <?php if ($media !== null): ?>
-                                                        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
-                                                            <div style="width: 60px; height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden;">
-                                                                <div style="height: 100%; background: <?= $media >= 7 ? '#10B981' : ($media >= 5 ? '#F59E0B' : '#EF4444') ?>; width: <?= min(100, $media * 10) ?>%;"></div>
-                                                            </div>
-                                                            <span class="td-score <?= $scoreClass ?>" style="min-width: 30px; text-align: right;"><?= $mediaStr ?></span>
-                                                        </div>
-                                                    <?php else: ?>
-                                                        <div style="text-align: right;"><span class="td-score score-bad">—</span></div>
-                                                    <?php endif; ?>
-                                                </td>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: left;">Turma</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: left;">Disciplina</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: center;">Situação</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: center;">1ª Média</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: center;">2ª Recup.</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: center;">Média Final</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: right;">Ações</th>
                                             </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($boletim)): ?>
+                                                <tr><td colspan="7" style="text-align:center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #E2E8F0;">Nenhuma disciplina vinculada à sua turma.</td></tr>
+                                            <?php else: ?>
+                                                <?php foreach ($boletim as $discId => $d):
+                                                    $media = $d['qtd_notas'] > 0 ? $d['soma_notas'] / $d['qtd_notas'] : null;
+                                                    $mediaStr = $media !== null ? number_format($media, 2, '.', '') : '—';
+                                                    $status = $media !== null ? ($media >= 7 ? 'Aprovado' : 'Cursando') : 'Cursando';
+                                                    $turmaStr = htmlspecialchars($aluno['turma_nome'] ?? 'TGT03NA');
+                                                    
+                                                    // Estilização dinâmica
+                                                    $statusBg = $status === 'Aprovado' ? '#F0FDF4' : '#EFF6FF';
+                                                    $statusColor = $status === 'Aprovado' ? '#16A34A' : '#2563EB';
+                                                    $statusBorder = $status === 'Aprovado' ? '#BBF7D0' : '#BFDBFE';
+                                                    
+                                                    $valColor = $media !== null ? '#334155' : '#94A3B8';
+                                                    $finalColor = $media !== null ? '#1E293B' : '#94A3B8';
+                                                ?>
+                                                <tr style="background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #E2E8F0; border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 12px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)';">
+                                                    <td style="padding: 16px; font-weight: 600; color: #64748B; font-size: 0.85rem; border-radius: 12px 0 0 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0;"><?= $turmaStr ?></td>
+                                                    <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                                            <div style="width: 32px; height: 32px; border-radius: 8px; background: #EFF6FF; color: #3B82F6; display: flex; align-items: center; justify-content: center;"><i data-lucide="book" style="width: 16px; height: 16px;"></i></div>
+                                                            <span style="font-weight: 700; color: #1E293B; font-size: 0.95rem;"><?= htmlspecialchars($d['nome']) ?></span>
+                                                        </div>
+                                                    </td>
+                                                    <td style="padding: 16px; text-align: center; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                                                        <span style="background: <?= $statusBg ?>; color: <?= $statusColor ?>; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; border: 1px solid <?= $statusBorder ?>;"><?= $status ?></span>
+                                                    </td>
+                                                    <td style="padding: 16px; text-align: center; font-weight: 700; color: <?= $valColor ?>; font-size: 0.95rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;"><?= $mediaStr ?></td>
+                                                    <td style="padding: 16px; text-align: center; font-weight: 700; color: #94A3B8; font-size: 0.95rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">—</td>
+                                                    <td style="padding: 16px; text-align: center; font-weight: 800; color: <?= $finalColor ?>; font-size: 1rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;"><?= $mediaStr ?></td>
+                                                    <td style="padding: 16px; text-align: right; border-radius: 0 12px 12px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0;">
+                                                        <button onclick="abrirModalNotas('<?= addslashes($d['nome']) ?>', <?= $media !== null ? $media : 'null' ?>)" style="background: transparent; border: 1px solid #0EA5E9; color: #0EA5E9; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0EA5E9'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='#0EA5E9';">Ver Notas</button>
+                                                    </td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div id="tab-notas-avaliacoes" class="notas-tab-content" style="display: none; margin-top: 1.5rem;">
+                                <div class="inst-card"><div style="padding: 2rem; text-align: center; color: #64748B;">Nenhuma avaliação avulsa selecionada. Use a aba "Visão por Etapas".</div></div>
+                            </div>
                         </div>
                     </div><!-- /sec-notas -->
-
-
 
                     <!-- ==================== FINANCEIRO ==================== -->
                     <div id="sec-financeiro" class="sec">
@@ -726,132 +806,395 @@ $events_json = json_encode($events_fc);
                     <!-- ==================== MEU PERFIL ==================== -->
                     <div id="sec-perfil" class="sec">
                         <style>
-                            .perfil-hdr { display: flex; align-items: center; gap: 20px; padding: 25px; background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 12px; margin-bottom: 25px; }
-                            .perfil-avatar { width: 80px; height: 80px; background: #E0F2FE; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #0EA5E9; font-weight: bold; }
-                            .perfil-nav { display: flex; gap: 15px; border-bottom: 1px solid var(--premium-border); margin-bottom: 25px; }
-                            .perfil-tab { padding: 10px 20px; font-weight: 500; color: var(--premium-text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
-                            .perfil-tab:hover { color: var(--premium-text); }
+                            /* New premium styles for profile UNIAENE inspiration */
+                            .perfil-page-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+                            .perfil-page-title { font-size: 1.6rem; font-weight: 300; color: #1E293B; letter-spacing: 0.5px; text-transform: uppercase; }
+                            .perfil-badge-status { background: #F1F5F9; color: #64748B; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+                            
+                            .perfil-banner { display: flex; align-items: stretch; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; margin-bottom: 25px; overflow: hidden; }
+                            .perfil-avatar-col { width: 180px; background: #FFFFFF; border-right: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; padding: 20px; }
+                            .perfil-avatar-box { width: 120px; height: 120px; background: #1E293B; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 3rem; font-weight: bold; }
+                            .perfil-info-col { flex: 1; padding: 25px 30px; display: flex; flex-direction: column; justify-content: center; gap: 15px; }
+                            .perfil-info-item { display: flex; flex-direction: column; gap: 2px; }
+                            .perfil-info-lbl { font-size: 0.75rem; color: #0EA5E9; font-weight: 600; }
+                            .perfil-info-val { font-size: 0.9rem; color: #64748B; font-weight: 500; }
+                            
+                            .perfil-tabs { display: flex; gap: 30px; border-bottom: 1px solid #E2E8F0; margin-bottom: 30px; }
+                            .perfil-tab { padding: 10px 0; font-size: 0.9rem; font-weight: 600; color: #94A3B8; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+                            .perfil-tab:hover { color: #64748B; }
                             .perfil-tab.active { color: #0EA5E9; border-bottom-color: #0EA5E9; }
-                            .perfil-section { display: none; animation: fadeIn 0.3s ease; }
-                            .perfil-section.active { display: block; }
-                            .perfil-section-title { font-size: 1.1rem; font-weight: 600; color: var(--premium-text); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--premium-border); }
-                            .perfil-input-group { margin-bottom: 15px; }
-                            .perfil-input-group label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--premium-text-muted); margin-bottom: 6px; }
-                            .perfil-input-wrapper { display: flex; align-items: center; background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 6px; overflow: hidden; transition: all 0.2s; }
-                            .perfil-input-wrapper:focus-within { border-color: #0EA5E9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
-                            .perfil-input-wrapper i { padding: 0 12px; color: var(--premium-text-muted); }
-                            .perfil-input-wrapper input, .perfil-input-wrapper select { flex: 1; border: none; padding: 10px 14px 10px 0; background: transparent; color: var(--premium-text); font-size: 0.9rem; outline: none; }
-                            @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+                            
+                            .perfil-section-block { margin-bottom: 40px; }
+                            .perfil-section-title { font-size: 1rem; font-weight: 700; color: #0EA5E9; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid #E2E8F0; }
+                            
+                            .perfil-readonly-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 15px; }
+                            .perfil-readonly-item { display: flex; flex-direction: column; gap: 6px; }
+                            .perfil-readonly-lbl { font-size: 0.75rem; color: #94A3B8; font-weight: 600; }
+                            .perfil-readonly-val-box { display: flex; align-items: center; border: 1px solid #E2E8F0; border-radius: 4px; padding: 10px 14px; background: #FFFFFF; }
+                            .perfil-readonly-val { flex: 1; font-size: 0.9rem; color: #475569; font-weight: 500; }
+                            .perfil-readonly-icon { width: 28px; height: 28px; background: #0EA5E9; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: background 0.2s; }
+                            .perfil-readonly-icon:hover { background: #0284C7; }
+                            
+                            .perfil-empty-msg { display: flex; align-items: center; gap: 10px; background: #F0F9FF; border: 1px solid #BAE6FD; padding: 12px 16px; border-radius: 6px; color: #0369A1; font-size: 0.85rem; font-weight: 500; }
+                            
+                            .perfil-tab-content { display: none; animation: fadeIn 0.3s ease; }
+                            .perfil-tab-content.active { display: block; }
                         </style>
 
-                        <div class="perfil-hdr">
-                            <div class="perfil-avatar">
-                                <?= strtoupper(substr($aluno['nome'], 0, 1)) ?>
+                        <div class="perfil-page-hdr">
+                            <div class="perfil-page-title"><?= htmlspecialchars($aluno['nome']) ?></div>
+                            <div class="perfil-badge-status"><?= htmlspecialchars($aluno['situacao_aluno'] ?? 'Cursando') ?></div>
+                        </div>
+
+                        <div class="perfil-banner">
+                            <div class="perfil-avatar-col">
+                                <div class="perfil-avatar-box">
+                                    <i data-lucide="user" style="width: 60px; height: 60px; opacity: 0.8;"></i>
+                                </div>
                             </div>
-                            <div>
-                                <h2 style="font-size: 1.4rem; font-weight: 600; color: var(--premium-text); margin: 0 0 5px 0;"><?= htmlspecialchars($aluno['nome']) ?></h2>
-                                <div style="display: flex; gap: 15px; font-size: 0.9rem; color: var(--premium-text-muted);">
-                                    <span style="display: flex; align-items: center; gap: 5px;"><i data-lucide="hash" style="width: 14px;"></i> RA: <?= htmlspecialchars($aluno['id']) ?></span>
-                                    <span style="display: flex; align-items: center; gap: 5px;"><i data-lucide="book-open" style="width: 14px;"></i> <?= htmlspecialchars($aluno['curso_nome'] ?? 'Curso não definido') ?></span>
+                            <div class="perfil-info-col">
+                                <div class="perfil-info-item">
+                                    <div class="perfil-info-lbl">Registro acadêmico</div>
+                                    <div class="perfil-info-val"><?= htmlspecialchars($aluno['ra'] ?? $aluno['id']) ?></div>
+                                </div>
+                                <div class="perfil-info-item">
+                                    <div class="perfil-info-lbl">Curso</div>
+                                    <div class="perfil-info-val"><?= htmlspecialchars($aluno['curso_nome'] ?? 'Não informado') ?></div>
+                                </div>
+                                <div class="perfil-info-item">
+                                    <div class="perfil-info-lbl">Habilitação</div>
+                                    <div class="perfil-info-val"><?= htmlspecialchars($aluno['curso_nome'] ?? 'Não informado') ?></div>
+                                </div>
+                                <div class="perfil-info-item">
+                                    <div class="perfil-info-lbl">Turno</div>
+                                    <div class="perfil-info-val">Noturno</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="perfil-nav">
-                            <div class="perfil-tab active" onclick="switchPerfilTab('dados', this)">Dados Pessoais</div>
-                            <div class="perfil-tab" onclick="switchPerfilTab('endereco', this)">Endereço</div>
-                            <div class="perfil-tab" onclick="switchPerfilTab('documentos', this)">Documentos</div>
-                            <div class="perfil-tab" onclick="switchPerfilTab('seguranca', this)">Segurança</div>
+                        <div class="perfil-tabs">
+                            <div class="perfil-tab active" onclick="switchPerfilMainTab('pessoais', this)">Dados pessoais</div>
+                            <div class="perfil-tab" onclick="switchPerfilMainTab('profissionais', this)">Dados profissionais</div>
+                            <div class="perfil-tab" onclick="switchPerfilMainTab('responsaveis', this)">Responsáveis</div>
+                            <div class="perfil-tab" onclick="switchPerfilMainTab('documentos', this)">Documentos</div>
                         </div>
 
-                        <div id="tab-perfil-dados" class="perfil-section active">
-                            <div class="perfil-section-title">Informações Básicas</div>
-                            <form onsubmit="alert('Dados atualizados com sucesso!'); return false;">
-                                <div class="grid-2">
-                                    <div class="perfil-input-group">
-                                        <label>Nome Completo</label>
-                                        <div class="perfil-input-wrapper"><i data-lucide="user"></i><input type="text" value="<?= htmlspecialchars($aluno['nome']) ?>"></div>
+                        <div id="tab-content-pessoais" class="perfil-tab-content active">
+                            <!-- Identificação -->
+                            <div class="perfil-section-block">
+                                <div class="perfil-section-title">Identificação</div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Data de nascimento:</div>
+                                        <div class="perfil-readonly-val-box" style="border: none; padding: 0; background: transparent;">
+                                            <span class="perfil-readonly-val"><?= htmlspecialchars($aluno['data_nascimento'] ?? '30/11/2006') ?></span>
+                                        </div>
                                     </div>
-                                    <div class="perfil-input-group">
-                                        <label>E-mail</label>
-                                        <div class="perfil-input-wrapper"><i data-lucide="mail"></i><input type="email" value="<?= htmlspecialchars($aluno['email'] ?? '') ?>" disabled style="color: var(--premium-text-muted);"></div>
-                                    </div>
-                                    <div class="perfil-input-group">
-                                        <label>CPF</label>
-                                        <div class="perfil-input-wrapper"><i data-lucide="credit-card"></i><input type="text" value="<?= htmlspecialchars($aluno['cpf'] ?? '') ?>"></div>
-                                    </div>
-                                    <div class="perfil-input-group">
-                                        <label>Telefone / WhatsApp</label>
-                                        <div class="perfil-input-wrapper"><i data-lucide="phone"></i><input type="text" value="<?= htmlspecialchars($aluno['telefone'] ?? '') ?>"></div>
-                                    </div>
-                                    <div class="perfil-input-group">
-                                        <label>Cargo Desejado / Atual</label>
-                                        <div class="perfil-input-wrapper"><i data-lucide="briefcase"></i>
-                                            <select>
-                                                <option value="" disabled selected>Selecione um cargo</option>
-                                                <option value="Jovem Aprendiz">Jovem Aprendiz</option>
-                                                <option value="Estagiário">Estagiário</option>
-                                                <option value="Assistente Administrativo">Assistente Administrativo</option>
-                                                <option value="Auxiliar Técnico">Auxiliar Técnico</option>
-                                            </select>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Naturalidade:</div>
+                                        <div class="perfil-readonly-val-box" style="border: none; padding: 0; background: transparent;">
+                                            <span class="perfil-readonly-val">Não informado</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-                                    <button type="submit" class="inst-btn-primary">Salvar Alterações</button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div id="tab-perfil-endereco" class="perfil-section">
-                            <div class="perfil-section-title">Endereço Residencial</div>
-                            <form onsubmit="alert('Endereço atualizado com sucesso!'); return false;">
-                                <div class="grid-2">
-                                    <div class="perfil-input-group"><label>CEP</label><div class="perfil-input-wrapper"><i data-lucide="map-pin"></i><input type="text" placeholder="00000-000"></div></div>
-                                    <div class="perfil-input-group"><label>Endereço</label><div class="perfil-input-wrapper"><i data-lucide="home"></i><input type="text" placeholder="Rua, Avenida, etc"></div></div>
-                                    <div class="perfil-input-group"><label>Número</label><div class="perfil-input-wrapper"><i data-lucide="hash"></i><input type="text" placeholder="123"></div></div>
-                                    <div class="perfil-input-group"><label>Bairro</label><div class="perfil-input-wrapper"><i data-lucide="map"></i><input type="text"></div></div>
-                                    <div class="perfil-input-group"><label>Estado</label><div class="perfil-input-wrapper"><i data-lucide="map"></i>
-                                            <select>
-                                                <option value="" disabled selected>Selecione</option>
-                                                <option value="SP">São Paulo</option>
-                                                <option value="RJ">Rio de Janeiro</option>
-                                                <option value="MG">Minas Gerais</option>
-                                                <option value="PR">Paraná</option>
-                                                <option value="PA" selected>Pará</option>
-                                            </select>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Estado natal:</div>
+                                        <div class="perfil-readonly-val-box" style="border: none; padding: 0; background: transparent;">
+                                            <span class="perfil-readonly-val">Não informado</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-                                    <button type="submit" class="inst-btn-primary">Salvar Endereço</button>
+                            </div>
+
+                            <!-- Filiação -->
+                            <div class="perfil-section-block">
+                                <div class="perfil-section-title">Filiação</div>
+                                <div class="perfil-empty-msg">
+                                    <i data-lucide="info" style="width: 18px; height: 18px;"></i>
+                                    Nenhum registro encontrado!
                                 </div>
-                            </form>
+                            </div>
+
+                            <!-- Contato -->
+                            <div class="perfil-section-block">
+                                <div class="perfil-section-title">Contato</div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">E-mail</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val"><?= htmlspecialchars($aluno['email'] ?? 'email@exemplo.com') ?></span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Celular</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val"><?= htmlspecialchars($aluno['telefone'] ?? '(00) 00000-0000') ?></span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Comercial</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val"></span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Residencial</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val"></span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Endereço -->
+                            <div class="perfil-section-block">
+                                <div class="perfil-section-title">Endereço</div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">CEP</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val">00000-000</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Logradouro</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val">Rua das Amostras</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div id="tab-perfil-documentos" class="perfil-section">
-                            <div class="perfil-section-title">Meus Documentos</div>
-                            <div style="background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 8px; overflow: hidden;">
-                                <table class="inst-table" style="margin: 0; border: none;">
-                                    <thead><tr><th>Documento</th><th style="text-align: center;">Status</th><th style="text-align: right;">Ação</th></tr></thead>
+                        <div id="tab-content-profissionais" class="perfil-tab-content">
+                            <div class="perfil-section-block">
+                                <div class="perfil-section-title">Dados da Empresa</div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Empresa</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val">Tech Solutions S/A</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Cargo</div>
+                                        <div class="perfil-readonly-val-box">
+                                            <span class="perfil-readonly-val">Jovem Aprendiz</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="perfil-section-block">
+                                <div class="perfil-section-title">Endereço Profissional</div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">CEP</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">00000-000</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Logradouro</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Avenida Paulista</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                </div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Número</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">1000</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Complemento</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Andar 5, Sala 501</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                </div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Bairro</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Bela Vista</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Cidade</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">São Paulo</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                </div>
+                                <div class="perfil-readonly-row">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Estado</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">SP</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Telefone da empresa</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">(11) 4002-8922</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                </div>
+                                <div class="perfil-readonly-row" style="grid-template-columns: 1fr; max-width: 50%;">
+                                    <div class="perfil-readonly-item">
+                                        <div class="perfil-readonly-lbl">Horário de Trabalho</div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">08:00 às 14:00</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; margin-bottom: 20px;">
+                                <button class="inst-btn-primary" style="display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="save" style="width: 16px; height: 16px;"></i> Atualizar informações</button>
+                            </div>
+                        </div>
+                        
+                        <div id="tab-content-responsaveis" class="perfil-tab-content">
+                            <div class="perfil-banner" style="margin-top: 15px; margin-bottom: 25px; background: #FFFFFF; align-items: center; padding: 0;">
+                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border-right: 1px solid #E2E8F0; width: 220px;">
+                                    <div class="perfil-avatar-box" style="width: 80px; height: 80px; background: #F1F5F9; color: #64748B; font-size: 2rem; margin-bottom: 10px; border-radius: 50%;">
+                                        <i data-lucide="user" style="width: 40px; height: 40px;"></i>
+                                    </div>
+                                    <div style="font-weight: 700; color: #1E293B; font-size: 0.9rem; text-align: center; line-height: 1.2;">SAMOEL SILVA DO NASCIMENTO</div>
+                                    <div style="font-size: 0.75rem; color: #64748B; margin-top: 10px;">Parentesco: <span style="color:#1E293B; font-weight: 500;">Outros</span></div>
+                                    <div style="font-size: 0.75rem; color: #64748B; margin-top: 2px;">Status: <span style="color: #10B981; font-weight: 600;">Ativo</span></div>
+                                </div>
+                                <div style="flex: 1; padding: 25px;">
+                                    <div class="perfil-section-title" style="margin-top: 0; padding-top: 0;">Dados do Responsável Financeiro</div>
+                                    <div class="perfil-readonly-row">
+                                        <div class="perfil-readonly-item">
+                                            <div class="perfil-readonly-lbl">E-mail</div>
+                                            <div class="perfil-readonly-val-box">
+                                                <span class="perfil-readonly-val">samoelsilvadonascimento9@gmail.com</span>
+                                                <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                            </div>
+                                        </div>
+                                        <div class="perfil-readonly-item">
+                                            <div class="perfil-readonly-lbl">Telefone</div>
+                                            <div class="perfil-readonly-val-box">
+                                                <span class="perfil-readonly-val">94 99139-3708</span>
+                                                <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="perfil-readonly-row">
+                                        <div class="perfil-readonly-item">
+                                            <div class="perfil-readonly-lbl">Celular</div>
+                                            <div class="perfil-readonly-val-box">
+                                                <span class="perfil-readonly-val"></span>
+                                                <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                            </div>
+                                        </div>
+                                        <div class="perfil-readonly-item">
+                                            <div class="perfil-readonly-lbl">Telefone comercial</div>
+                                            <div class="perfil-readonly-val-box">
+                                                <span class="perfil-readonly-val"></span>
+                                                <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <button class="inst-btn-primary" style="display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="save" style="width: 16px; height: 16px;"></i> Atualizar informações</button>
+                            </div>
+                        </div>
+
+                        <div id="tab-content-documentos" class="perfil-tab-content">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                                <span style="font-size: 1.2rem; color: #1E293B; font-weight: 300;">Documentos:</span>
+                                <div class="perfil-input-wrapper" style="width: 150px; background: #FFFFFF; border-radius: 4px;">
+                                    <select style="font-weight: 600;"><option>2026-1S</option></select>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 20px; margin-bottom: 20px; font-size: 0.8rem; font-weight: 600;">
+                                <div style="display: flex; align-items: center; gap: 6px; color: #F59E0B;"><i data-lucide="alert-circle" style="width: 14px;"></i> Não entregue</div>
+                                <div style="display: flex; align-items: center; gap: 6px; color: #3B82F6;"><i data-lucide="clock" style="width: 14px;"></i> Entregue em validação</div>
+                                <div style="display: flex; align-items: center; gap: 6px; color: #EF4444;"><i data-lucide="x-circle" style="width: 14px;"></i> Recusado</div>
+                                <div style="display: flex; align-items: center; gap: 6px; color: #10B981;"><i data-lucide="check-circle" style="width: 14px;"></i> Validado</div>
+                            </div>
+
+                            <div style="background: var(--premium-surface); border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
+                                <table class="inst-table" style="margin: 0; border: none; font-size: 0.85rem;">
+                                    <thead style="background: #FFFFFF; color: #1E293B;">
+                                        <tr>
+                                            <th style="color: #64748B; font-weight: 600; text-align: center; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #0EA5E9;">Situação</th>
+                                            <th style="color: #64748B; font-weight: 600; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #0EA5E9;">Descrição</th>
+                                            <th style="color: #64748B; font-weight: 600; text-align: center; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #0EA5E9;">Envio</th>
+                                            <th style="color: #64748B; font-weight: 600; text-align: center; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #0EA5E9;">Obrigatório?</th>
+                                            <th style="color: #64748B; font-weight: 600; text-align: center; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #0EA5E9;">Qtd prevista | entregue</th>
+                                            <th style="color: #64748B; font-weight: 600; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #0EA5E9;">Data de entrega</th>
+                                            <th style="color: #64748B; font-weight: 600; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #0EA5E9;">Prazo de entrega</th>
+                                            <th style="color: #64748B; font-weight: 600; border-bottom: 1px solid #0EA5E9;">Motivo de rejeição</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
-                                        <tr><td style="font-weight: 500;">RG / Identidade</td><td style="text-align: center;"><span class="inst-status status-ok">Enviado</span></td><td style="text-align: right;"><a href="#" style="color: #0EA5E9;"><i data-lucide="download" style="width: 14px;"></i></a></td></tr>
-                                        <tr><td style="font-weight: 500;">CPF</td><td style="text-align: center;"><span class="inst-status status-ok">Enviado</span></td><td style="text-align: right;"><a href="#" style="color: #0EA5E9;"><i data-lucide="download" style="width: 14px;"></i></a></td></tr>
+                                        <tr>
+                                            <td style="text-align: center; color: #10B981;"><i data-lucide="check-circle" style="width: 18px; margin: auto;"></i></td>
+                                            <td style="font-weight: 600; color: #0EA5E9; cursor: pointer; text-decoration: underline;">Certificado de Conclusão do Ensino Médio</td>
+                                            <td style="text-align: center;"></td>
+                                            <td style="text-align: center;">Sim</td>
+                                            <td style="text-align: center;">1 | 1</td>
+                                            <td>30/01/2026</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center; color: #10B981;"><i data-lucide="check-circle" style="width: 18px; margin: auto;"></i></td>
+                                            <td style="font-weight: 600; color: #0EA5E9; cursor: pointer; text-decoration: underline;">CPF</td>
+                                            <td style="text-align: center;"></td>
+                                            <td style="text-align: center;">Sim</td>
+                                            <td style="text-align: center;">1 | 1</td>
+                                            <td>04/02/2026</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center; color: #F59E0B;"><i data-lucide="alert-circle" style="width: 18px; margin: auto;"></i></td>
+                                            <td style="font-weight: 600;">RG/CN</td>
+                                            <td style="text-align: center; color: #0EA5E9; cursor: pointer;"><i data-lucide="paperclip" style="width: 16px; margin: auto;"></i></td>
+                                            <td style="text-align: center;">Não</td>
+                                            <td style="text-align: center;">1 | 0</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center; color: #F59E0B;"><i data-lucide="alert-circle" style="width: 18px; margin: auto;"></i></td>
+                                            <td style="font-weight: 600;">Certidão de Nascimento ou Casamento</td>
+                                            <td style="text-align: center; color: #0EA5E9; cursor: pointer;"><i data-lucide="paperclip" style="width: 16px; margin: auto;"></i></td>
+                                            <td style="text-align: center;">Não</td>
+                                            <td style="text-align: center;">1 | 0</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center; color: #F59E0B;"><i data-lucide="alert-circle" style="width: 18px; margin: auto;"></i></td>
+                                            <td style="font-weight: 600;">Certificado de Dispensa Militar</td>
+                                            <td style="text-align: center; color: #0EA5E9; cursor: pointer;"><i data-lucide="paperclip" style="width: 16px; margin: auto;"></i></td>
+                                            <td style="text-align: center;">Não</td>
+                                            <td style="text-align: center;">1 | 0</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
-                        <div id="tab-perfil-seguranca" class="perfil-section">
-                            <div class="perfil-section-title">Alterar Senha</div>
-                            <div style="max-width: 500px;">
-                                <form onsubmit="alert('Senha alterada com sucesso!'); this.reset(); return false;">
-                                    <div class="perfil-input-group"><label>Senha Atual</label><div class="perfil-input-wrapper"><i data-lucide="lock"></i><input type="password" required></div></div>
-                                    <div class="perfil-input-group"><label>Nova Senha</label><div class="perfil-input-wrapper"><i data-lucide="key"></i><input type="password" required></div></div>
-                                    <button type="submit" class="inst-btn-primary" style="margin-top: 15px;">Atualizar Senha</button>
-                                </form>
-                            </div>
-                        </div>
+                        <script>
+                            function switchPerfilMainTab(tabId, element) {
+                                document.querySelectorAll('.perfil-tab').forEach(el => el.classList.remove('active'));
+                                if(element) element.classList.add('active');
+                                document.querySelectorAll('.perfil-tab-content').forEach(el => el.classList.remove('active'));
+                                const target = document.getElementById('tab-content-' + tabId);
+                                if(target) target.classList.add('active');
+                            }
+                        </script>
                     </div><!-- /sec-perfil -->
                     
                     <!-- ==================== HORARIOS ==================== -->
@@ -1541,7 +1884,62 @@ $events_json = json_encode($events_fc);
                 document.getElementById('tab-sec-solicitados').style.display = tab === 'solicitados' ? 'block' : 'none';
             }
         </script>
-        <script src="../assets/js/portal_aluno.js"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="../assets/js/portal_aluno.js?v=<?= time() ?>"></script>
+            <!-- Modal Avaliações (Notas) -->
+        <div id="modalNotas" class="modal-overlay" onclick="fecharModalNotas()">
+            <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 850px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                <div style="background: #FFFFFF; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; border-bottom: 1px solid #E2E8F0;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="background: #FFF0E6; color: #FF6B00; padding: 10px; border-radius: 10px; display: flex;"><i data-lucide="award" style="width: 22px; height: 22px;"></i></div>
+                        <div>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Desempenho na Disciplina</span>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: #1E293B; margin-top: 2px;" id="modalNotasTitle">Disciplina</h3>
+                        </div>
+                    </div>
+                    <button class="modal-close" onclick="fecharModalNotas()" style="background: #F1F5F9; border: none; color: #64748B; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#E2E8F0'; this.style.color='#0F172A';" onmouseout="this.style.background='#F1F5F9'; this.style.color='#64748B';"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+                </div>
+                <div class="comp-body" style="padding: 24px; background: #F8FAFC;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 0.85rem; font-weight: 700; color: #475569;">FILTRAR ETAPA:</span>
+                            <select style="padding: 8px 16px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 0.85rem; font-weight: 600; color: #1E293B; background: #FFFFFF; outline: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                <option>Todas as Etapas</option>
+                            </select>
+                        </div>
+                    </div>
 
+                    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; color: #334155;">
+                                <thead style="position: sticky; top: 0; z-index: 10; background: #FFFFFF;">
+                                    <tr>
+                                        <th style="padding: 16px 20px; text-align: left; font-weight: 700; font-size: 0.75rem; color: #64748B; text-transform: uppercase; border-bottom: 2px solid #E2E8F0;">Etapa</th>
+                                        <th style="padding: 16px 20px; text-align: center; font-weight: 700; font-size: 0.75rem; color: #64748B; text-transform: uppercase; border-bottom: 2px solid #E2E8F0;">Data</th>
+                                        <th style="padding: 16px 20px; text-align: left; font-weight: 700; font-size: 0.75rem; color: #64748B; text-transform: uppercase; border-bottom: 2px solid #E2E8F0;">Avaliação</th>
+                                        <th style="padding: 16px 20px; text-align: center; font-weight: 700; font-size: 0.75rem; color: #64748B; text-transform: uppercase; border-bottom: 2px solid #E2E8F0;">Peso</th>
+                                        <th style="padding: 16px 20px; text-align: center; font-weight: 700; font-size: 0.75rem; color: #64748B; text-transform: uppercase; border-bottom: 2px solid #E2E8F0;">Nota</th>
+                                        <th style="padding: 16px 20px; text-align: center; font-weight: 700; font-size: 0.75rem; color: #64748B; text-transform: uppercase; border-bottom: 2px solid #E2E8F0;">Devolução</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalNotasBody">
+                                    <!-- Conteúdo será injetado via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="comp-footer" style="padding: 20px 24px; background: #FFFFFF; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; border-radius: 0 0 16px 16px;">
+                    <button style="background: #FF6B00; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; border: none; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(255, 107, 0, 0.2);" onmouseover="this.style.background='#D95A00'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#FF6B00'; this.style.transform='translateY(0)';">
+                        Ver Detalhes da Disciplina
+                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.app -->
+
+    <script src="../assets/js/portal_aluno.js?v=12"></script>
+</body>
 </html>
