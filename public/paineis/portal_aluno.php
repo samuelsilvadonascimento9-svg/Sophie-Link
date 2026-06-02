@@ -260,6 +260,54 @@ $events_json = json_encode($events_fc);
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=12">
     <link rel="stylesheet" href="../assets/css/premium.css?v=12">
+
+        <style>
+            /* Modo Escuro Premium */
+            body.dark-mode {
+                --premium-bg: #0F172A;
+                --premium-surface: #1E293B;
+                --premium-border: #334155;
+                --premium-text: #F8FAFC;
+                --premium-text-muted: #94A3B8;
+                --c-bg: #0F172A;
+                --c-surface: #1E293B;
+                --c-text: #F8FAFC;
+                --c-text-muted: #94A3B8;
+                --c-border: #334155;
+            }
+            body.dark-mode .sidebar {
+                background: #1E293B;
+                border-right-color: #334155;
+            }
+            body.dark-mode .inst-card, body.dark-mode .metric-box {
+                background: #1E293B;
+                border-color: #334155;
+            }
+            body.dark-mode .inst-table th {
+                background: #0F172A;
+                color: #F8FAFC;
+                border-bottom-color: #334155;
+            }
+            body.dark-mode .inst-table td {
+                border-bottom-color: #334155;
+            }
+            body.dark-mode .vaga-card {
+                background: #1E293B !important;
+                border-color: #334155 !important;
+            }
+            body.dark-mode .page-hdr {
+                background: #1E293B;
+                border-bottom-color: #334155;
+            }
+            body.dark-mode input, body.dark-mode select {
+                background: #0F172A !important;
+                color: #F8FAFC !important;
+                border-color: #334155 !important;
+            }
+            body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
+                background: #334155;
+            }
+        </style>
 </head>
 
 <body>
@@ -290,7 +338,8 @@ $events_json = json_encode($events_fc);
             <a href="#" class="nav-link" onclick="showSec('oportunidades',this)"><i data-lucide="briefcase"></i> Oportunidades</a>
             <a href="#" class="nav-link" onclick="showSec('historico',this)"><i data-lucide="file-text"></i> Histórico Escolar</a>
             <a href="#" class="nav-link" onclick="showSec('secretaria',this)"><i data-lucide="folder-open"></i> Secretaria</a>
-            <a href="ava.php" class="nav-link"><i data-lucide="monitor-play"></i> Acesso ao AVA</a>
+                        <a href="ava.php" class="nav-link"><i data-lucide="monitor-play"></i> Acesso ao AVA</a>
+            <a href="#" class="nav-link" onclick="toggleDarkMode()"><i data-lucide="moon"></i> Modo Escuro</a>
 
             <div class="sb-footer">
                 <a href="../auth/logout.php"><i data-lucide="log-out"></i> Sair</a>
@@ -418,10 +467,16 @@ $events_json = json_encode($events_fc);
                                         <i data-lucide="credit-card" class="inst-icon"></i> Próxima Mensalidade
                                     </div>
                                     <div class="finance-block">
-                                        <div class="finance-due">Vencimento: <strong>10/05/2026</strong></div>
-                                        <div class="finance-amount">R$ 250,00</div>
-                                        <div class="finance-status"><span class="pill pill-amber">A Vencer</span></div>
-                                        <a href="../reports/boleto_print.php?mes=Maio&valor=250,00" target="_blank" class="inst-btn-primary"><i data-lucide="printer"></i> Imprimir Boleto</a>
+                                        <?php if ($totalPendente > 0): ?>
+                                            <div class="finance-due">Vencimento: <strong><?= $proximoVencimento ? date('d/m/Y', strtotime($proximoVencimento)) : 'Em breve' ?></strong></div>
+                                            <div class="finance-amount">R$ <?= number_format($totalPendente, 2, ',', '.') ?></div>
+                                            <div class="finance-status"><span class="pill pill-amber">A Vencer</span></div>
+                                            <a href="../reports/boleto_print.php?mes=<?= $proximoVencimento ? date('m/Y', strtotime($proximoVencimento)) : 'Atual' ?>&valor=<?= number_format($totalPendente, 2, ',', '.') ?>" target="_blank" class="inst-btn-primary"><i data-lucide="printer"></i> Imprimir Boleto</a>
+                                        <?php else: ?>
+                                            <div class="finance-due">Situação Financeira</div>
+                                            <div class="finance-amount" style="color: #16A34A; font-size: 1.5rem;">Em dia!</div>
+                                            <div class="finance-status"><span class="pill pill-ok">Regular</span></div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -667,6 +722,138 @@ $events_json = json_encode($events_fc);
                         </div>
                     </div><!-- /sec-financeiro -->
 
+                    
+                    <!-- ==================== MEU PERFIL ==================== -->
+                    <div id="sec-perfil" class="sec">
+                        <style>
+                            .perfil-hdr { display: flex; align-items: center; gap: 20px; padding: 25px; background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 12px; margin-bottom: 25px; }
+                            .perfil-avatar { width: 80px; height: 80px; background: #E0F2FE; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #0EA5E9; font-weight: bold; }
+                            .perfil-nav { display: flex; gap: 15px; border-bottom: 1px solid var(--premium-border); margin-bottom: 25px; }
+                            .perfil-tab { padding: 10px 20px; font-weight: 500; color: var(--premium-text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+                            .perfil-tab:hover { color: var(--premium-text); }
+                            .perfil-tab.active { color: #0EA5E9; border-bottom-color: #0EA5E9; }
+                            .perfil-section { display: none; animation: fadeIn 0.3s ease; }
+                            .perfil-section.active { display: block; }
+                            .perfil-section-title { font-size: 1.1rem; font-weight: 600; color: var(--premium-text); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--premium-border); }
+                            .perfil-input-group { margin-bottom: 15px; }
+                            .perfil-input-group label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--premium-text-muted); margin-bottom: 6px; }
+                            .perfil-input-wrapper { display: flex; align-items: center; background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 6px; overflow: hidden; transition: all 0.2s; }
+                            .perfil-input-wrapper:focus-within { border-color: #0EA5E9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+                            .perfil-input-wrapper i { padding: 0 12px; color: var(--premium-text-muted); }
+                            .perfil-input-wrapper input, .perfil-input-wrapper select { flex: 1; border: none; padding: 10px 14px 10px 0; background: transparent; color: var(--premium-text); font-size: 0.9rem; outline: none; }
+                            @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+                        </style>
+
+                        <div class="perfil-hdr">
+                            <div class="perfil-avatar">
+                                <?= strtoupper(substr($aluno['nome'], 0, 1)) ?>
+                            </div>
+                            <div>
+                                <h2 style="font-size: 1.4rem; font-weight: 600; color: var(--premium-text); margin: 0 0 5px 0;"><?= htmlspecialchars($aluno['nome']) ?></h2>
+                                <div style="display: flex; gap: 15px; font-size: 0.9rem; color: var(--premium-text-muted);">
+                                    <span style="display: flex; align-items: center; gap: 5px;"><i data-lucide="hash" style="width: 14px;"></i> RA: <?= htmlspecialchars($aluno['id']) ?></span>
+                                    <span style="display: flex; align-items: center; gap: 5px;"><i data-lucide="book-open" style="width: 14px;"></i> <?= htmlspecialchars($aluno['curso_nome'] ?? 'Curso não definido') ?></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="perfil-nav">
+                            <div class="perfil-tab active" onclick="switchPerfilTab('dados', this)">Dados Pessoais</div>
+                            <div class="perfil-tab" onclick="switchPerfilTab('endereco', this)">Endereço</div>
+                            <div class="perfil-tab" onclick="switchPerfilTab('documentos', this)">Documentos</div>
+                            <div class="perfil-tab" onclick="switchPerfilTab('seguranca', this)">Segurança</div>
+                        </div>
+
+                        <div id="tab-perfil-dados" class="perfil-section active">
+                            <div class="perfil-section-title">Informações Básicas</div>
+                            <form onsubmit="alert('Dados atualizados com sucesso!'); return false;">
+                                <div class="grid-2">
+                                    <div class="perfil-input-group">
+                                        <label>Nome Completo</label>
+                                        <div class="perfil-input-wrapper"><i data-lucide="user"></i><input type="text" value="<?= htmlspecialchars($aluno['nome']) ?>"></div>
+                                    </div>
+                                    <div class="perfil-input-group">
+                                        <label>E-mail</label>
+                                        <div class="perfil-input-wrapper"><i data-lucide="mail"></i><input type="email" value="<?= htmlspecialchars($aluno['email'] ?? '') ?>" disabled style="color: var(--premium-text-muted);"></div>
+                                    </div>
+                                    <div class="perfil-input-group">
+                                        <label>CPF</label>
+                                        <div class="perfil-input-wrapper"><i data-lucide="credit-card"></i><input type="text" value="<?= htmlspecialchars($aluno['cpf'] ?? '') ?>"></div>
+                                    </div>
+                                    <div class="perfil-input-group">
+                                        <label>Telefone / WhatsApp</label>
+                                        <div class="perfil-input-wrapper"><i data-lucide="phone"></i><input type="text" value="<?= htmlspecialchars($aluno['telefone'] ?? '') ?>"></div>
+                                    </div>
+                                    <div class="perfil-input-group">
+                                        <label>Cargo Desejado / Atual</label>
+                                        <div class="perfil-input-wrapper"><i data-lucide="briefcase"></i>
+                                            <select>
+                                                <option value="" disabled selected>Selecione um cargo</option>
+                                                <option value="Jovem Aprendiz">Jovem Aprendiz</option>
+                                                <option value="Estagiário">Estagiário</option>
+                                                <option value="Assistente Administrativo">Assistente Administrativo</option>
+                                                <option value="Auxiliar Técnico">Auxiliar Técnico</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                                    <button type="submit" class="inst-btn-primary">Salvar Alterações</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="tab-perfil-endereco" class="perfil-section">
+                            <div class="perfil-section-title">Endereço Residencial</div>
+                            <form onsubmit="alert('Endereço atualizado com sucesso!'); return false;">
+                                <div class="grid-2">
+                                    <div class="perfil-input-group"><label>CEP</label><div class="perfil-input-wrapper"><i data-lucide="map-pin"></i><input type="text" placeholder="00000-000"></div></div>
+                                    <div class="perfil-input-group"><label>Endereço</label><div class="perfil-input-wrapper"><i data-lucide="home"></i><input type="text" placeholder="Rua, Avenida, etc"></div></div>
+                                    <div class="perfil-input-group"><label>Número</label><div class="perfil-input-wrapper"><i data-lucide="hash"></i><input type="text" placeholder="123"></div></div>
+                                    <div class="perfil-input-group"><label>Bairro</label><div class="perfil-input-wrapper"><i data-lucide="map"></i><input type="text"></div></div>
+                                    <div class="perfil-input-group"><label>Estado</label><div class="perfil-input-wrapper"><i data-lucide="map"></i>
+                                            <select>
+                                                <option value="" disabled selected>Selecione</option>
+                                                <option value="SP">São Paulo</option>
+                                                <option value="RJ">Rio de Janeiro</option>
+                                                <option value="MG">Minas Gerais</option>
+                                                <option value="PR">Paraná</option>
+                                                <option value="PA" selected>Pará</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                                    <button type="submit" class="inst-btn-primary">Salvar Endereço</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="tab-perfil-documentos" class="perfil-section">
+                            <div class="perfil-section-title">Meus Documentos</div>
+                            <div style="background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 8px; overflow: hidden;">
+                                <table class="inst-table" style="margin: 0; border: none;">
+                                    <thead><tr><th>Documento</th><th style="text-align: center;">Status</th><th style="text-align: right;">Ação</th></tr></thead>
+                                    <tbody>
+                                        <tr><td style="font-weight: 500;">RG / Identidade</td><td style="text-align: center;"><span class="inst-status status-ok">Enviado</span></td><td style="text-align: right;"><a href="#" style="color: #0EA5E9;"><i data-lucide="download" style="width: 14px;"></i></a></td></tr>
+                                        <tr><td style="font-weight: 500;">CPF</td><td style="text-align: center;"><span class="inst-status status-ok">Enviado</span></td><td style="text-align: right;"><a href="#" style="color: #0EA5E9;"><i data-lucide="download" style="width: 14px;"></i></a></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="tab-perfil-seguranca" class="perfil-section">
+                            <div class="perfil-section-title">Alterar Senha</div>
+                            <div style="max-width: 500px;">
+                                <form onsubmit="alert('Senha alterada com sucesso!'); this.reset(); return false;">
+                                    <div class="perfil-input-group"><label>Senha Atual</label><div class="perfil-input-wrapper"><i data-lucide="lock"></i><input type="password" required></div></div>
+                                    <div class="perfil-input-group"><label>Nova Senha</label><div class="perfil-input-wrapper"><i data-lucide="key"></i><input type="password" required></div></div>
+                                    <button type="submit" class="inst-btn-primary" style="margin-top: 15px;">Atualizar Senha</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div><!-- /sec-perfil -->
+                    
                     <!-- ==================== HORARIOS ==================== -->
                     <div id="sec-horarios" class="sec">
                         <div class="inst-metrics" style="margin-bottom: 1.5rem;">
@@ -825,56 +1012,65 @@ $events_json = json_encode($events_fc);
                         </div>
                     </div><!-- /sec-historico -->
 
-                    <!-- ==================== SECRETARIA ==================== -->
+                                        <!-- ==================== SECRETARIA ==================== -->
                     <div id="sec-secretaria" class="sec">
-                        <div class="inst-metrics" style="margin-bottom: 1.5rem;">
-                            <div class="metric-box" style="flex: 1;">
-                                <div class="metric-icon" style="background: #EFF6FF; color: #2563EB;"><i data-lucide="folder-open"></i></div>
+                        <div class="inst-metrics" style="margin-bottom: 2rem;">
+                            <div class="metric-box" style="flex: 1; border-left: 4px solid #0EA5E9;">
+                                <div class="metric-icon" style="background: #E0F2FE; color: #0EA5E9;"><i data-lucide="folder-open"></i></div>
                                 <div class="metric-data">
                                     <div class="metric-lbl">Atendimento</div>
-                                    <div class="metric-val" style="font-size: 1.25rem;">Secretaria Online</div>
+                                    <div class="metric-val" style="font-size: 1.4rem;">Secretaria Online</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="finance-tabs" style="border-bottom: 1px solid #E2E8F0; margin-bottom: 1rem;">
-                            <button class="finance-tab sec-tab active" onclick="switchSecretariaTab('disponiveis', this)" style="padding-bottom: 12px; font-weight: 500; font-size: 0.9rem;">Disponíveis</button>
-                            <button class="finance-tab sec-tab" onclick="switchSecretariaTab('solicitados', this)" style="padding-bottom: 12px; font-weight: 500; font-size: 0.9rem;">Solicitados</button>
+                        <div class="perfil-nav" style="margin-bottom: 25px;">
+                            <div class="perfil-tab sec-tab active" onclick="switchSecretariaTab('disponiveis', this)">Novo Requerimento</div>
+                            <div class="perfil-tab sec-tab" onclick="switchSecretariaTab('solicitados', this)">Meus Pedidos</div>
                         </div>
 
                         <!-- ABA DISPONÍVEIS -->
                         <div id="tab-sec-disponiveis">
-                            <div class="inst-card" style="max-width: 600px;">
-                                <div class="inst-card-header">
-                                    <div><i data-lucide="folder-plus" class="inst-icon"></i> Novo Requerimento</div>
+                            <div class="inst-card" style="max-width: 700px; border-top: 4px solid #0EA5E9;">
+                                <div class="inst-card-header" style="border-bottom: 1px solid var(--premium-border);">
+                                    <div><i data-lucide="folder-plus" class="inst-icon"></i> Solicitar Documentos</div>
                                 </div>
-                                <div style="padding: 1.5rem;">
+                                <div style="padding: 2rem;">
                                     <?php if(isset($_GET['req']) && $_GET['req'] == 'sucesso'): ?>
-                                        <div style="background: #D1FAE5; color: #065F46; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">
-                                            Sua solicitação foi enviada com sucesso! Acompanhe em "Meus Pedidos".
+                                        <div style="background: #D1FAE5; border: 1px solid #34D399; color: #065F46; padding: 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
+                                            <i data-lucide="check-circle" style="width: 20px;"></i> Sua solicitação foi enviada com sucesso! Acompanhe em "Meus Pedidos".
                                         </div>
                                         <script>
-                                            setTimeout(() => { switchSecretariaTab('solicitados', document.querySelectorAll('.sec-tab')[1]); }, 2000);
+                                            setTimeout(() => { switchSecretariaTab('solicitados', document.querySelectorAll('.sec-tab')[1]); }, 2500);
                                         </script>
                                     <?php endif; ?>
                                     <form method="POST" action="portal_aluno.php">
                                         <input type="hidden" name="action" value="novo_requerimento">
-                                        <div style="margin-bottom: 15px;">
-                                            <label style="font-size: 0.85rem; font-weight: 500; color: #475569; display: block; margin-bottom: 6px;">Tipo de Solicitação</label>
-                                            <select name="tipo_solicitacao" required style="width:100%; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 6px; outline: none; background: #fff; color: #1E293B; font-size: 0.9rem;">
-                                                <option value="Declaração de Matrícula">Declaração de Matrícula</option>
-                                                <option value="Atestado de Frequência">Atestado de Frequência</option>
-                                                <option value="Envio de Folha de Ponto (Empresa)">Envio de Folha de Ponto (Empresa)</option>
-                                                <option value="Justificativa de Falta (Atestado Médico)">Justificativa de Falta (Atestado Médico)</option>
-                                            </select>
+                                        
+                                        <div class="perfil-input-group" style="margin-bottom: 20px;">
+                                            <label>Tipo de Solicitação</label>
+                                            <div class="perfil-input-wrapper">
+                                                <i data-lucide="file-text"></i>
+                                                <select name="tipo_solicitacao" required style="cursor: pointer;">
+                                                    <option value="" disabled selected>Selecione um documento...</option>
+                                                    <option value="Declaração de Matrícula">Declaração de Matrícula</option>
+                                                    <option value="Atestado de Frequência">Atestado de Frequência</option>
+                                                    <option value="Envio de Folha de Ponto (Empresa)">Envio de Folha de Ponto (Empresa)</option>
+                                                    <option value="Justificativa de Falta (Atestado Médico)">Justificativa de Falta (Atestado Médico)</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div style="margin-bottom: 15px;">
-                                            <label style="font-size: 0.85rem; font-weight: 500; color: #475569; display: block; margin-bottom: 6px;">Observações</label>
-                                            <textarea name="observacoes" style="width:100%; height:80px; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 6px; outline: none; resize:none; font-family: inherit; font-size: 0.9rem;" placeholder="Descreva sua solicitação..."></textarea>
+                                        
+                                        <div class="perfil-input-group" style="margin-bottom: 25px;">
+                                            <label>Observações Adicionais</label>
+                                            <div style="background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 6px; overflow: hidden; padding: 5px;">
+                                                <textarea name="observacoes" style="width:100%; height:100px; border: none; outline: none; background: transparent; color: var(--premium-text); font-family: inherit; font-size: 0.9rem; padding: 10px;" placeholder="Descreva sua solicitação detalhadamente..."></textarea>
+                                            </div>
                                         </div>
-                                        <button type="submit" style="width:100%; display: flex; align-items: center; justify-content: center; background: #0ea5e9; border: none; padding: 12px; border-radius: 6px; color: #fff; font-weight: 500; cursor: pointer; transition: background 0.2s;">
-                                            Enviar Solicitação
-                                        </button>
+                                        
+                                        <div style="display: flex; justify-content: flex-end;">
+                                            <button type="submit" class="inst-btn-primary" style="padding: 12px 24px; font-size: 1rem;"><i data-lucide="send" style="width: 18px; margin-right: 8px;"></i> Enviar Solicitação</button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -884,7 +1080,7 @@ $events_json = json_encode($events_fc);
                         <div id="tab-sec-solicitados" style="display: none;">
                             <div class="inst-card">
                                 <div class="inst-card-header">
-                                    <div><i data-lucide="inbox" class="inst-icon"></i> Meus Pedidos</div>
+                                    <div><i data-lucide="inbox" class="inst-icon"></i> Acompanhamento de Pedidos</div>
                                 </div>
                                 <table class="inst-table">
                                     <thead>
@@ -898,7 +1094,10 @@ $events_json = json_encode($events_fc);
                                     <tbody>
                                         <?php if (empty($requerimentosDb)): ?>
                                             <tr>
-                                                <td colspan="4" style="text-align:center; padding: 2rem; color: #94A3B8;">Nenhum pedido aberto no momento.</td>
+                                                <td colspan="4" style="text-align:center; padding: 3rem; color: var(--premium-text-muted);">
+                                                    <i data-lucide="folder-open" style="width: 40px; height: 40px; margin-bottom: 10px; opacity: 0.5;"></i><br>
+                                                    Nenhum pedido aberto no momento.
+                                                </td>
                                             </tr>
                                         <?php else: ?>
                                             <?php foreach ($requerimentosDb as $req):
@@ -909,9 +1108,9 @@ $events_json = json_encode($events_fc);
                                                 if ($req['status'] === 'recusado') { $statusClass = 'status-warn'; $statusText = 'Recusado'; }
                                             ?>
                                                 <tr>
-                                                    <td class="td-primary">#<?= htmlspecialchars($req['protocolo']) ?></td>
-                                                    <td style="color: #475569;"><?= htmlspecialchars($req['tipo']) ?></td>
-                                                    <td style="color: #64748B;"><?= date('d/m/Y', strtotime($req['data_solicitacao'])) ?></td>
+                                                    <td class="td-primary" style="font-weight: 600;">#<?= htmlspecialchars($req['protocolo']) ?></td>
+                                                    <td style="color: var(--premium-text);"><?= htmlspecialchars($req['tipo']) ?></td>
+                                                    <td style="color: var(--premium-text-muted);"><i data-lucide="calendar" style="width: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> <?= date('d/m/Y', strtotime($req['data_solicitacao'])) ?></td>
                                                     <td style="text-align:right;"><span class="inst-status <?= $statusClass ?>"><?= $statusText ?></span></td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -921,7 +1120,6 @@ $events_json = json_encode($events_fc);
                             </div>
                         </div>
                     </div><!-- /sec-secretaria -->
-
 
                     <!-- ==================== MURAL DE AVISOS ==================== -->
                     <div id="sec-mural" class="sec">
@@ -1038,6 +1236,52 @@ $events_json = json_encode($events_fc);
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
+                        </div> <!-- /tab-vagas -->
+                        
+                        <div id="tab-acompanhamento" style="display: none;">
+                            <div class="inst-card" style="padding: 2rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid var(--premium-border); padding-bottom: 1.5rem;">
+                                    <div>
+                                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--premium-text); margin: 0 0 0.5rem 0;">Meu Contrato Atual</h3>
+                                        <div style="font-size: 0.9rem; color: var(--premium-text-muted);">Acompanhe o andamento das suas atividades na empresa.</div>
+                                    </div>
+                                    <span class="pill pill-ok" style="font-size: 0.8rem; padding: 6px 16px;">Contrato Ativo</span>
+                                </div>
+                                
+                                <div class="grid-2" style="gap: 2rem;">
+                                    <div>
+                                        <div style="margin-bottom: 1.5rem;">
+                                            <label style="font-size: 0.75rem; font-weight: 600; color: var(--premium-text-muted); text-transform: uppercase;">Empresa Concedente</label>
+                                            <div style="font-size: 1rem; font-weight: 500; color: var(--premium-text); margin-top: 4px;"><?= htmlspecialchars($aluno['empresa_nome'] ?? 'Vale S.A.') ?></div>
+                                        </div>
+                                        <div style="margin-bottom: 1.5rem;">
+                                            <label style="font-size: 0.75rem; font-weight: 600; color: var(--premium-text-muted); text-transform: uppercase;">Vigência</label>
+                                            <div style="font-size: 0.9rem; color: var(--premium-text); margin-top: 4px;">01/02/2026 a 31/01/2027</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 8px; padding: 1.5rem;">
+                                        <h4 style="font-size: 0.95rem; font-weight: 600; color: var(--premium-text); margin: 0 0 1rem 0;">Próximas Entregas</h4>
+                                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                                                <div style="width: 12px; height: 12px; background: #0EA5E9; border-radius: 50%; margin-top: 4px;"></div>
+                                                <div>
+                                                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--premium-text);">Relatório Mensal - Maio</div>
+                                                    <div style="font-size: 0.75rem; color: var(--premium-text-muted);">Prazo: 10/06/2026</div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                                                <div style="width: 12px; height: 12px; background: #F59E0B; border-radius: 50%; margin-top: 4px;"></div>
+                                                <div>
+                                                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--premium-text);">Avaliação de Desempenho (Gestor)</div>
+                                                    <div style="font-size: 0.75rem; color: var(--premium-text-muted);">Prazo: 15/07/2026</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- /tab-acompanhamento -->
                     </div>
 
                 </main>
