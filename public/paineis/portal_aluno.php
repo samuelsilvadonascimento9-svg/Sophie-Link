@@ -351,7 +351,6 @@ $events_json = json_encode($events_fc);
             <a href="#" class="nav-link" onclick="showSec('historico',this)"><i data-lucide="file-text"></i> Histórico Escolar</a>
             <a href="#" class="nav-link" onclick="showSec('secretaria',this)"><i data-lucide="folder-open"></i> Secretaria</a>
             <a href="../auth/login_ava.php" class="nav-link"><i data-lucide="monitor-play"></i> Acesso ao AVA</a>
-            <a href="#" class="nav-link" onclick="toggleDarkMode()"><i data-lucide="moon"></i> Modo Escuro</a>
 
             <div class="sb-footer">
                 <a href="../auth/logout.php"><i data-lucide="log-out"></i> Sair</a>
@@ -366,7 +365,7 @@ $events_json = json_encode($events_fc);
                 <div class="topbar-title" id="topbar-title">Portal do Aluno</div>
                 <div class="topbar-right">
                     <div style="position: relative; display: inline-block;">
-                        <button class="topbar-btn" title="Configurações" onclick="document.getElementById('configDropdown').style.display = document.getElementById('configDropdown').style.display === 'block' ? 'none' : 'block'; event.stopPropagation(); setTimeout(() => lucide.createIcons(), 50);">
+                        <button id="btnConfig" class="topbar-btn" title="Configurações">
                             <i data-lucide="settings"></i>
                         </button>
                         <div id="configDropdown" style="display: none; position: absolute; right: 0; top: 45px; background: white; border: 1px solid #E2E8F0; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 220px; z-index: 1000; overflow: hidden; text-align: left;">
@@ -376,7 +375,7 @@ $events_json = json_encode($events_fc);
                             <a href="#" onclick="emBreve(); return false;" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
                                 <i data-lucide="key" style="width: 16px; height: 16px;"></i> Alterar Senha
                             </a>
-                            <a href="#" onclick="emBreve(); return false;" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                            <a href="#" onclick="toggleDarkMode(); return false;" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #1E293B; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <i data-lucide="moon" style="width: 16px; height: 16px;"></i> Modo Escuro
                                 </div>
@@ -1199,13 +1198,10 @@ $events_json = json_encode($events_fc);
                     
                     <!-- ==================== HORARIOS ==================== -->
                     <div id="sec-horarios" class="sec">
-                        <div class="inst-metrics" style="margin-bottom: 1.5rem;">
-                            <div class="metric-box" style="flex: 1;">
-                                <div class="metric-icon" style="background: #FFFBEB; color: #D97706;"><i data-lucide="calendar"></i></div>
-                                <div class="metric-data">
-                                    <div class="metric-lbl">Cronograma</div>
-                                    <div class="metric-val" style="font-size: 1.25rem;">Agenda Acadêmica</div>
-                                </div>
+                        <div class="page-hdr">
+                            <div>
+                                <div class="ph-title">Agenda Acadêmica</div>
+                                <div class="ph-sub">Cronograma de aulas e eventos da sua turma</div>
                             </div>
                         </div>
 
@@ -1293,13 +1289,10 @@ $events_json = json_encode($events_fc);
 
                     <!-- ==================== HISTÓRICO ==================== -->
                     <div id="sec-historico" class="sec">
-                        <div class="inst-metrics" style="margin-bottom: 1.5rem;">
-                            <div class="metric-box" style="flex: 1;">
-                                <div class="metric-icon" style="background: #F8FAFC; color: #475569;"><i data-lucide="file-text"></i></div>
-                                <div class="metric-data">
-                                    <div class="metric-lbl">Documento Oficial</div>
-                                    <div class="metric-val" style="font-size: 1.25rem;">Histórico Escolar</div>
-                                </div>
+                        <div class="page-hdr">
+                            <div>
+                                <div class="ph-title">Histórico Escolar</div>
+                                <div class="ph-sub">Documento oficial de notas e carga horária cumprida</div>
                             </div>
                         </div>
 
@@ -1357,19 +1350,16 @@ $events_json = json_encode($events_fc);
 
                                         <!-- ==================== SECRETARIA ==================== -->
                     <div id="sec-secretaria" class="sec">
-                        <div class="inst-metrics" style="margin-bottom: 2rem;">
-                            <div class="metric-box" style="flex: 1; border-left: 4px solid #0EA5E9;">
-                                <div class="metric-icon" style="background: #E0F2FE; color: #0EA5E9;"><i data-lucide="folder-open"></i></div>
-                                <div class="metric-data">
-                                    <div class="metric-lbl">Atendimento</div>
-                                    <div class="metric-val" style="font-size: 1.4rem;">Secretaria Online</div>
-                                </div>
+                        <div class="page-hdr">
+                            <div>
+                                <div class="ph-title">Secretaria Online</div>
+                                <div class="ph-sub">Atendimento e solicitação de requerimentos institucionais</div>
                             </div>
                         </div>
 
-                        <div class="perfil-nav" style="margin-bottom: 25px;">
-                            <div class="perfil-tab sec-tab active" onclick="switchSecretariaTab('disponiveis', this)">Novo Requerimento</div>
-                            <div class="perfil-tab sec-tab" onclick="switchSecretariaTab('solicitados', this)">Meus Pedidos</div>
+                        <div class="finance-tabs" style="border-bottom: 1px solid #E2E8F0; margin-bottom: 1.5rem;">
+                            <button class="finance-tab sec-tab active" onclick="switchSecretariaTab('disponiveis', this)" style="padding-bottom: 12px; font-weight: 500; font-size: 0.9rem;">Novo Requerimento</button>
+                            <button class="finance-tab sec-tab" onclick="switchSecretariaTab('solicitados', this)" style="padding-bottom: 12px; font-weight: 500; font-size: 0.9rem;">Meus Pedidos</button>
                         </div>
 
                         <!-- ABA DISPONÍVEIS -->
@@ -1854,39 +1844,12 @@ $events_json = json_encode($events_fc);
                         }
                     });
                     calendar.render();
-
                     window.dispatchEvent(new Event('resize'));
                 }
             });
-
-            function switchHorarioTab(tab, btn) {
-                document.querySelectorAll('#tab-quadro ~ .finance-tabs .finance-tab, #sec-horarios .finance-tab').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('tab-quadro').style.display = tab === 'quadro' ? 'block' : 'none';
-                document.getElementById('tab-calendario').style.display = tab === 'calendario' ? 'block' : 'none';
-
-                if (tab === 'calendario') {
-                    setTimeout(() => window.dispatchEvent(new Event('resize')), 10);
-                }
-            }
-
-            function switchOportunidadesTab(tab, btn) {
-                document.querySelectorAll('.op-tab').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('tab-vagas').style.display = tab === 'vagas' ? 'block' : 'none';
-                document.getElementById('tab-acompanhamento').style.display = tab === 'acompanhamento' ? 'block' : 'none';
-            }
-
-            function switchSecretariaTab(tab, btn) {
-                document.querySelectorAll('.sec-tab').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('tab-sec-disponiveis').style.display = tab === 'disponiveis' ? 'block' : 'none';
-                document.getElementById('tab-sec-solicitados').style.display = tab === 'solicitados' ? 'block' : 'none';
-            }
         </script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="../assets/js/portal_aluno.js?v=<?= time() ?>"></script>
-            <!-- Modal Avaliações (Notas) -->
         <div id="modalNotas" class="modal-overlay" onclick="fecharModalNotas()">
             <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 850px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
                 <div style="background: #FFFFFF; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; border-bottom: 1px solid #E2E8F0;">

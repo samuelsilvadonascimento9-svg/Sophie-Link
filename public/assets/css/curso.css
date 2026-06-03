@@ -1,0 +1,775 @@
+/* ================================================================
+   CURSO PAGE — CSS COMPARTILHADO (Sophie Link)
+   ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&family=Caveat:wght@600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --c-primary:    #F97316;
+    --c-dark:       #1F2937;
+    --c-bg:         #FFFFFF;
+    --c-border:     #E5E7EB;
+    --c-text:       #111827;
+    --c-text-2:     #4B5563;
+    --c-text-muted: #6B7280;
+    --font-sans:    'Inter', sans-serif;
+    --font-display: 'Syne', sans-serif;
+    --font-cursive: 'Caveat', cursive;
+    --nav-h:        80px;
+    /* Cada página define --c-course e --c-course-d e --c-course-lt */
+}
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--font-sans); background: var(--c-bg); color: var(--c-text); -webkit-font-smoothing: antialiased; overflow-x: hidden; line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* ================================================================
+   NAVBAR
+   ================================================================ */
+.nav {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+    height: var(--nav-h);
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 3rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    transition: all 0.3s;
+}
+.nav-brand img { height: 42px; object-fit: contain; }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 20px; border-radius: 30px;
+    font-size: 0.9rem; font-weight: 600; color: var(--c-text-2);
+    border: 1px solid var(--c-border);
+    transition: all 0.2s;
+}
+.nav-back:hover { color: var(--c-course); border-color: var(--c-course); background: var(--c-course-lt); }
+.nav-back i { width: 16px; height: 16px; }
+.nav-cta-curso {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 24px; border-radius: 30px;
+    font-size: 0.9rem; font-weight: 700;
+    background: var(--c-course); color: #fff;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--c-course) 40%, transparent);
+}
+.nav-cta-curso:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.nav-cta-curso i { width: 16px; height: 16px; }
+
+/* ================================================================
+   HERO
+   ================================================================ */
+.curso-hero {
+    position: relative;
+    min-height: 100vh;
+    background: var(--c-course);
+    display: flex; align-items: center;
+    overflow: hidden;
+    padding-top: var(--nav-h);
+}
+.curso-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+}
+.hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, transparent 60%);
+    pointer-events: none;
+}
+.hero-layout {
+    position: relative; z-index: 10;
+    max-width: 1200px; margin: 0 auto;
+    padding: 5rem 3rem;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; align-items: center;
+    width: 100%;
+}
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    padding: 6px 16px; border-radius: 30px;
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+.hero-badge i { width: 14px; height: 14px; }
+.curso-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.curso-hero h1 span {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+    padding: 4px 16px;
+    border-radius: 8px;
+    display: inline-block;
+}
+.curso-hero p {
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+.hero-stats-row {
+    display: flex; gap: 2rem; flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+}
+.hero-stat {
+    text-align: center;
+}
+.hero-stat-val {
+    font-family: var(--font-display);
+    font-size: 2rem; font-weight: 800;
+    color: #fff; line-height: 1;
+}
+.hero-stat-lbl {
+    font-size: 0.8rem; color: rgba(255,255,255,0.75);
+    font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-hero-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #fff; color: var(--c-course);
+    padding: 14px 32px; border-radius: 30px;
+    font-weight: 800; font-size: 0.95rem; text-transform: uppercase;
+    transition: all 0.3s;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+.btn-hero-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(0,0,0,0.3); }
+.btn-hero-secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: transparent; color: #fff;
+    padding: 14px 32px; border-radius: 30px;
+    font-weight: 700; font-size: 0.95rem; text-transform: uppercase;
+    border: 2px solid rgba(255,255,255,0.5);
+    transition: all 0.3s;
+}
+.btn-hero-secondary:hover { background: rgba(255,255,255,0.15); border-color: #fff; transform: translateY(-3px); }
+.hero-visual {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    height: 450px;
+}
+
+/* ================================================================
+   SEÇÕES GENÉRICAS
+   ================================================================ */
+.section { padding: 6rem 3rem; }
+.section-alt { background: #F9FAFB; }
+.container { max-width: 1200px; margin: 0 auto; }
+.sec-label {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--c-course);
+    margin-bottom: 0.75rem; display: block;
+}
+.sec-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 800; color: var(--c-text);
+    line-height: 1.2; letter-spacing: -1px;
+    margin-bottom: 1rem;
+}
+.sec-desc {
+    font-size: 1.05rem; color: var(--c-text-muted);
+    max-width: 650px; line-height: 1.7; margin-bottom: 3rem;
+}
+
+/* ================================================================
+   SOBRE O CURSO
+   ================================================================ */
+.sobre-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: start; margin-top: 3rem;
+}
+.sobre-text p {
+    font-size: 1.05rem; color: var(--c-text-2);
+    line-height: 1.8; margin-bottom: 1.5rem;
+}
+.sobre-highlights {
+    display: flex; flex-direction: column; gap: 20px;
+}
+.highlight-item {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: #fff; border: 1px solid var(--c-border);
+    border-radius: 16px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.highlight-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.highlight-icon {
+    width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+    background: var(--c-course-lt); color: var(--c-course);
+    display: flex; align-items: center; justify-content: center;
+}
+.highlight-icon i { width: 24px; height: 24px; }
+.highlight-text h4 { font-size: 1rem; font-weight: 700; color: var(--c-text); margin-bottom: 4px; }
+.highlight-text p { font-size: 0.9rem; color: var(--c-text-muted); line-height: 1.5; }
+
+/* ================================================================
+   GRADE CURRICULAR (ACORDEÃO)
+   ================================================================ */
+.grade-list { display: flex; flex-direction: column; gap: 12px; margin-top: 2rem; }
+.modulo {
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+.modulo:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+.modulo-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+.modulo-header:hover { background: var(--c-course-lt); }
+.modulo-header.open { background: var(--c-course-lt); border-bottom: 2px solid var(--c-course); }
+.modulo-num {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--c-course); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem; margin-right: 16px; flex-shrink: 0;
+}
+.modulo-title { font-weight: 700; color: var(--c-text); font-size: 1rem; flex: 1; }
+.modulo-hrs { font-size: 0.85rem; color: var(--c-text-muted); font-weight: 500; margin-right: 16px; }
+.modulo-chevron { width: 20px; height: 20px; color: var(--c-text-muted); transition: transform 0.3s; }
+.modulo-header.open .modulo-chevron { transform: rotate(180deg); }
+.modulo-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s;
+}
+.modulo-body.open { max-height: 500px; }
+.modulo-body-inner { padding: 20px 24px; padding-left: 76px; }
+.modulo-body ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.modulo-body ul li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.95rem; color: var(--c-text-2);
+}
+.modulo-body ul li::before {
+    content: '';
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--c-course); flex-shrink: 0;
+}
+
+/* ================================================================
+   COMPETÊNCIAS
+   ================================================================ */
+.competencias-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem; margin-top: 2.5rem;
+}
+.competencia-card {
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative; overflow: hidden;
+}
+.competencia-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--c-course);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+}
+.competencia-card:hover { transform: translateY(-5px); box-shadow: 0 12px 35px rgba(0,0,0,0.08); border-color: var(--c-course); }
+.competencia-card:hover::before { transform: scaleX(1); }
+.comp-icon {
+    width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 1.25rem;
+    background: var(--c-course-lt); color: var(--c-course);
+    display: flex; align-items: center; justify-content: center;
+}
+.comp-icon i { width: 32px; height: 32px; }
+.comp-title { font-size: 1rem; font-weight: 700; color: var(--c-text); margin-bottom: 0.5rem; }
+.comp-desc { font-size: 0.875rem; color: var(--c-text-muted); line-height: 1.5; }
+
+/* ================================================================
+   MERCADO DE TRABALHO
+   ================================================================ */
+.mercado-grid {
+    display: grid; grid-template-columns: 1fr 2fr;
+    gap: 3rem; align-items: start; margin-top: 2.5rem;
+}
+.mercado-info { display: flex; flex-direction: column; gap: 20px; }
+.mercado-stat-box {
+    background: var(--c-course);
+    color: #fff; border-radius: 20px;
+    padding: 2rem; text-align: center;
+}
+.mercado-stat-box .val {
+    font-family: var(--font-display); font-size: 2.5rem; font-weight: 800;
+    display: block; line-height: 1; margin-bottom: 6px;
+}
+.mercado-stat-box .lbl { font-size: 0.85rem; opacity: 0.85; font-weight: 500; }
+.cargos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cargo-item {
+    background: #fff; border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 16px;
+    display: flex; align-items: center; gap: 12px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+.cargo-item:hover { border-color: var(--c-course); transform: translateX(4px); }
+.cargo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-course); flex-shrink: 0; }
+.cargo-item span { font-size: 0.9rem; font-weight: 600; color: var(--c-text); }
+
+/* ================================================================
+   DEPOIMENTOS
+   ================================================================ */
+.depoimentos-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem; margin-top: 2.5rem;
+}
+.depoimento-card {
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: 20px; padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.depoimento-card:hover { transform: translateY(-5px); box-shadow: 0 12px 35px rgba(0,0,0,0.08); }
+.dep-quote {
+    font-family: var(--font-display); font-size: 4rem; font-weight: 800;
+    color: var(--c-course); line-height: 0.8; margin-bottom: 1rem; opacity: 0.3;
+}
+.dep-text { font-size: 0.95rem; color: var(--c-text-2); line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; }
+.dep-author { display: flex; align-items: center; gap: 12px; }
+.dep-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--c-course); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem;
+}
+.dep-name { font-weight: 700; color: var(--c-text); font-size: 0.95rem; }
+.dep-role { font-size: 0.8rem; color: var(--c-text-muted); }
+
+/* ================================================================
+   CTA FINAL
+   ================================================================ */
+.cta-section {
+    background: var(--c-course);
+    padding: 6rem 3rem; text-align: center;
+    position: relative; overflow: hidden;
+}
+.cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+.cta-section h2 {
+    position: relative; z-index: 1;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800; color: #fff;
+    text-transform: uppercase; letter-spacing: -1px;
+    margin-bottom: 1rem;
+}
+.cta-section p {
+    position: relative; z-index: 1;
+    font-size: 1.1rem; color: rgba(255,255,255,0.85);
+    margin-bottom: 2.5rem; max-width: 550px; margin-left: auto; margin-right: auto;
+}
+.cta-btns {
+    position: relative; z-index: 1;
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+.footer {
+    background: var(--c-dark); color: #fff;
+    padding: 4rem 3rem 2rem;
+    border-top-left-radius: 60px; border-top-right-radius: 60px;
+    margin-top: 0;
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; }
+.footer-brand { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: #fff; }
+.footer-brand span { color: var(--c-course); }
+.footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+.footer-links a { font-size: 0.9rem; color: #9CA3AF; transition: color 0.2s; }
+.footer-links a:hover { color: var(--c-course); }
+.footer-bottom { max-width: 1200px; margin: 2rem auto 0; padding-top: 1.5rem; border-top: 1px solid #374151; font-size: 0.85rem; color: #6B7280; text-align: center; }
+
+/* ================================================================
+   ANIMAÇÕES COMPARTILHADAS
+   ================================================================ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes dash { to { stroke-dashoffset: 0; } }
+
+.reveal { opacity: 0; transform: translateY(40px); transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1); }
+.reveal.active { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 1024px) {
+    .hero-layout { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .sobre-grid { grid-template-columns: 1fr; }
+    .mercado-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .nav { padding: 0 1.5rem; }
+    .section { padding: 4rem 1.5rem; }
+    .hero-layout { padding: 3rem 1.5rem; }
+    .cta-section { padding: 4rem 1.5rem; }
+    .footer { padding: 3rem 1.5rem 1.5rem; border-radius: 40px 40px 0 0; }
+    .cargos-grid { grid-template-columns: 1fr; }
+}
+
+/* ================================================================
+   NAV SCROLLED STATE
+   ================================================================ */
+.nav-scrolled {
+    background: rgba(255,255,255,0.98) !important;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.10);
+}
+
+/* ================================================================
+   ANIMAÇÃO 1: CIRCUITO ELÉTRICO (Eletromecânica)
+   ================================================================ */
+.circuit-canvas {
+    width: 100%; height: 100%;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.15);
+}
+.circuit-wrap { width: 100%; height: 420px; border-radius: 20px; overflow: hidden; position: relative; }
+
+/* ================================================================
+   ANIMAÇÃO 2: EPI CHECKLIST (Segurança do Trabalho)
+   ================================================================ */
+.epi-board {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%; max-width: 380px;
+}
+.epi-board h3 { color: #fff; font-weight: 800; font-size: 1.1rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+.epi-list { display: flex; flex-direction: column; gap: 10px; }
+.epi-item {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 12px 16px;
+    cursor: pointer; transition: all 0.2s; color: rgba(255,255,255,0.9);
+    font-weight: 500; font-size: 0.9rem;
+    user-select: none;
+}
+.epi-item:hover { background: rgba(255,255,255,0.18); transform: translateX(4px); }
+.epi-item.checked { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.4); }
+.epi-item.checked .epi-label { text-decoration: line-through; opacity: 0.6; }
+.epi-check { width: 20px; height: 20px; flex-shrink: 0; transition: color 0.2s; }
+.epi-item.checked .epi-check { color: #4ade80; }
+.epi-progress { margin-top: 1.25rem; }
+.epi-progress-bar-wrap { background: rgba(255,255,255,0.15); border-radius: 99px; height: 8px; overflow: hidden; margin-top: 8px; }
+.epi-progress-bar { height: 100%; background: #4ade80; border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+.epi-progress-label { color: rgba(255,255,255,0.8); font-size: 0.8rem; font-weight: 600; }
+
+/* ================================================================
+   ANIMAÇÃO 3: PARTÍCULAS GRÁFICO (Administração)
+   ================================================================ */
+.chart-visual {
+    width: 100%; max-width: 380px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px; padding: 2rem;
+}
+.chart-bars { display: flex; align-items: flex-end; gap: 12px; height: 160px; margin-bottom: 1rem; }
+.chart-bar {
+    flex: 1; border-radius: 8px 8px 0 0;
+    background: rgba(255,255,255,0.3);
+    animation: barGrow 1.5s ease-out forwards;
+    transform-origin: bottom;
+}
+@keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.chart-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+.chart-bar:nth-child(2) { height: 65%; animation-delay: 0.2s; }
+.chart-bar:nth-child(3) { height: 85%; animation-delay: 0.3s; }
+.chart-bar:nth-child(4) { height: 55%; animation-delay: 0.4s; }
+.chart-bar:nth-child(5) { height: 95%; animation-delay: 0.5s; }
+.chart-bar:nth-child(6) { height: 70%; animation-delay: 0.6s; }
+.chart-bar:nth-child(1) { background: rgba(255,255,255,0.5); }
+.chart-bar:nth-child(5) { background: rgba(255,255,255,0.9); }
+.chart-kpi-row { display: flex; gap: 12px; }
+.chart-kpi { flex: 1; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; text-align: center; }
+.chart-kpi .kv { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: #fff; }
+.chart-kpi .kl { font-size: 0.7rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ================================================================
+   ANIMAÇÃO 4: CHIP PARTÍCULAS (Eletrônica)
+   ================================================================ */
+.chip-visual {
+    position: relative; width: 320px; height: 320px;
+}
+.chip-core {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 120px; height: 120px; border-radius: 16px;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+}
+.chip-core i { width: 48px; height: 48px; color: #fff; }
+.chip-pin {
+    position: absolute; background: rgba(255,255,255,0.5);
+    border-radius: 2px;
+}
+.chip-pin.h { width: 30px; height: 6px; }
+.chip-pin.v { width: 6px; height: 30px; }
+/* Top pins */
+.chip-pin:nth-child(2)  { top: 80px; left: 105px; }
+.chip-pin:nth-child(3)  { top: 80px; left: 140px; }
+.chip-pin:nth-child(4)  { top: 80px; left: 175px; }
+/* Bottom pins */
+.chip-pin:nth-child(5)  { bottom: 80px; left: 105px; }
+.chip-pin:nth-child(6)  { bottom: 80px; left: 140px; }
+.chip-pin:nth-child(7)  { bottom: 80px; left: 175px; }
+/* Left pins */
+.chip-pin:nth-child(8)  { left: 80px; top: 120px; width: 6px; height: 24px; }
+.chip-pin:nth-child(9)  { left: 80px; top: 155px; width: 6px; height: 24px; }
+/* Right pins */
+.chip-pin:nth-child(10) { right: 80px; top: 120px; width: 6px; height: 24px; }
+.chip-pin:nth-child(11) { right: 80px; top: 155px; width: 6px; height: 24px; }
+.chip-dot {
+    position: absolute; width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.8);
+    animation: chipPulse 2s ease-in-out infinite;
+}
+@keyframes chipPulse {
+    0%,100% { transform: scale(0.6); opacity: 0.3; }
+    50% { transform: scale(1.4); opacity: 1; }
+}
+.chip-dot:nth-child(12) { top: 30px; left: 30px; animation-delay: 0s; }
+.chip-dot:nth-child(13) { top: 30px; right: 30px; animation-delay: 0.3s; }
+.chip-dot:nth-child(14) { bottom: 30px; left: 30px; animation-delay: 0.6s; }
+.chip-dot:nth-child(15) { bottom: 30px; right: 30px; animation-delay: 0.9s; }
+.chip-dot:nth-child(16) { top: 50%; left: 10px; transform: translateY(-50%); animation-delay: 1.2s; }
+.chip-dot:nth-child(17) { top: 50%; right: 10px; transform: translateY(-50%); animation-delay: 1.5s; }
+
+/* ================================================================
+   ANIMAÇÃO 5: GAUGE (Gestão da Qualidade)
+   ================================================================ */
+.gauge-visual {
+    position: relative; width: 300px; height: 220px;
+    display: flex; flex-direction: column; align-items: center;
+}
+.gauge-svg { width: 280px; height: 180px; }
+.gauge-needle-group { transform-origin: 140px 140px; transition: transform 0.5s ease; }
+#gaugeNeedle { transform-origin: center bottom; transition: transform 0.05s linear; }
+.gauge-label { font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #fff; margin-top: -20px; }
+.gauge-sublabel { font-size: 0.8rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px; }
+
+/* ================================================================
+   ANIMAÇÃO 6: MAPA DE ROTAS (Logística)
+   ================================================================ */
+.route-visual {
+    width: 100%; max-width: 400px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px; padding: 1.5rem;
+}
+.route-svg { width: 100%; height: 200px; }
+.route-path {
+    fill: none; stroke: rgba(255,255,255,0.4); stroke-width: 2;
+    stroke-dasharray: 300; stroke-dashoffset: 300;
+    animation: drawRoute 3s ease forwards 0.5s;
+}
+.route-active {
+    fill: none; stroke: #fff; stroke-width: 3;
+    stroke-dasharray: 300; stroke-dashoffset: 300;
+    animation: drawRoute 3s ease forwards 1s;
+}
+@keyframes drawRoute { to { stroke-dashoffset: 0; } }
+.route-dot { animation: pulse 1.5s ease-in-out infinite; }
+.route-truck { animation: moveTruck 3s ease-in-out infinite; }
+@keyframes moveTruck { 0%,100% { transform: translateX(0); } 50% { transform: translateX(40px); } }
+.route-stats { display: flex; gap: 10px; margin-top: 1rem; }
+.route-stat { flex: 1; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 10px; text-align: center; }
+.route-stat .rv { font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: #fff; }
+.route-stat .rl { font-size: 0.7rem; color: rgba(255,255,255,0.7); text-transform: uppercase; }
+
+/* ================================================================
+   ANIMAÇÃO 7: ENGRENAGEM 3D (Mecânica Pesada)
+   ================================================================ */
+.gear-visual {
+    position: relative; width: 320px; height: 320px;
+    display: flex; align-items: center; justify-content: center;
+}
+.gear-svg-big { width: 200px; height: 200px; animation: spin 8s linear infinite; color: rgba(255,255,255,0.8); }
+.gear-svg-sm  { width: 120px; height: 120px; animation: spin 5s linear infinite reverse; color: rgba(255,255,255,0.5); position: absolute; bottom: 30px; right: 20px; }
+
+/* ================================================================
+   ANIMAÇÃO 8: FAÍSCA ELÉTRICA (Elétrica Industrial)
+   ================================================================ */
+.spark-visual {
+    position: relative; width: 320px; height: 320px;
+    display: flex; align-items: center; justify-content: center;
+}
+.spark-bolt {
+    position: absolute; width: 80px; height: 80px;
+    color: #fff; animation: sparkBolt 0.8s ease-in-out infinite;
+}
+@keyframes sparkBolt {
+    0%,100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 20px #fff); }
+    50% { opacity: 0.5; transform: scale(0.85); filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
+}
+.spark-ring {
+    position: absolute; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    animation: sparkRing 1.5s ease-out infinite;
+}
+@keyframes sparkRing {
+    0% { width: 80px; height: 80px; opacity: 1; }
+    100% { width: 300px; height: 300px; opacity: 0; }
+}
+.spark-ring:nth-child(2) { animation-delay: 0s; }
+.spark-ring:nth-child(3) { animation-delay: 0.5s; }
+.spark-ring:nth-child(4) { animation-delay: 1s; }
+.spark-particles { position: absolute; inset: 0; }
+.spark-p {
+    position: absolute; width: 4px; height: 4px; border-radius: 50%;
+    background: #fff;
+    animation: sparkFly 1.2s ease-out infinite;
+}
+@keyframes sparkFly {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+.spark-p:nth-child(1) { top:50%;left:50%; --dx:60px;--dy:-80px; animation-delay:0s; }
+.spark-p:nth-child(2) { top:50%;left:50%; --dx:-70px;--dy:-60px; animation-delay:0.15s; }
+.spark-p:nth-child(3) { top:50%;left:50%; --dx:80px;--dy:50px; animation-delay:0.3s; }
+.spark-p:nth-child(4) { top:50%;left:50%; --dx:-50px;--dy:80px; animation-delay:0.45s; }
+.spark-p:nth-child(5) { top:50%;left:50%; --dx:30px;--dy:-100px; animation-delay:0.6s; }
+.spark-p:nth-child(6) { top:50%;left:50%; --dx:-90px;--dy:30px; animation-delay:0.75s; }
+
+/* ================================================================
+   ANIMAÇÃO 9: TERMINAL (Informática)
+   ================================================================ */
+.terminal-visual {
+    width: 100%; max-width: 420px;
+    background: #0d1117;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.terminal-bar {
+    background: #1c2128;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+}
+.terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+.terminal-dot.red { background: #ff5f57; }
+.terminal-dot.yellow { background: #ffbd2e; }
+.terminal-dot.green { background: #28c840; }
+.terminal-title { color: rgba(255,255,255,0.4); font-size: 0.8rem; font-family: monospace; margin-left: 8px; }
+.terminal-body { padding: 1.25rem; min-height: 200px; font-family: 'Courier New', monospace; font-size: 0.8rem; }
+.term-line { color: #7ee787; line-height: 1.8; white-space: pre-wrap; }
+.term-line::after { content: '▋'; animation: blink 1s step-end infinite; }
+.term-line:not(:last-child)::after { content: ''; animation: none; }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ================================================================
+   ANIMAÇÃO 10: FLUXO DE DOCUMENTOS (Rotinas Adm.)
+   ================================================================ */
+.docs-visual {
+    position: relative; width: 320px; height: 360px;
+}
+.doc-card {
+    position: absolute;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px; padding: 16px;
+    width: 160px;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.75rem;
+}
+.doc-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.doc-card p { opacity: 0.7; font-size: 0.72rem; }
+.doc-line { width: 100%; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 4px 0; }
+.doc-line.short { width: 60%; }
+.doc-card:nth-child(1) { top: 0; left: 0; animation: docFloat1 3s ease-in-out infinite; }
+.doc-card:nth-child(2) { top: 120px; right: 0; animation: docFloat2 3s ease-in-out infinite 0.5s; }
+.doc-card:nth-child(3) { bottom: 0; left: 30px; animation: docFloat1 3s ease-in-out infinite 1s; }
+@keyframes docFloat1 { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(0deg); } }
+@keyframes docFloat2 { 0%,100% { transform: translateY(0) rotate(2deg); } 50% { transform: translateY(-8px) rotate(0deg); } }
+.doc-arrow {
+    position: absolute;
+    color: rgba(255,255,255,0.4);
+    animation: pulse 2s ease-in-out infinite;
+}
+.doc-arrow:nth-child(4) { top: 80px; left: 120px; }
+.doc-arrow:nth-child(5) { top: 220px; left: 80px; }
+
+/* ================================================================
+   ANIMAÇÃO 11: PLANILHA EXCEL
+   ================================================================ */
+.xls-visual {
+    width: 100%; max-width: 380px;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.xls-toolbar {
+    background: #217346; padding: 10px 16px;
+    display: flex; align-items: center; gap: 8px;
+}
+.xls-toolbar-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.4); }
+.xls-toolbar-title { color: rgba(255,255,255,0.9); font-size: 0.8rem; font-weight: 600; margin-left: 6px; }
+.xls-header { display: grid; grid-template-columns: 40px repeat(5, 1fr); background: #f3f3f3; border-bottom: 2px solid #217346; }
+.xls-col-h { padding: 6px; text-align: center; font-size: 0.7rem; font-weight: 700; color: #555; border-right: 1px solid #ddd; }
+.xls-grid { display: flex; flex-direction: column; }
+.xls-row { display: grid; grid-template-columns: 40px repeat(5, 1fr); border-bottom: 1px solid #e8e8e8; }
+.xls-num { padding: 6px; text-align: center; font-size: 0.7rem; color: #888; background: #f9f9f9; border-right: 1px solid #ddd; }
+.xls-cell { padding: 6px 8px; font-size: 0.72rem; color: #1F2937; border-right: 1px solid #eee; transition: background 0.15s, color 0.15s; }
+.xls-cell.active-cell { background: #217346; color: #fff; }
+.xls-cell.num { text-align: right; color: #1a56db; }
+.xls-cell.formula { color: #6b21a8; }
+.xls-cell.bold { font-weight: 700; }
+
+/* ================================================================
+   RESPONSIVE ADICIONAL
+   ================================================================ */
+@media (max-width: 768px) {
+    .terminal-visual, .xls-visual, .route-visual { max-width: 100%; }
+    .chip-visual, .gear-visual, .spark-visual, .docs-visual { width: 260px; height: 260px; }
+    .epi-board, .chart-visual { max-width: 100%; }
+}

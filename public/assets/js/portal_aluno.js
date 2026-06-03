@@ -1,5 +1,19 @@
 lucide.createIcons();
 
+// ==================== NAVEGAÇÃO PRINCIPAL ====================
+
+const sectionTitles = {
+    inicio:       'Portal do Aluno',
+    notas:        'Notas & Frequência',
+    financeiro:   'Financeiro',
+    horarios:     'Agenda Acadêmica',
+    mural:        'Mural de Avisos',
+    oportunidades:'Oportunidades de Carreira',
+    historico:    'Histórico Escolar',
+    secretaria:   'Secretaria Online',
+    perfil:       'Meu Perfil'
+};
+
 function showSec(id, el) {
     event && event.preventDefault();
     document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
@@ -7,11 +21,44 @@ function showSec(id, el) {
     if (sec) sec.classList.add('active');
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     if (el) el.classList.add('active');
-    const titles = { inicio: 'Portal do Aluno', notas: 'Notas & Frequência', financeiro: 'Financeiro' };
+
+    // Atualiza título da topbar
     const tb = document.getElementById('topbar-title');
-    if (tb) tb.textContent = titles[id] || 'Portal do Aluno';
+    if (tb) tb.textContent = sectionTitles[id] || 'Portal do Aluno';
+
+    // Inicializar gráficos ao entrar em Notas
+    if (id === 'notas') {
+        setTimeout(initChartNotas, 100);
+    }
+
+    // Fechar dropdown de configurações se estiver aberto
+    const dd = document.getElementById('configDropdown');
+    if (dd) dd.style.display = 'none';
 }
 
+// ==================== MODO ESCURO ====================
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark ? '1' : '0');
+
+    // Atualizar ícone
+    const moonLinks = document.querySelectorAll('#configDropdown [data-lucide="moon"], #configDropdown [data-lucide="sun"]');
+    moonLinks.forEach(icon => {
+        icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+    });
+    lucide.createIcons();
+}
+
+// Restaurar modo escuro salvo
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('darkMode') === '1') {
+        document.body.classList.add('dark-mode');
+    }
+});
+
+// ==================== FILTRO DE FATURAS ====================
 
 function filtrarFaturas(status, el) {
     if (el) {
@@ -24,62 +71,58 @@ function filtrarFaturas(status, el) {
         if (status === 'todas') {
             linha.style.display = 'flex';
         } else {
-            if (linha.getAttribute('data-status') === status) {
-                linha.style.display = 'flex';
-            } else {
-                linha.style.display = 'none';
-            }
+            linha.style.display = linha.getAttribute('data-status') === status ? 'flex' : 'none';
         }
     });
 }
 
+// ==================== TABS: SECRETARIA ====================
+
 function switchSecretariaTab(tab, el) {
     if (el) {
-        document.querySelectorAll('.finance-tab.sec-tab').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.sec-tab').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
     }
-    
-    document.getElementById('tab-pedidos').style.display = 'none';
-    document.getElementById('tab-novo').style.display = 'none';
-    
-    document.getElementById('tab-' + tab).style.display = 'block';
+
+    const disponiveis = document.getElementById('tab-sec-disponiveis');
+    const solicitados  = document.getElementById('tab-sec-solicitados');
+    if (disponiveis) disponiveis.style.display = tab === 'disponiveis' ? 'block' : 'none';
+    if (solicitados)  solicitados.style.display  = tab === 'solicitados'  ? 'block' : 'none';
 }
+
+// ==================== TABS: HORÁRIOS ====================
 
 function switchHorarioTab(tab, el) {
     if (el) {
         document.querySelectorAll('#sec-horarios .finance-tab').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
     }
-    
-    document.getElementById('tab-quadro').style.display = 'none';
-    document.getElementById('tab-calendario').style.display = 'none';
-    
-    document.getElementById('tab-' + tab).style.display = 'block';
-    
-    // Se for o calendário, disparar resize event para forçar o FullCalendar a renderizar corretamente na div oculta
+
+    const quadro    = document.getElementById('tab-quadro');
+    const calendar  = document.getElementById('tab-calendario');
+    if (quadro)   quadro.style.display   = tab === 'quadro'     ? 'block' : 'none';
+    if (calendar) calendar.style.display = tab === 'calendario' ? 'block' : 'none';
+
     if (tab === 'calendario') {
-        window.dispatchEvent(new Event('resize'));
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
     }
 }
+
+// ==================== TABS: OPORTUNIDADES ====================
 
 function switchOportunidadesTab(tab, el) {
     if (el) {
         document.querySelectorAll('#sec-oportunidades .op-tab').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
     }
-    
-    document.getElementById('tab-vagas').style.display = 'none';
-    // Se existir a tab acompanhamento (atualmente não tem div real com conteúdo, mas deixo pronto)
+
+    const vagas          = document.getElementById('tab-vagas');
     const acompanhamento = document.getElementById('tab-acompanhamento');
-    if (acompanhamento) acompanhamento.style.display = 'none';
-    
-    const target = document.getElementById('tab-' + tab);
-    if (target) target.style.display = 'block';
+    if (vagas)          vagas.style.display          = tab === 'vagas'          ? 'block' : 'none';
+    if (acompanhamento) acompanhamento.style.display = tab === 'acompanhamento' ? 'block' : 'none';
 }
 
-function emBreve() {
-    alert("Esta funcionalidade ainda está em desenvolvimento e será lançada em breve!");
-}
+// ==================== FILTRO DE OPORTUNIDADES ====================
 
 function filtrarOportunidades(tipo) {
     const vagas = document.querySelectorAll('.vaga-card');
@@ -95,45 +138,41 @@ function filtrarOportunidades(tipo) {
     });
 }
 
-// ==================== LÓGICA DE NOTAS E FREQUÊNCIA ====================
+// ==================== PLACEHOLDER ====================
+
+function emBreve() {
+    alert('Esta funcionalidade estará disponível em breve!');
+}
+
+// ==================== NOTAS: GRÁFICOS ====================
 
 let chartAvaliacaoInst = null;
-let chartEtapaInst = null;
+let chartEtapaInst     = null;
 
 function initChartNotas() {
     const ctxAv = document.getElementById('chartNotasAvaliacao');
     const ctxEt = document.getElementById('chartNotasEtapa');
-    
     if (!ctxAv || !ctxEt) return;
 
     if (chartAvaliacaoInst) chartAvaliacaoInst.destroy();
-    if (chartEtapaInst) chartEtapaInst.destroy();
+    if (chartEtapaInst)     chartEtapaInst.destroy();
 
-    // Paleta exclusiva Sophie Link
-    const colorAluno = '#0EA5E9'; // Sky Blue
-    const colorMedia = '#FF6B00'; // Brand Orange
+    const colorAluno  = '#0EA5E9';
+    const colorMedia  = '#FF6B00';
     const radiusCustom = 6;
 
-    // Chart 1: Notas por avaliação
+    // Lê dados reais injetados pelo PHP (fallback para mock)
+    const labelsAv = window.notasLabels  || ['AVALIAÇÃO GERAL', 'CERTIFICADO', 'TRABALHOS', 'TRABALHO FINAL'];
+    const valuesAv = window.notasValues  || [2.48, 2.00, 0.80, 3.00];
+    const mediaAv  = window.mediaTurmaAv || [1.71, 1.85, 1.45, 2.78];
+
     chartAvaliacaoInst = new Chart(ctxAv, {
         type: 'bar',
         data: {
-            labels: ['AVALIACAO GERAL', 'CERTIFICADO DE PYTHON', 'TRABALHOS EM SALA', 'TRABALHO FINAL'],
+            labels: labelsAv,
             datasets: [
-                {
-                    label: 'Aluno',
-                    data: [2.48, 2.00, 0.80, 3.00],
-                    backgroundColor: colorAluno,
-                    borderRadius: radiusCustom,
-                    maxBarThickness: 40
-                },
-                {
-                    label: 'Média da turma',
-                    data: [1.71, 1.85, 1.45, 2.78],
-                    backgroundColor: colorMedia,
-                    borderRadius: radiusCustom,
-                    maxBarThickness: 40
-                }
+                { label: 'Aluno',           data: valuesAv, backgroundColor: colorAluno, borderRadius: radiusCustom, maxBarThickness: 40 },
+                { label: 'Média da turma',  data: mediaAv,  backgroundColor: colorMedia, borderRadius: radiusCustom, maxBarThickness: 40 }
             ]
         },
         options: {
@@ -143,32 +182,19 @@ function initChartNotas() {
                 legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 10, padding: 20, font: { family: "'Inter', sans-serif", size: 12 } } }
             },
             scales: {
-                y: { beginAtZero: true, max: 3.5, grid: { borderDash: [5, 5], color: '#E2E8F0' } },
+                y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#E2E8F0' } },
                 x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif", size: 10, weight: '500' } } }
             }
         }
     });
 
-    // Chart 2: Notas por etapa
     chartEtapaInst = new Chart(ctxEt, {
         type: 'bar',
         data: {
             labels: ['Média', 'Recuperação', 'Média Final'],
             datasets: [
-                {
-                    label: 'Média da turma',
-                    data: [7.89, 7.89, 7.89],
-                    backgroundColor: colorMedia,
-                    borderRadius: radiusCustom,
-                    maxBarThickness: 40
-                },
-                {
-                    label: 'Aluno',
-                    data: [8.5, 8.5, 8.5],
-                    backgroundColor: colorAluno,
-                    borderRadius: radiusCustom,
-                    maxBarThickness: 40
-                }
+                { label: 'Média da turma', data: [7.89, 7.89, 7.89], backgroundColor: colorMedia, borderRadius: radiusCustom, maxBarThickness: 40 },
+                { label: 'Aluno',          data: [8.50, 8.50, 8.50], backgroundColor: colorAluno, borderRadius: radiusCustom, maxBarThickness: 40 }
             ]
         },
         options: {
@@ -185,56 +211,52 @@ function initChartNotas() {
     });
 }
 
+// ==================== NOTAS: TABS (ETAPAS / AVALIAÇÕES) ====================
+
 function switchNotasTab(tab, el) {
     if (el) {
         document.querySelectorAll('.notas-tab').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
     }
-    
     document.querySelectorAll('.notas-tab-content').forEach(c => c.style.display = 'none');
     const target = document.getElementById('tab-notas-' + tab);
     if (target) target.style.display = 'block';
 }
 
+// ==================== MODAL DE NOTAS DETALHADO ====================
+
 function abrirModalNotas(disciplinaNome, media) {
     const modal = document.getElementById('modalNotas');
     if (!modal) return;
-    
-    document.getElementById('modalNotasTitle').textContent = disciplinaNome + ': Projeto integrador';
-    
+
+    document.getElementById('modalNotasTitle').textContent = disciplinaNome + ': Detalhes';
+
     const tbody = document.getElementById('modalNotasBody');
     tbody.innerHTML = '';
-    
+
     const dadosMocks = [
-        { etapa: 'Média', dataAvaliacao: '28/04/2026', avaliacao: 'AVALIACAO GERAL', valor: '3,00', nota: '2,48', dataDevolucao: '' },
-        { etapa: 'Média', dataAvaliacao: '', avaliacao: 'CERTIFICADO DE PYTHON', valor: '2,00', nota: '2,00', dataDevolucao: '' },
-        { etapa: 'Média', dataAvaliacao: '', avaliacao: 'TRABALHOS EM SALA', valor: '2,00', nota: '0,80', notaBaixa: true, dataDevolucao: '' },
-        { etapa: 'Média', dataAvaliacao: '', avaliacao: 'TRABALHO FINAL', valor: '3,00', nota: '3,00', dataDevolucao: '' }
+        { etapa: 'Média', dataAvaliacao: '28/04/2026', avaliacao: 'AVALIAÇÃO GERAL', valor: '3,00', nota: '2,48', notaBaixa: false, dataDevolucao: '' },
+        { etapa: 'Média', dataAvaliacao: '',            avaliacao: 'CERTIFICADO',     valor: '2,00', nota: '2,00', notaBaixa: false, dataDevolucao: '' },
+        { etapa: 'Média', dataAvaliacao: '',            avaliacao: 'TRABALHOS',        valor: '2,00', nota: '0,80', notaBaixa: true,  dataDevolucao: '' },
+        { etapa: 'Média', dataAvaliacao: '',            avaliacao: 'TRABALHO FINAL',   valor: '3,00', nota: '3,00', notaBaixa: false, dataDevolucao: '' }
     ];
-    
+
     dadosMocks.forEach(d => {
-        const isNotaBaixa = d.notaBaixa;
-        const bgRow = '#FFFFFF';
-        
-        let notaBadge = '';
-        if (isNotaBaixa) {
-            notaBadge = `<span style="background: #FEF2F2; color: #DC2626; padding: 4px 10px; border-radius: 6px; font-weight: 700; border: 1px solid #FECACA;">${d.nota}</span>`;
-        } else {
-            notaBadge = `<span style="background: #F0FDF4; color: #16A34A; padding: 4px 10px; border-radius: 6px; font-weight: 700; border: 1px solid #BBF7D0;">${d.nota}</span>`;
-        }
+        const notaBadge = d.notaBaixa
+            ? `<span style="background:#FEF2F2;color:#DC2626;padding:4px 10px;border-radius:6px;font-weight:700;border:1px solid #FECACA;">${d.nota}</span>`
+            : `<span style="background:#F0FDF4;color:#16A34A;padding:4px 10px;border-radius:6px;font-weight:700;border:1px solid #BBF7D0;">${d.nota}</span>`;
 
         const tr = document.createElement('tr');
-        tr.style.cssText = `background: ${bgRow}; border-bottom: 1px solid #E2E8F0; transition: background 0.2s;`;
+        tr.style.cssText = 'background:#FFFFFF;border-bottom:1px solid #E2E8F0;transition:background 0.2s;';
         tr.onmouseover = () => tr.style.background = '#F8FAFC';
-        tr.onmouseout = () => tr.style.background = bgRow;
-        
+        tr.onmouseout  = () => tr.style.background = '#FFFFFF';
         tr.innerHTML = `
-            <td style="padding: 16px 20px; font-weight: 600; color: #475569;">${d.etapa}</td>
-            <td style="padding: 16px 20px; text-align: center; color: #64748B; font-weight: 500;">${d.dataAvaliacao || '-'}</td>
-            <td style="padding: 16px 20px; color: #1E293B; font-weight: 600;">${d.avaliacao}</td>
-            <td style="padding: 16px 20px; text-align: center; color: #64748B; font-weight: 600;">${d.valor} pts</td>
-            <td style="padding: 16px 20px; text-align: center;">${notaBadge}</td>
-            <td style="padding: 16px 20px; text-align: center; color: #64748B;">${d.dataDevolucao || '-'}</td>
+            <td style="padding:16px 20px;font-weight:600;color:#475569;">${d.etapa}</td>
+            <td style="padding:16px 20px;text-align:center;color:#64748B;font-weight:500;">${d.dataAvaliacao || '-'}</td>
+            <td style="padding:16px 20px;color:#1E293B;font-weight:600;">${d.avaliacao}</td>
+            <td style="padding:16px 20px;text-align:center;color:#64748B;font-weight:600;">${d.valor} pts</td>
+            <td style="padding:16px 20px;text-align:center;">${notaBadge}</td>
+            <td style="padding:16px 20px;text-align:center;color:#64748B;">${d.dataDevolucao || '-'}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -247,15 +269,37 @@ function fecharModalNotas() {
     if (modal) modal.classList.remove('active');
 }
 
-const originalShowSec = showSec;
-showSec = function(id, el) {
-    originalShowSec(id, el);
-    if (id === 'notas') {
-        setTimeout(initChartNotas, 100);
-    }
-};
-
+// Fechar modal clicando fora
 document.addEventListener('DOMContentLoaded', () => {
+    const modalNotas = document.getElementById('modalNotas');
+    if (modalNotas) {
+        modalNotas.addEventListener('click', function(e) {
+            if (e.target === this) fecharModalNotas();
+        });
+    }
+
+    // Gerenciar clique no botão de configuração (engrenagem)
+    const btnConfig = document.getElementById('btnConfig');
+    if (btnConfig) {
+        btnConfig.addEventListener('click', function(e) {
+            e.stopPropagation(); // Evita que feche imediatamente pelo event listener abaixo
+            const dd = document.getElementById('configDropdown');
+            if (dd) {
+                dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+                setTimeout(() => lucide.createIcons(), 50);
+            }
+        });
+    }
+
+    // Fechar dropdown de config ao clicar fora
+    document.addEventListener('click', function(e) {
+        const dd = document.getElementById('configDropdown');
+        if (dd && !dd.contains(e.target) && !e.target.closest('#btnConfig')) {
+            dd.style.display = 'none';
+        }
+    });
+
+    // Inicializar gráficos se a seção de notas já estiver ativa
     if (document.getElementById('sec-notas') && document.getElementById('sec-notas').classList.contains('active')) {
         setTimeout(initChartNotas, 100);
     }

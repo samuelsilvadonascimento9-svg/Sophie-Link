@@ -172,7 +172,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
                 <div class="lb-row">
                     <label class="lb-check"><input type="checkbox" name="lembrar"> Lembrar meus dados</label>
-                    <a href="#" class="lb-forgot">Esqueci a senha</a>
+                    <a href="esqueci_senha.php" class="lb-forgot">Esqueci a senha</a>
                 </div>
 
                 <button type="submit" class="lb-submit">Entrar no Portal <i data-lucide="arrow-right"></i></button>
