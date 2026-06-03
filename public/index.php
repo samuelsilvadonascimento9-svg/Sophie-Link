@@ -123,12 +123,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         </button>
         <div class="sm-acc-body">
             <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Ensino Médio Integrado</a>
-            <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Eletromecânica</a>
-            <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Seg. do Trabalho</a>
-            <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Administração</a>
-            <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Eletrônica</a>
-            <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Gestão da Qualidade</a>
-            <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Técnico em Logística</a>
+            <a href="cursos/eletro-mecanica.php" class="sm-sub-link">Técnico em Eletromecânica</a>
+            <a href="cursos/seguranca-trabalho.php" class="sm-sub-link">Técnico em Seg. do Trabalho</a>
+            <a href="cursos/administracao.php" class="sm-sub-link">Técnico em Administração</a>
+            <a href="cursos/eletronica.php" class="sm-sub-link">Técnico em Eletrônica</a>
+            <a href="cursos/gestao-qualidade.php" class="sm-sub-link">Técnico em Gestão da Qualidade</a>
+            <a href="cursos/logistica.php" class="sm-sub-link">Técnico em Logística</a>
         </div>
 
         <div class="sm-footer">
