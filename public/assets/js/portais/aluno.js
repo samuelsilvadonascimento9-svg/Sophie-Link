@@ -304,3 +304,43 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(initChartNotas, 100);
     }
 });
+
+// ==================== PAGAMENTO MP ====================
+
+function iniciarPagamento(faturaId) {
+    if (!faturaId) {
+        alert('Nenhuma fatura encontrada.');
+        return;
+    }
+    
+    const btn = event.currentTarget;
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '<i data-lucide="loader" class="spin"></i> Processando...';
+    btn.disabled = true;
+    lucide.createIcons();
+
+    fetch('../api/checkout_mp.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: faturaId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success && data.init_point) {
+            window.open(data.init_point, '_blank');
+            btn.innerHTML = oldHtml;
+            btn.disabled = false;
+        } else {
+            alert('Erro ao gerar pagamento: ' + (data.error || 'Falha desconhecida.'));
+            btn.innerHTML = oldHtml;
+            btn.disabled = false;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Erro de comunicação. Tente novamente.');
+        btn.innerHTML = oldHtml;
+        btn.disabled = false;
+    });
+}
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // portal_professor.php — Portal do Professor | Sophie Link
 session_start();
 require_once '../../includes/auth.php';
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $turma_id = isset($parts[1]) ? (int)$parts[1] : null;
 
             if (!$titulo) throw new Exception('Informe um título para o material.');
-            if (!in_array($tipo, ['pdf','atividade','aviso'])) throw new Exception('Tipo inválido.');
+            if (!in_array($tipo, ['apresentacao','pdf','atividade','avaliacao','aviso'])) throw new Exception('Tipo inválido.');
 
             $arquivo_nome = null;
             $arquivo_path = null;
@@ -189,7 +189,7 @@ $materiaisProf = $stmtMats->fetchAll();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../assets/css/portal_professor.css">
+    <link rel="stylesheet" href="../assets/css/portais/professor.css">
     <link rel="stylesheet" href="../assets/css/premium.css">
     <style>
         .filter-row { display: none; }
@@ -340,7 +340,7 @@ $materiaisProf = $stmtMats->fetchAll();
                         <tr class="mat-row" data-tipo="<?= $m['tipo'] ?>">
                             <td>
                                 <?php
-                                $labels = ['pdf'=>'PDF','atividade'=>'Atividade','aviso'=>'Aviso'];
+                                $labels = ['apresentacao'=>'Apresentação','pdf'=>'PDF','atividade'=>'Atividade','avaliacao'=>'Avaliação','aviso'=>'Aviso'];
                                 $label  = $labels[$m['tipo']] ?? $m['tipo'];
                                 ?>
                                 <span class="tipo-badge tipo-<?= $m['tipo'] ?>"><?= $label ?></span>
@@ -388,8 +388,10 @@ $materiaisProf = $stmtMats->fetchAll();
                                 <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Tipo de Material *</label>
                                 <select name="tipo" id="tipo-select" class="input-field" required onchange="toggleDataEntrega(this.value)">
                                     <option value="">Selecione...</option>
+                                    <option value="apresentacao">🎓 Apresentação / Material Básico</option>
                                     <option value="pdf">📄 PDF / Documento</option>
-                                    <option value="atividade">📝 Atividade</option>
+                                    <option value="atividade">📝 Atividade para Entrega</option>
+                                    <option value="avaliacao">✅ Avaliação / Link de Prova</option>
                                     <option value="aviso">📢 Aviso / Comunicado</option>
                                 </select>
                             </div>
@@ -664,6 +666,6 @@ function filterMats(tipo) {
     });
 }
 </script>
-<script src="../assets/js/portal_professor.js"></script>
+<script src="../assets/js/portais/professor.js"></script>
 </body>
 </html>

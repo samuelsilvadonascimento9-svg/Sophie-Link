@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * setup_ava_tables.php
  * Cria as tabelas do AVA (materiais, entregas de atividades).
@@ -72,6 +72,6 @@ a{display:inline-block;margin-top:1.5rem;background:#0EA5E9;color:#fff;padding:1
 <?php foreach ($ja_existiam as $t): ?><div class="warn">⚠️ Tabela <strong><?= $t ?></strong> já existia (ignorada).</div><?php endforeach; ?>
 <?php foreach ($erros as $e): ?><div class="err">❌ <?= htmlspecialchars($e) ?></div><?php endforeach; ?>
 <?php if (empty($erros)): ?><div class="ok" style="font-weight:700;margin-top:1rem;">🎉 Tabelas do AVA prontas!</div><?php endif; ?>
-<a href="../public/paineis/portal_professor.php">→ Portal do Professor</a>
-<a href="../public/paineis/ava.php" style="background:#7C3AED;margin-left:8px;">→ AVA</a>
+<a href="../public/portais/professor.php">→ Portal do Professor</a>
+<a href="../public/portais/ava.php" style="background:#7C3AED;margin-left:8px;">→ AVA</a>
 </body></html>

@@ -1,0 +1,243 @@
+/* ================================================================
+   CURSO VARIATIONS — SOPHIE LINK
+   Estilos específicos para diferenciar estruturalmente cada curso
+   ================================================================ */
+
+/* ================================================================
+   1. ADMINISTRAÇÃO (Clean / Corporativo)
+   ================================================================ */
+.adm-layout {
+    --bg-corp: #f4f6f8;
+}
+.adm-hero {
+    background: linear-gradient(135deg, var(--c-course) 0%, #0d1b42 100%);
+    justify-content: center;
+    text-align: center;
+}
+.adm-hero .hero-layout {
+    grid-template-columns: 1fr;
+    max-width: 900px;
+}
+.adm-hero .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.adm-hero p { text-align: center; margin: 0 auto 2.5rem; }
+.adm-hero .hero-stats-row { justify-content: center; }
+.adm-hero .hero-btns { justify-content: center; }
+
+/* Horizontal scrolling for competencies */
+.adm-competencias-wrap {
+    display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 2rem;
+    scroll-snap-type: x mandatory;
+}
+.adm-competencias-wrap::-webkit-scrollbar { height: 8px; }
+.adm-competencias-wrap::-webkit-scrollbar-thumb { background: var(--c-course); border-radius: 10px; }
+.adm-comp-card {
+    min-width: 300px; scroll-snap-align: start;
+    border-top: 4px solid var(--c-course);
+}
+
+/* ================================================================
+   2. INFORMÁTICA (Tech / Dark Mode)
+   ================================================================ */
+.inf-layout {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+.inf-layout .section-alt { background: #1e293b; }
+.inf-layout .sec-title { color: #f8fafc; }
+.inf-layout .sec-desc, .inf-layout p { color: #cbd5e1; }
+.inf-layout .sec-label { color: #38bdf8; text-shadow: 0 0 10px rgba(56,189,248,0.5); }
+.inf-layout .highlight-item, .inf-layout .modulo, .inf-layout .competencia-card, .inf-layout .mercado-stat-box, .inf-layout .cargo-item, .inf-layout .depoimento-card {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+.inf-layout .highlight-text h4, .inf-layout .modulo-title, .inf-layout .comp-title, .inf-layout .dep-name { color: #f8fafc; }
+.inf-layout .modulo-body ul li { color: #cbd5e1; }
+.inf-layout .cargo-item span { color: #f8fafc; }
+
+.inf-hero {
+    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+    border-bottom: 1px solid #334155;
+}
+.inf-hero::before {
+    background-image:
+        linear-gradient(rgba(56,189,248,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.05) 1px, transparent 1px);
+}
+.inf-hero h1 { font-family: monospace; letter-spacing: -1px; text-transform: none; }
+.inf-hero h1 span { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; text-shadow: 0 0 10px rgba(56,189,248,0.8); }
+
+/* File tree styling for modules */
+.inf-modulo { border-left: 2px solid #334155; margin-left: 20px; border-radius: 0; border-top: none; border-right: none; border-bottom: none; background: transparent !important; }
+.inf-modulo .modulo-header { padding: 15px 0 15px 20px; position: relative; }
+.inf-modulo .modulo-header::before { content:''; position: absolute; left: -2px; top: 50%; width: 16px; height: 2px; background: #334155; }
+.inf-modulo .modulo-num { background: #38bdf8; color: #0f172a; border-radius: 4px; width: 28px; height: 28px; }
+
+/* ================================================================
+   3. LOGÍSTICA (Slanted / Dinâmico)
+   ================================================================ */
+.log-hero {
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+    padding-bottom: 8rem;
+}
+.log-layout .section {
+    position: relative;
+}
+.log-split {
+    display: flex; gap: 4rem; align-items: center;
+}
+.log-split-content { flex: 1; }
+.log-split-visual { flex: 1; background: var(--c-course-lt); border-radius: 30px; padding: 3rem; transform: skewY(-3deg); }
+.log-split-visual > * { transform: skewY(3deg); }
+
+.log-cards-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.log-card {
+    background: #fff; padding: 2rem; border-radius: 12px;
+    border-left: 6px solid var(--c-course);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transform: skewX(-5deg); transition: transform 0.3s;
+}
+.log-card > * { transform: skewX(5deg); }
+.log-card:hover { transform: skewX(-5deg) translateY(-10px); }
+
+/* ================================================================
+   4. SEGURANÇA DO TRABALHO (Checklist / Alerta)
+   ================================================================ */
+.seg-hero {
+    background: repeating-linear-gradient( 45deg, var(--c-course), var(--c-course) 20px, var(--c-course-d) 20px, var(--c-course-d) 40px );
+}
+.seg-hero .hero-overlay { background: rgba(0,0,0,0.7); }
+.seg-layout .sec-label { display: inline-block; background: var(--c-course); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; }
+.seg-layout .highlight-item {
+    border: 2px solid var(--c-border);
+    border-left: 8px solid var(--c-course);
+    border-radius: 8px;
+}
+.seg-grid-check {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+}
+.seg-check-box {
+    background: #fff; padding: 2rem; border: 2px dashed var(--c-border);
+    border-radius: 12px; display: flex; flex-direction: column; gap: 1rem;
+}
+
+/* ================================================================
+   5. MECÂNICA PESADA (Industrial / Robusto)
+   ================================================================ */
+.mec-layout {
+    background: #111; color: #eee;
+    font-family: 'Syne', sans-serif;
+}
+.mec-hero {
+    background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%23222"/><circle cx="50" cy="50" r="2" fill="%23444"/></svg>') repeat;
+    border-bottom: 8px solid var(--c-course);
+}
+.mec-layout .sec-title { color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+.mec-layout .modulo, .mec-layout .competencia-card, .mec-layout .cargo-item, .mec-layout .depoimento-card, .mec-layout .highlight-item {
+    background: #1a1a1a; border: 2px solid #333; border-radius: 4px; color: #ddd;
+}
+.mec-layout .modulo-header { background: #222; }
+.mec-layout .modulo-header:hover { background: #2a2a2a; }
+.mec-layout .modulo-title, .mec-layout .highlight-text h4, .mec-layout .comp-title { color: #fff; }
+.mec-layout .cargo-item span { color: #fff; }
+.mec-layout .section-alt { background: #151515; }
+.mec-plate {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    border: 2px solid #444; border-radius: 8px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.5);
+    padding: 2rem;
+    position: relative;
+}
+.mec-plate::before, .mec-plate::after {
+    content: ''; position: absolute; width: 12px; height: 12px; border-radius: 50%;
+    background: #111; border: 2px solid #333;
+}
+.mec-plate::before { top: 10px; left: 10px; box-shadow: 0 0 0 2px #444; }
+.mec-plate::after { bottom: 10px; right: 10px; box-shadow: 0 0 0 2px #444; }
+
+/* ================================================================
+   6. ELÉTRICA INDUSTRIAL (High Voltage / Grid)
+   ================================================================ */
+.elec-layout .sec-label { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.4); }
+.elec-hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #000000 100%);
+}
+.elec-hero::after {
+    content:''; position: absolute; top:0; left:0; width:100%; height: 5px;
+    background: #fbbf24; box-shadow: 0 0 15px #fbbf24;
+}
+
+/* ================================================================
+   7. GESTÃO DA QUALIDADE (Precision / Minimal)
+   ================================================================ */
+.gq-layout { font-family: 'Inter', sans-serif; }
+.gq-hero {
+    background: #fff;
+    color: var(--c-dark);
+}
+.gq-hero h1, .gq-hero p { color: var(--c-dark); }
+.gq-hero h1 span { background: var(--c-course-lt); color: var(--c-course); }
+.gq-hero .hero-badge { background: var(--c-course); color: #fff; border-color: transparent; }
+.gq-hero .hero-stat-val { color: var(--c-course); }
+.gq-hero .hero-stat-lbl { color: var(--c-text-2); }
+.gq-hero .btn-hero-primary { background: var(--c-course); color: #fff; }
+.gq-hero .btn-hero-secondary { color: var(--c-text); border-color: var(--c-border); }
+.gq-hero .btn-hero-secondary:hover { background: var(--c-course-lt); border-color: var(--c-course); color: var(--c-course); }
+
+/* ================================================================
+   8. EXCEL AVANÇADO (Data / Cells)
+   ================================================================ */
+.excel-layout .competencias-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--c-border);
+}
+.excel-comp-card {
+    border-radius: 0;
+    border: 1px solid var(--c-border);
+    margin: -1px 0 0 -1px;
+}
+.excel-hero { background: #107c41; }
+.excel-hero .hero-badge { background: #185c37; }
+
+/* ================================================================
+   9. ROTINAS ADM (Workflow / Steps)
+   ================================================================ */
+.rot-steps {
+    display: flex; flex-direction: column; gap: 0;
+    position: relative; padding-left: 40px;
+}
+.rot-steps::before {
+    content:''; position: absolute; left: 19px; top: 0; bottom: 0; width: 2px;
+    background: var(--c-course-lt);
+}
+.rot-step-item {
+    position: relative; padding-bottom: 3rem;
+}
+.rot-step-dot {
+    position: absolute; left: -40px; top: 0; width: 40px; height: 40px;
+    border-radius: 50%; background: var(--c-course); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; border: 4px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* ================================================================
+   10. ELETROMECÂNICA (Hybrid / Split Focus)
+   ================================================================ */
+.em-layout .modulo { border-radius: 0; border-left: 4px solid var(--c-course); }
+.em-hero {
+    background: linear-gradient(90deg, #1e293b 50%, var(--c-course) 50%);
+}
+@media (max-width:1024px){ .em-hero { background: var(--c-course); } }
+
+/* ================================================================
+   11. ELETRÔNICA (Micro / Circuits)
+   ================================================================ */
+.eletronica-layout .sec-title { font-family: monospace; }
+.eletronica-layout .competencia-card { border: 1px solid var(--c-course); background: radial-gradient(circle at top right, rgba(16,185,129,0.05) 0%, transparent 70%); }

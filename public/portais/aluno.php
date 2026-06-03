@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // portal_aluno.php — Portal do Aluno | Centro Técnico Profissionalizante Sophie Link
 session_start();
 
@@ -143,6 +143,7 @@ $faturas = $stmtFat->fetchAll(PDO::FETCH_ASSOC);
 $totalPago = 0;
 $totalPendente = 0;
 $proximoVencimento = null;
+$proximaFaturaId = null;
 
 foreach ($faturas as $fat) {
     if ($fat['status'] === 'pago') $totalPago += $fat['valor'];
@@ -150,6 +151,7 @@ foreach ($faturas as $fat) {
         $totalPendente += $fat['valor'];
         if (!$proximoVencimento || strtotime($fat['data_vencimento']) < strtotime($proximoVencimento)) {
             $proximoVencimento = $fat['data_vencimento'];
+            $proximaFaturaId = $fat['id'];
         }
     }
 }
@@ -260,7 +262,7 @@ $events_json = json_encode($events_fc);
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <link rel="stylesheet" href="../assets/css/portal_aluno.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/portais/aluno.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/premium.css?v=<?= time() ?>">
 
         <style>
@@ -482,7 +484,7 @@ $events_json = json_encode($events_fc);
                                             <div class="finance-due">Vencimento: <strong><?= $proximoVencimento ? date('d/m/Y', strtotime($proximoVencimento)) : 'Em breve' ?></strong></div>
                                             <div class="finance-amount">R$ <?= number_format($totalPendente, 2, ',', '.') ?></div>
                                             <div class="finance-status"><span class="pill pill-amber">A Vencer</span></div>
-                                            <a href="../reports/boleto_print.php?mes=<?= $proximoVencimento ? date('m/Y', strtotime($proximoVencimento)) : 'Atual' ?>&valor=<?= number_format($totalPendente, 2, ',', '.') ?>" target="_blank" class="inst-btn-primary"><i data-lucide="printer"></i> Imprimir Boleto</a>
+                                            <button onclick="iniciarPagamento(<?= $proximaFaturaId ?>)" class="inst-btn-primary" style="border:none; cursor:pointer;"><i data-lucide="credit-card"></i> Pagar Mensalidade</button>
                                         <?php else: ?>
                                             <div class="finance-due">Situação Financeira</div>
                                             <div class="finance-amount" style="color: #16A34A; font-size: 1.5rem;">Em dia!</div>
@@ -790,7 +792,7 @@ $events_json = json_encode($events_fc);
                                                 <?php elseif ($fat['status'] === 'cancelado'): ?>
                                                     <span style="color: #94A3B8; font-size: 0.85rem; padding: 6px 12px; background: #F1F5F9; border-radius: 4px;">Cancelado</span>
                                                 <?php else: ?>
-                                                    <a href="../reports/boleto_print.php?mes=<?= urlencode($fat['competencia']) ?>&valor=<?= number_format($fat['valor'], 2, ',', '.') ?>" target="_blank" style="background: #10B981; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; text-decoration: none; display: inline-block;">Gerar Boleto</a>
+                                                    <button onclick="iniciarPagamento(<?= $fat['id'] ?>)" style="background: #10B981; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; cursor: pointer; display: inline-block;"><i data-lucide="credit-card" style="width:14px;height:14px;margin-bottom:-2px;"></i> Pagar</button>
                                                 <?php endif; ?>
                                             </div>
 
@@ -1849,7 +1851,7 @@ $events_json = json_encode($events_fc);
             });
         </script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="../assets/js/portal_aluno.js?v=<?= time() ?>"></script>
+        <script src="../assets/js/portais/aluno.js?v=<?= time() ?>"></script>
         <div id="modalNotas" class="modal-overlay" onclick="fecharModalNotas()">
             <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 850px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
                 <div style="background: #FFFFFF; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; border-bottom: 1px solid #E2E8F0;">
@@ -1903,6 +1905,6 @@ $events_json = json_encode($events_fc);
 
     </div><!-- /.app -->
 
-    <script src="../assets/js/portal_aluno.js?v=12"></script>
+    <script src="../assets/js/portais/aluno.js?v=12"></script>
 </body>
 </html>

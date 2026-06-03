@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // portal_empresa.php — Portal da Empresa | Sophie Link (Corporate Banking Theme)
 session_start();
 require_once '../../includes/auth.php';
@@ -85,7 +85,7 @@ foreach ($listaAprendizes as $a) {
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="../assets/css/portal_empresa.css">
+<link rel="stylesheet" href="../assets/css/portais/empresa.css">
 
     <link rel="stylesheet" href="../assets/css/premium.css">
 </head>
@@ -266,7 +266,7 @@ foreach ($listaAprendizes as $a) {
     </div>
 </div>
 
-<script src="../assets/js/portal_empresa.js"></script>
+<script src="../assets/js/portais/empresa.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var ctx = document.getElementById('freqChart').getContext('2d');

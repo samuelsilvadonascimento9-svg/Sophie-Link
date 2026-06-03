@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // resetar_senha.php — Definição de Nova Senha | Sophie Link
 require_once '../../app/Core/Connect.php';
 $pdo = \Core\Connect::getInstance();

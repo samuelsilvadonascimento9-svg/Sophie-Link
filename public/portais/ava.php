@@ -83,36 +83,54 @@ if ($isProf) {
         $boletim[$disc]['notas'][] = $row['valor_nota'];
     }
 
-    // ─── Materiais (PDFs e Avisos) do AVA para a turma do aluno ────────────────
-    $materiaisAluno = [];
-    $atividadesAluno = [];
+    // ─── Disciplinas da turma do aluno ────────────────────────────────────────
+    $disciplinasAluno = [];
     if ($turma_id) {
-        $stmtMats = $pdo->prepare("
-            SELECT m.*, d.nome AS disciplina_nome, u.nome AS professor_nome
-            FROM ava_materiais m
-            LEFT JOIN disciplinas d ON d.id = m.disciplina_id
-            LEFT JOIN usuarios u ON u.id = m.professor_id
-            WHERE m.turma_id = ? AND m.tipo IN ('pdf','aviso')
-            ORDER BY m.criado_em DESC
+        $stmtDiscs = $pdo->prepare("
+            SELECT DISTINCT d.id, d.nome, d.carga_horaria,
+                   u.nome AS professor_nome
+            FROM professor_disciplina pd
+            JOIN disciplinas d ON d.id = pd.disciplina_id
+            LEFT JOIN usuarios u ON u.id = pd.usuario_id
+            WHERE pd.turma_id = ?
+            ORDER BY d.nome ASC
         ");
-        $stmtMats->execute([$turma_id]);
-        $materiaisAluno = $stmtMats->fetchAll();
+        $stmtDiscs->execute([$turma_id]);
+        $disciplinasAluno = $stmtDiscs->fetchAll();
+    }
 
-        $stmtAtvs = $pdo->prepare("
-            SELECT m.*,
-                   d.nome AS disciplina_nome,
-                   u.nome AS professor_nome,
-                   e.status AS entrega_status,
-                   e.criado_em AS entrega_em
+    // ─── Todos os materiais do AVA agrupados por disciplina e tipo ───────────
+    $materiaisAluno   = [];
+    $atividadesAluno  = [];
+    $materiaisPorDisc = [];
+    if ($turma_id) {
+        $stmtAllMats = $pdo->prepare("
+            SELECT m.*, d.nome AS disciplina_nome, u.nome AS professor_nome,
+                   e.status AS entrega_status, e.criado_em AS entrega_em
             FROM ava_materiais m
             LEFT JOIN disciplinas d ON d.id = m.disciplina_id
             LEFT JOIN usuarios u ON u.id = m.professor_id
             LEFT JOIN ava_entregas e ON e.material_id = m.id AND e.aprendiz_id = ?
-            WHERE m.turma_id = ? AND m.tipo = 'atividade'
-            ORDER BY m.data_entrega ASC, m.criado_em DESC
+            WHERE m.turma_id = ?
+            ORDER BY m.tipo, m.criado_em DESC
         ");
-        $stmtAtvs->execute([$aluno_id, $turma_id]);
-        $atividadesAluno = $stmtAtvs->fetchAll();
+        $stmtAllMats->execute([$aluno_id, $turma_id]);
+        foreach ($stmtAllMats->fetchAll() as $mat) {
+            $disc_id_mat = $mat['disciplina_id'] ?? 0;
+            if (!isset($materiaisPorDisc[$disc_id_mat])) {
+                $materiaisPorDisc[$disc_id_mat] = [
+                    'apresentacao' => [], 'pdf' => [],
+                    'atividade'    => [], 'avaliacao' => [], 'aviso' => []
+                ];
+            }
+            $tipo_mat = $mat['tipo'] ?? 'pdf';
+            if (isset($materiaisPorDisc[$disc_id_mat][$tipo_mat])) {
+                $materiaisPorDisc[$disc_id_mat][$tipo_mat][] = $mat;
+            }
+            // Compat: listas antigas
+            if (in_array($tipo_mat, ['pdf', 'aviso']))    $materiaisAluno[]  = $mat;
+            if ($tipo_mat === 'atividade')                 $atividadesAluno[] = $mat;
+        }
     }
 
     // ─── Frequência real do aluno (últimas 30 presenças) ───────────────────────
@@ -135,6 +153,29 @@ if ($isProf) {
 }
 
 $primeiroNome = explode(' ', $nomeAluno)[0];
+
+// ─── Prepara dados das disciplinas para o JavaScript ──────────────────────────
+$cursosAVAData = [];
+if (!$isProf) {
+    foreach ($disciplinasAluno as $disc) {
+        $did  = $disc['id'];
+        $mats = $materiaisPorDisc[$did] ?? [
+            'apresentacao' => [], 'pdf' => [], 'atividade' => [], 'avaliacao' => [], 'aviso' => []
+        ];
+        $totalItens = count($mats['pdf']) + count($mats['atividade']) + count($mats['avaliacao']) + count($mats['apresentacao']);
+        $cursosAVAData[] = [
+            'id'           => $did,
+            'nome'         => $disc['nome'],
+            'professor'    => $disc['professor_nome'] ?? '',
+            'carga_horaria'=> (int)($disc['carga_horaria'] ?? 0),
+            'total_itens'  => $totalItens,
+            'apresentacao' => array_values($mats['apresentacao']),
+            'pdfs'         => array_values($mats['pdf']),
+            'atividades'   => array_values($mats['atividade']),
+            'avaliacoes'   => array_values($mats['avaliacao']),
+        ];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -204,32 +245,15 @@ $primeiroNome = explode(' ', $nomeAluno)[0];
      SUB-NAVBAR
      ================================================================ -->
 <div class="subnav">
-    <a href="../index.php" class="subnav-link"><i data-lucide="home"></i> Início</a>
+    <span class="subnav-link active" id="snav-home" onclick="showSec('home')">Ferramentas</span>
     <div class="subnav-sep"></div>
-    <?php if (!$isProf): ?>
-    <a href="portal_aluno.php" class="subnav-link">Portal do Aluno</a>
+    <a href="portal_aluno.php" class="subnav-link">Portal do aluno</a>
     <div class="subnav-sep"></div>
-    <?php endif; ?>
-    <span class="subnav-link active" id="snav-home" onclick="showSec('home')"><i data-lucide="book-open"></i> <?= $isProf ? 'Minhas Turmas' : 'Meus Cursos' ?></span>
+    <span class="subnav-link">Publicações</span>
     <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-calendario" onclick="showSec('calendario')">Calendário</span>
-    <?php if (!$isProf): ?>
+    <span class="subnav-link">Ajuda do ava</span>
     <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-materiais" onclick="showSec('materiais')"><i data-lucide="file-text"></i> Materiais</span>
-    <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-atividades" onclick="showSec('atividades')"><i data-lucide="clipboard-list"></i> Atividades</span>
-    <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-frequencia" onclick="showSec('frequencia')"><i data-lucide="calendar-check"></i> Frequência</span>
-    <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-notas" onclick="showSec('notas')"><i data-lucide="bar-chart-2"></i> Notas</span>
-    <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-mensagens" onclick="showSec('mensagens')">Mensagens</span>
-    <?php else: ?>
-    <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-mensagens" onclick="showSec('mensagens')">Mensagens</span>
-    <div class="subnav-sep"></div>
-    <a href="portal_professor.php" class="subnav-link" style="color:var(--c-brand);font-weight:700;"><i data-lucide="graduation-cap"></i> Portal do Professor</a>
-    <?php endif; ?>
+    <span class="subnav-link">Descobrir</span>
 </div>
 
 <!-- ================================================================
@@ -292,51 +316,40 @@ $primeiroNome = explode(' ', $nomeAluno)[0];
                     </div>
 
                 <?php else: ?>
-                    <!-- VISÃO ALUNO: cards de curso -->
+                    <!-- VISÃO ALUNO: cards de disciplinas (dinâmico) -->
+                    <?php if (empty($disciplinasAluno)): ?>
+                        <div style="padding:2rem;text-align:center;color:var(--c-text-muted);font-size:0.85rem;">
+                            <i data-lucide="book-open" style="width:40px;height:40px;margin:0 auto 12px;display:block;opacity:0.25;"></i>
+                            Nenhuma disciplina disponível ainda.<br>Aguarde a coordenação vincular você a uma turma.
+                        </div>
+                    <?php else: ?>
                     <div class="courses-grid">
-
-                        <a href="#" class="course-card" onclick="openCourse(event,'eletro')">
-                            <img class="cc-thumb" src="../assets/images/ava_eletro.png" alt="Manutenção Eletromecânica">
+                        <?php foreach ($disciplinasAluno as $disc):
+                            $did      = $disc['id'];
+                            $mats     = $materiaisPorDisc[$did] ?? ['apresentacao'=>[],'pdf'=>[],'atividade'=>[],'avaliacao'=>[],'aviso'=>[]];
+                            $nItens   = count($mats['pdf']) + count($mats['atividade']) + count($mats['avaliacao']) + count($mats['apresentacao']);
+                            $nPend    = count(array_filter($mats['atividade'], fn($a) => !$a['entrega_status']));
+                        ?>
+                        <a href="#" class="course-card" onclick="openCourse(event, <?= $did ?>)">
+                            <div class="cc-thumb cc-thumb-solid">
+                                <i data-lucide="book-open" style="width:32px;height:32px;color:rgba(255,255,255,0.85);"></i>
+                            </div>
                             <div class="cc-body">
-                                <div class="cc-title">Manutenção Eletromecânica I</div>
-                                <div class="cc-code">MEC-101 &bull; Turma A</div>
-                                <div class="cc-status"><div class="cc-dot cc-dot-green"></div>Em Curso</div>
-                                <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
+                                <div class="cc-title"><?= htmlspecialchars($disc['nome']) ?></div>
+                                <div class="cc-code">Prof. <?= htmlspecialchars($disc['professor_nome'] ?? '—') ?></div>
+                                <div class="cc-status">
+                                    <div class="cc-dot cc-dot-green"></div>Em Curso
+                                    <?php if ($nPend > 0): ?>
+                                        &nbsp;·&nbsp;<span style="color:var(--c-amber);font-size:0.68rem;font-weight:700;"><?= $nPend ?> pendente(s)</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="cc-footer"><?= $nItens ?> conteúdo(s) disponível(is)</div>
                             </div>
                         </a>
-
-                        <a href="#" class="course-card" onclick="openCourse(event,'qualidade')">
-                            <img class="cc-thumb" src="../assets/images/ava_qualidade.png" alt="Gestão da Qualidade">
-                            <div class="cc-body">
-                                <div class="cc-title">Gestão da Qualidade (ISO 9001)</div>
-                                <div class="cc-code">GQ-201 &bull; Turma B</div>
-                                <div class="cc-status"><div class="cc-dot cc-dot-green"></div>Em Curso</div>
-                                <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
-                            </div>
-                        </a>
-
-                        <a href="#" class="course-card" onclick="openCourse(event,'seguranca')">
-                            <img class="cc-thumb" src="../assets/images/ava_seguranca.png" alt="Saúde e Segurança">
-                            <div class="cc-body">
-                                <div class="cc-title">Saúde e Segurança do Trabalho (Mineração)</div>
-                                <div class="cc-code">SST-301 &bull; Turma A</div>
-                                <div class="cc-status"><div class="cc-dot cc-dot-amber"></div>Atenção — Freq. 72%</div>
-                                <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
-                            </div>
-                        </a>
-
-                        <a href="#" class="course-card" onclick="openCourse(event,'logistica')">
-                            <img class="cc-thumb" src="../assets/images/ava_logistica.png" alt="Logística">
-                            <div class="cc-body">
-                                <div class="cc-title">Logística Aplicada e Cadeia de Suprimentos</div>
-                                <div class="cc-code">LOG-401 &bull; Turma A</div>
-                                <div class="cc-status"><div class="cc-dot cc-dot-gray"></div>Iniciando</div>
-                                <div class="cc-footer">Encerra em agosto 30, 2026 às 23:59</div>
-                            </div>
-                        </a>
-
+                        <?php endforeach; ?>
                     </div>
-                    <div class="courses-footer"><a href="#">Exibir Todos os Cursos (4)</a></div>
+                    <div class="courses-footer"><a href="#">Exibir Todas as Disciplinas (<?= count($disciplinasAluno) ?>)</a></div>
+                    <?php endif; ?>
                 <?php endif; ?>
 
             <!-- ATIVIDADES PENDENTES (real do BD) -->
@@ -848,6 +861,9 @@ $primeiroNome = explode(' ', $nomeAluno)[0];
 </div>
 
 
+<script>
+window.cursosAVA = <?= json_encode($cursosAVAData, JSON_UNESCAPED_UNICODE) ?>;
+</script>
 <script src="../assets/js/ava.js"></script>
 </body>
 </html>

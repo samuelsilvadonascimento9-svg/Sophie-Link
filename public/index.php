@@ -1,4 +1,4 @@
-<?php // Landing Page Institucional — Centro Técnico Profissionalizante Sophie Link 
+﻿<?php // Landing Page Institucional — Centro Técnico Profissionalizante Sophie Link 
 session_start();
 require_once '../includes/db.php';
 /** @var \PDO $pdo */
@@ -122,13 +122,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <i data-lucide="chevron-down"></i>
         </button>
         <div class="sm-acc-body">
-            <a href="#cursos" class="sm-sub-link" onclick="toggleMenu()">Ensino Médio Integrado</a>
-            <a href="cursos/eletro-mecanica.php" class="sm-sub-link">Técnico em Eletromecânica</a>
-            <a href="cursos/seguranca-trabalho.php" class="sm-sub-link">Técnico em Seg. do Trabalho</a>
             <a href="cursos/administracao.php" class="sm-sub-link">Técnico em Administração</a>
+            <a href="cursos/eletrica-industrial.php" class="sm-sub-link">Técnico em Elétrica Industrial</a>
+            <a href="cursos/eletro-mecanica.php" class="sm-sub-link">Técnico em Eletromecânica</a>
             <a href="cursos/eletronica.php" class="sm-sub-link">Técnico em Eletrônica</a>
+            <a href="cursos/excel-avancado.php" class="sm-sub-link">Excel Avançado e Dashboards</a>
             <a href="cursos/gestao-qualidade.php" class="sm-sub-link">Técnico em Gestão da Qualidade</a>
+            <a href="cursos/informatica.php" class="sm-sub-link">Técnico em Informática</a>
             <a href="cursos/logistica.php" class="sm-sub-link">Técnico em Logística</a>
+            <a href="cursos/mecanica-pesada.php" class="sm-sub-link">Técnico em Mecânica Pesada</a>
+            <a href="cursos/rotinas-adm.php" class="sm-sub-link">Rotinas Adm. e DP</a>
+            <a href="cursos/seguranca-trabalho.php" class="sm-sub-link">Técnico em Seg. do Trabalho</a>
         </div>
 
         <div class="sm-footer">

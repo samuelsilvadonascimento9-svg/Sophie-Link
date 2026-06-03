@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // painel_academico.php — Gestão Educacional e Financeira | Sophie Link
 session_start();
 if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['usuario_nivel'], ['admin', 'coordenadora'])) {
@@ -292,6 +292,6 @@ $alertas = $pdo->query("
     </div>
 </div>
 
-<script src="../assets/js/painel_academico.js"></script>
+<script src="../assets/js/admin/painel_academico.js"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['usuario_id'])) { header('Location: ../index.php'); exit; }
 $pageTitle = 'Empresas';
 $activeNav = 'empresas';
-require_once '../components/layout_header.php';
+require_once '../components/layout/header.php';
 ?>
 
 <!-- ===== MÓDULO EMPRESAS ===== -->
@@ -141,6 +141,6 @@ require_once '../components/layout_header.php';
     <div id="tableFooter" style="padding:1rem 1.5rem;font-size:0.78rem;color:var(--muted);border-top:1px solid var(--border)"></div>
 </div>
 
-<?php require_once '../components/layout_footer.php'; ?>
+<?php require_once '../components/layout/footer.php'; ?>
 
-<script src="../assets/js/empresas.js"></script>
+<script src="../assets/js/admin/empresas.js"></script>

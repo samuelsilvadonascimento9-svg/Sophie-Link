@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // termos.php - Termos de Uso e Privacidade (LGPD)
 ?>
 <!DOCTYPE html>

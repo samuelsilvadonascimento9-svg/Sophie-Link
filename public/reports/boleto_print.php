@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // boleto_print.php — Gerador Simulado de Boleto
 session_start();
 if (!isset($_SESSION['usuario_id'])) {

@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&family=Work+Sans:wght@400;600;800;900&display=swap');
+
+:root {
+    --seg-alert: #FFCC00;
+    --seg-dark: #1F1F1F;
+    --seg-danger: #D32F2F;
+    --seg-safe: #388E3C;
+    --seg-light: #F4F4F4;
+    --font-heading: 'Work Sans', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--seg-light);
+    color: var(--seg-dark);
+    font-family: var(--font-heading);
+    overflow-x: hidden;
+}
+
+/* Hazard Stripes */
+.seg-stripe-top {
+    height: 12px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--seg-alert),
+      var(--seg-alert) 20px,
+      var(--seg-dark) 20px,
+      var(--seg-dark) 40px
+    );
+}
+
+/* Safety Nav */
+.seg-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 3rem;
+    background: #FFF;
+    border-bottom: 2px solid var(--seg-dark);
+}
+.seg-nav-logo img { width: 140px; }
+.seg-nav-links { display: flex; gap: 2rem; }
+.seg-nav-links a {
+    text-decoration: none;
+    color: var(--seg-dark);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+.seg-nav-links a:hover { color: var(--seg-danger); }
+.seg-btn {
+    background: var(--seg-danger);
+    color: #FFF !important;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    padding: 0.8rem 1.5rem;
+    border: 2px solid var(--seg-dark);
+    box-shadow: 4px 4px 0 var(--seg-dark);
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+.seg-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--seg-dark);
+}
+
+/* Clipboard Hero */
+.seg-hero {
+    padding: 4rem;
+    display: flex;
+    justify-content: center;
+}
+.seg-clipboard {
+    background: #FFF;
+    border: 3px solid var(--seg-dark);
+    border-radius: 8px 8px 0 0;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+    position: relative;
+}
+.seg-clip-top {
+    background: var(--seg-dark);
+    height: 40px;
+    width: 200px;
+    margin: -20px auto 20px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.seg-clip-hole {
+    width: 15px; height: 15px;
+    background: var(--seg-light);
+    border-radius: 50%;
+}
+.seg-form-header {
+    border-bottom: 3px solid var(--seg-dark);
+    padding: 0 3rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.seg-form-title h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+}
+.seg-form-title p {
+    font-family: var(--font-mono);
+    color: var(--seg-danger);
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+.seg-form-meta { text-align: right; font-family: var(--font-mono); font-size: 0.9rem; }
+.seg-form-meta .box { border: 2px solid var(--seg-dark); padding: 0.5rem 1rem; margin-top: 0.5rem; display: inline-block; font-weight: 700; }
+
+.seg-form-body { padding: 3rem; }
+.seg-desc { font-size: 1.2rem; margin-bottom: 2rem; line-height: 1.8; }
+
+/* Checklist */
+.seg-checklist-title {
+    background: var(--seg-alert);
+    color: var(--seg-dark);
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 2px solid var(--seg-dark);
+    margin-bottom: 1.5rem;
+}
+.seg-check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+.seg-check-item {
+    border: 2px solid var(--seg-dark);
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+}
+.seg-check-box {
+    width: 30px; height: 30px;
+    border: 3px solid var(--seg-dark);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--seg-safe);
+}
+.seg-check-content h3 { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; }
+.seg-check-content p { font-family: var(--font-mono); font-size: 0.85rem; }
+
+/* Footer */
+.seg-footer {
+    background: var(--seg-dark);
+    color: #FFF;
+    text-align: center;
+    padding: 3rem;
+    font-family: var(--font-mono);
+}

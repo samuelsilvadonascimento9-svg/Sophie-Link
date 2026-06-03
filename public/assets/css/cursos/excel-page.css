@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+    --ex-green: #107C41;
+    --ex-dark: #004B1C;
+    --ex-light: #F3F2F1;
+    --ex-white: #FFFFFF;
+    --ex-border: #D2D0CE;
+    --ex-text: #323130;
+    --ex-active: #C8E6C9;
+    --font-main: 'IBM Plex Sans', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--ex-light);
+    color: var(--ex-text);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+}
+
+/* Excel Ribbon Nav */
+.ex-nav-top { background: var(--ex-green); color: #FFF; padding: 0.5rem 1rem; font-size: 0.9rem; display: flex; align-items: center; justify-content: space-between; }
+.ex-nav-top a { color: #FFF; text-decoration: none; }
+.ex-ribbon {
+    background: var(--ex-white);
+    border-bottom: 1px solid var(--ex-border);
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.ex-ribbon-tab { font-weight: 500; padding: 0.5rem 1rem; cursor: pointer; color: var(--ex-text); text-decoration: none; border-bottom: 3px solid transparent; }
+.ex-ribbon-tab.active { border-bottom-color: var(--ex-green); color: var(--ex-green); }
+.ex-ribbon-tab:hover { background: var(--ex-light); }
+
+/* Grid Layout container */
+.ex-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 100px);
+}
+
+/* Formula Bar */
+.ex-formula-bar {
+    display: flex;
+    align-items: center;
+    background: var(--ex-white);
+    border-bottom: 1px solid var(--ex-border);
+    padding: 0.5rem;
+}
+.ex-cell-name { border: 1px solid var(--ex-border); padding: 0.2rem 1rem; margin-right: 1rem; font-weight: 600; background: var(--ex-light); width: 80px; text-align: center; }
+.ex-fx { color: #666; font-style: italic; font-weight: 600; margin-right: 0.5rem; }
+.ex-formula-input { flex: 1; border: 1px solid var(--ex-border); padding: 0.4rem 1rem; font-family: var(--font-main); outline: none; }
+.ex-formula-input:focus { border-color: var(--ex-green); }
+
+/* Main Grid */
+.ex-grid-area {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Row Headers */
+.ex-rows { width: 50px; background: var(--ex-light); border-right: 1px solid var(--ex-border); display: flex; flex-direction: column; }
+.ex-row-num { height: 100px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--ex-border); color: #666; font-size: 0.9rem; }
+
+/* Main Content Area (simulating cells) */
+.ex-main { flex: 1; overflow-y: auto; background: var(--ex-white); padding: 2rem; }
+
+.ex-cell-hero {
+    border: 2px solid var(--ex-green);
+    background: var(--ex-active);
+    padding: 3rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+.ex-cell-hero::after {
+    content: ''; position: absolute; bottom: -5px; right: -5px; width: 10px; height: 10px; background: var(--ex-green); border: 2px solid #FFF;
+}
+.ex-cell-hero h1 { font-size: 4rem; color: var(--ex-dark); margin-bottom: 1rem; }
+.ex-cell-hero p { font-size: 1.2rem; color: var(--ex-text); max-width: 700px; margin-bottom: 2rem; }
+
+.ex-btn {
+    background: var(--ex-green);
+    color: #FFF !important;
+    padding: 0.8rem 2rem;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    transition: background 0.2s;
+}
+.ex-btn:hover { background: var(--ex-dark); }
+
+/* Table for modules */
+.ex-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 3rem;
+}
+.ex-table th, .ex-table td {
+    border: 1px solid var(--ex-border);
+    padding: 1rem;
+    text-align: left;
+}
+.ex-table th { background: var(--ex-light); font-weight: 600; color: #666; text-transform: uppercase; font-size: 0.85rem; }
+.ex-table tr:hover { background: rgba(16, 124, 65, 0.05); }
+.ex-table td i { color: var(--ex-green); margin-right: 0.5rem; }
+
+/* Dashboard Cards */
+.ex-dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+.ex-dash-card {
+    border: 1px solid var(--ex-border);
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background: #FFF;
+    border-top: 4px solid var(--ex-green);
+}
+.ex-dash-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--ex-dark); }
+.ex-dash-card p { font-size: 0.95rem; color: #666; }
+
+/* Bottom tabs */
+.ex-tabs-bottom {
+    display: flex;
+    background: var(--ex-light);
+    border-top: 1px solid var(--ex-border);
+    padding-left: 50px;
+}
+.ex-sheet-tab {
+    padding: 0.5rem 2rem;
+    background: var(--ex-white);
+    border-right: 1px solid var(--ex-border);
+    font-weight: 600;
+    color: var(--ex-green);
+    border-bottom: 3px solid var(--ex-green);
+}
+.ex-sheet-tab.inactive {
+    background: transparent;
+    color: #666;
+    border-bottom: none;
+    font-weight: 400;
+}

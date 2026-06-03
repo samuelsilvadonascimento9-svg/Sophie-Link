@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // dashboard.php — Painel Admin CMS | Sophie Link (Vercel/Stripe Style)
 session_start();
 require_once '../../includes/auth.php';
@@ -601,6 +601,6 @@ $chartValuesJson = json_encode($chartValues);
     window.chartLabelsData = <?= $chartLabelsJson ?>;
     window.chartValuesData = <?= $chartValuesJson ?>;
 </script>
-<script src="../assets/js/dashboard.js"></script>
+<script src="../assets/js/admin/dashboard.js"></script>
 </body>
 </html>

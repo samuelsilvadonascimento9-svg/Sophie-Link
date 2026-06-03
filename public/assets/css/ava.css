@@ -441,3 +441,139 @@ img { display: block; max-width: 100%; }
     .course-card { border-right: none; }
 }
 
+/* ================================================================
+   CARDS DE CATEGORIA (Design Azul)
+   ================================================================ */
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+.cat-card {
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--c-border-lt);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+.cat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.cat-card-thumb {
+    background: linear-gradient(135deg, #0076a8, #005a82);
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.cat-card-label {
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.cat-card-body {
+    padding: 16px;
+    position: relative;
+    flex: 1;
+}
+.cat-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--c-text);
+    margin-bottom: 12px;
+}
+.cat-progress-bar {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+.cat-progress-fill {
+    height: 100%;
+    background: #0076a8;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+.cat-card-meta {
+    font-size: 0.7rem;
+    color: var(--c-text-muted);
+}
+.cat-check {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+.cat-card:hover .cat-check {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+/* ================================================================
+   ITENS DE MATERIAL
+   ================================================================ */
+.mat-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid var(--c-border-lt);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+}
+.mat-item:hover {
+    border-color: var(--c-border);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.mat-item-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--c-bg);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--c-brand);
+    flex-shrink: 0;
+}
+.mat-item-body {
+    flex: 1;
+    min-width: 0;
+}
+.mat-item-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    height: fit-content;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: var(--c-text-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.mat-item-btn:hover {
+    background: var(--c-border-lt);
+    color: var(--c-text);
+}

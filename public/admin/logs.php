@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // logs.php — Interface de Logs de Auditoria
 session_start();
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_nivel'] !== 'admin') {

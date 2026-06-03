@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // historico_print.php — Histórico Escolar Formatado | Sophie Link
 session_start();
 

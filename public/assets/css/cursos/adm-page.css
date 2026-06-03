@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --adm-primary: #0F172A;
+    --adm-secondary: #334155;
+    --adm-accent: #3B82F6;
+    --adm-surface: #FFFFFF;
+    --adm-bg: #F8FAFC;
+    --adm-border: #E2E8F0;
+    --font-serif: 'Playfair Display', serif;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--adm-bg);
+    color: var(--adm-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Corporate Nav */
+.adm-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 5rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--adm-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.adm-nav-logo img { width: 160px; }
+.adm-nav-links { display: flex; gap: 2.5rem; align-items: center; }
+.adm-nav-links a {
+    color: var(--adm-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.adm-nav-links a:hover { color: var(--adm-accent); }
+
+.adm-btn {
+    background: var(--adm-primary);
+    color: #FFF !important;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+}
+.adm-btn:hover {
+    background: var(--adm-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2);
+}
+
+/* Hero Section */
+.adm-hero {
+    padding: 6rem 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--adm-surface);
+    position: relative;
+    overflow: hidden;
+}
+.adm-hero::before {
+    content: '';
+    position: absolute;
+    top: -10%; right: -10%;
+    width: 50vw; height: 50vw;
+    background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 60%);
+    border-radius: 50%;
+    z-index: 0;
+}
+.adm-hero-content {
+    max-width: 600px;
+    position: relative;
+    z-index: 1;
+}
+.adm-tag {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--adm-accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 50px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+}
+.adm-hero h1 {
+    font-family: var(--font-serif);
+    font-size: 4.5rem;
+    line-height: 1.1;
+    color: var(--adm-primary);
+    margin-bottom: 1.5rem;
+}
+.adm-hero p {
+    font-size: 1.15rem;
+    color: var(--adm-secondary);
+    margin-bottom: 2.5rem;
+}
+.adm-hero-visual {
+    position: relative;
+    z-index: 1;
+    width: 450px;
+    height: 450px;
+    background: #FFF;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
+    border: 1px solid var(--adm-border);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+.adm-chart-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+.adm-chart-col { flex: 1; background: var(--adm-bg); border-radius: 12px; padding: 1.5rem; }
+.adm-chart-num { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+.adm-chart-lbl { font-size: 0.8rem; color: var(--adm-secondary); font-weight: 600; }
+.adm-chart-bar-wrap { flex: 1; background: var(--adm-bg); border-radius: 12px; padding: 1.5rem; display: flex; align-items: flex-end; gap: 1rem; }
+.adm-chart-bar { flex: 1; background: var(--adm-border); border-radius: 4px; position: relative; }
+.adm-chart-bar::after {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%;
+    background: var(--adm-accent); border-radius: 4px;
+    animation: growBar 1.5s ease-out forwards;
+}
+@keyframes growBar { 0% { height: 0; } }
+
+/* Modules Section */
+.adm-section { padding: 6rem 5rem; }
+.adm-section-header { text-align: center; margin-bottom: 4rem; }
+.adm-section-title { font-family: var(--font-serif); font-size: 3.5rem; color: var(--adm-primary); }
+.adm-section-desc { font-size: 1.1rem; color: var(--adm-secondary); max-width: 600px; margin: 1rem auto 0; }
+
+.adm-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+.adm-card {
+    background: var(--adm-surface);
+    border-radius: 16px;
+    padding: 2.5rem;
+    border: 1px solid var(--adm-border);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+}
+.adm-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    border-color: var(--adm-accent);
+}
+.adm-card-icon {
+    width: 50px; height: 50px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--adm-accent);
+    margin-bottom: 1.5rem;
+}
+.adm-card h3 { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem; }
+.adm-card p { font-size: 0.95rem; color: var(--adm-secondary); }
+
+/* Footer */
+.adm-footer {
+    background: var(--adm-primary);
+    color: rgba(255,255,255,0.7);
+    padding: 4rem 5rem;
+    text-align: center;
+}
+.adm-footer-brand { font-family: var(--font-serif); font-size: 2rem; color: #FFF; margin-bottom: 1rem; }
