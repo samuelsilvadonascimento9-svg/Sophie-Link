@@ -6,9 +6,9 @@ protect_page(['admin']);
 require_once '../../includes/db.php';
 /** @var \PDO $pdo */
 /** @var PDO $pdo */
-require_once '../../backend/Models/Empresa.php';
-require_once '../../backend/Models/Aprendiz.php';
-require_once '../../backend/Models/Turma.php';
+require_once '../../app/Models/Empresa.php';
+require_once '../../app/Models/Aprendiz.php';
+require_once '../../app/Models/Turma.php';
 require_once '../../app/Core/Security.php';
 
 $csrfToken = Security::generateCsrfToken();
@@ -311,6 +311,7 @@ $chartValuesJson = json_encode($chartValues);
                             </td>
                             <td>
                                 <form method="POST" style="display:inline;" onsubmit="return confirm('Excluir empresa?');">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                                     <input type="hidden" name="acao" value="del_empresa">
                                     <input type="hidden" name="id" value="<?= $e['id'] ?>">
                                     <button type="submit" class="btn-danger-icon" title="Excluir"><i data-lucide="trash-2" style="width:16px;"></i></button>
@@ -352,6 +353,7 @@ $chartValuesJson = json_encode($chartValues);
                             </td>
                             <td>
                                 <form method="POST" style="display:inline;" onsubmit="return confirm('Excluir aluno?');">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                                     <input type="hidden" name="acao" value="del_aluno">
                                     <input type="hidden" name="id" value="<?= $a['id'] ?>">
                                     <button type="submit" class="btn-danger-icon" title="Excluir"><i data-lucide="trash-2" style="width:16px;"></i></button>
