@@ -11,6 +11,8 @@ function showSec(id) {
 
     // Atualiza subnav
     document.querySelectorAll('.subnav-link').forEach(l => l.classList.remove('active'));
+    const navItem = document.getElementById('snav-' + id);
+    if (navItem) navItem.classList.add('active');
 }
 
 /* ----------------------------------------------------------------

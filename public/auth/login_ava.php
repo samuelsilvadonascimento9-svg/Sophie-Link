@@ -26,13 +26,13 @@ if (isset($_SESSION['usuario_id'])) {
             header('Location: ../paineis/portal_empresa.php');
             break;
         case 'professor':
-            header('Location: ../paineis/portal_professor.php');
+            header('Location: ../paineis/ava.php');
             break;
         case 'colaborador':
             header('Location: ../paineis/portal_colaborador.php');
             break;
         case 'aluno':
-            header('Location: ../paineis/portal_aluno.php');
+            header('Location: ../paineis/ava.php');
             break;
         default:
             header('Location: ../index.php');
@@ -86,13 +86,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: ../paineis/portal_empresa.php');
                     break;
                 case 'professor':
-                    header('Location: ../paineis/portal_professor.php');
+                    header('Location: ../paineis/ava.php');
                     break;
                 case 'colaborador':
                     header('Location: ../paineis/portal_colaborador.php');
                     break;
                 case 'aluno':
-                    header('Location: ../paineis/portal_aluno.php');
+                    header('Location: ../paineis/ava.php');
                     break;
                 default:
                     header('Location: ../index.php');

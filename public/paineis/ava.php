@@ -8,32 +8,133 @@ protect_page(['aluno', 'professor', 'admin']);
 require_once '../../includes/db.php';
 /** @var \PDO $pdo */
 
-// Busca o aluno logado
-$stmtAluno = $pdo->prepare("SELECT a.* FROM aprendizes a 
-                            JOIN usuarios u ON u.email = a.email OR u.nome = a.nome
-                            WHERE u.id = ? LIMIT 1");
-$stmtAluno->execute([$_SESSION['usuario_id']]);
-$aluno = $stmtAluno->fetch();
+$nivelUsuario = $_SESSION['usuario_nivel'] ?? 'aluno';
+$isProf = ($nivelUsuario === 'professor' || $nivelUsuario === 'admin');
 
-if (!$aluno) {
-    // aluno fallback para testes
-    $aluno = [
-        'id' => 1,
-        'nome' => $_SESSION['usuario_nome'] ?? 'Aluno'
-    ];
+// ─── PROFESSOR ────────────────────────────────────────────────────────────────
+if ($isProf) {
+    $nomeAluno      = $_SESSION['usuario_nome'] ?? 'Professor';
+    $aluno_id       = null;
+    $notasDb        = [];
+    $progressoTotal = 0;
+    $boletim        = [];
+    $ra             = '—';
+    $materiaisAluno = [];
+    $atividadesAluno= [];
+    $frequenciaAluno= [];
+
+    $stmtTurmasProf = $pdo->prepare("
+        SELECT pd.*, t.nome AS turma_nome, d.nome AS disciplina_nome
+        FROM professor_disciplina pd
+        JOIN turmas t ON t.id = pd.turma_id
+        JOIN disciplinas d ON d.id = pd.disciplina_id
+        WHERE pd.usuario_id = ?
+    ");
+    $stmtTurmasProf->execute([$_SESSION['usuario_id']]);
+    $turmasProfAva = $stmtTurmasProf->fetchAll();
+
+// ─── ALUNO ────────────────────────────────────────────────────────────────────
+} else {
+    $turmasProfAva = [];
+
+    // Dados básicos do aluno
+    $stmtAluno = $pdo->prepare("SELECT a.* FROM aprendizes a
+                                JOIN usuarios u ON u.email = a.email OR u.nome = a.nome
+                                WHERE u.id = ? LIMIT 1");
+    $stmtAluno->execute([$_SESSION['usuario_id']]);
+    $aluno = $stmtAluno->fetch();
+    if (!$aluno) {
+        $aluno = ['id' => 0, 'nome' => $_SESSION['usuario_nome'] ?? 'Aluno', 'turma_id' => null];
+    }
+
+    $aluno_id  = $aluno['id'];
+    $nomeAluno = $aluno['nome'];
+    $turma_id  = $aluno['turma_id'] ?? null;
+    $ra        = str_pad($aluno['id'], 6, '0', STR_PAD_LEFT);
+
+    // Notas para progresso e boletim
+    $stmtNotas = $pdo->prepare("
+        SELECT n.atividade, n.valor_nota, d.nome AS disciplina_nome
+        FROM notas n
+        LEFT JOIN disciplinas d ON d.id = n.disciplina_id
+        WHERE n.aprendiz_id = ?
+        ORDER BY n.data_registro DESC
+    ");
+    $stmtNotas->execute([$aluno_id]);
+    $notasDb = $stmtNotas->fetchAll();
+    $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
+
+    // Boletim agrupado por disciplina
+    $boletim = [];
+    $stmtBoletim = $pdo->prepare("
+        SELECT n.valor_nota, d.nome AS disciplina_nome, n.disciplina_id,
+               (SELECT COUNT(f2.id) FROM frequencia f2 WHERE f2.aprendiz_id = n.aprendiz_id AND f2.disciplina_id = n.disciplina_id AND f2.status = 'falta') AS total_faltas
+        FROM notas n
+        LEFT JOIN disciplinas d ON d.id = n.disciplina_id
+        WHERE n.aprendiz_id = ?
+        ORDER BY n.disciplina_id, n.data_registro ASC
+    ");
+    $stmtBoletim->execute([$aluno_id]);
+    foreach ($stmtBoletim->fetchAll() as $row) {
+        $disc = $row['disciplina_nome'] ?? 'Disciplina';
+        if (!isset($boletim[$disc])) {
+            $boletim[$disc] = ['notas' => [], 'faltas' => (int)$row['total_faltas']];
+        }
+        $boletim[$disc]['notas'][] = $row['valor_nota'];
+    }
+
+    // ─── Materiais (PDFs e Avisos) do AVA para a turma do aluno ────────────────
+    $materiaisAluno = [];
+    $atividadesAluno = [];
+    if ($turma_id) {
+        $stmtMats = $pdo->prepare("
+            SELECT m.*, d.nome AS disciplina_nome, u.nome AS professor_nome
+            FROM ava_materiais m
+            LEFT JOIN disciplinas d ON d.id = m.disciplina_id
+            LEFT JOIN usuarios u ON u.id = m.professor_id
+            WHERE m.turma_id = ? AND m.tipo IN ('pdf','aviso')
+            ORDER BY m.criado_em DESC
+        ");
+        $stmtMats->execute([$turma_id]);
+        $materiaisAluno = $stmtMats->fetchAll();
+
+        $stmtAtvs = $pdo->prepare("
+            SELECT m.*,
+                   d.nome AS disciplina_nome,
+                   u.nome AS professor_nome,
+                   e.status AS entrega_status,
+                   e.criado_em AS entrega_em
+            FROM ava_materiais m
+            LEFT JOIN disciplinas d ON d.id = m.disciplina_id
+            LEFT JOIN usuarios u ON u.id = m.professor_id
+            LEFT JOIN ava_entregas e ON e.material_id = m.id AND e.aprendiz_id = ?
+            WHERE m.turma_id = ? AND m.tipo = 'atividade'
+            ORDER BY m.data_entrega ASC, m.criado_em DESC
+        ");
+        $stmtAtvs->execute([$aluno_id, $turma_id]);
+        $atividadesAluno = $stmtAtvs->fetchAll();
+    }
+
+    // ─── Frequência real do aluno (últimas 30 presenças) ───────────────────────
+    $stmtFreq = $pdo->prepare("
+        SELECT f.data_registro, f.status, f.horario_entrada, f.horario_saida,
+               d.nome AS disciplina_nome
+        FROM frequencia f
+        LEFT JOIN disciplinas d ON d.id = f.disciplina_id
+        WHERE f.aprendiz_id = ?
+        ORDER BY f.data_registro DESC
+        LIMIT 30
+    ");
+    $stmtFreq->execute([$aluno_id]);
+    $frequenciaAluno = $stmtFreq->fetchAll();
+
+    // Calcular % de presença
+    $totalRegistros = count($frequenciaAluno);
+    $totalPresente  = count(array_filter($frequenciaAluno, fn($f) => $f['status'] === 'presente'));
+    $percPresenca   = $totalRegistros > 0 ? round(($totalPresente / $totalRegistros) * 100) : 100;
 }
 
-$aluno_id = $aluno['id'];
-$_SESSION['usuario_nome'] = $aluno['nome'];
-$nomeAluno = $aluno['nome'];
 $primeiroNome = explode(' ', $nomeAluno)[0];
-$ra = str_pad($aluno['id'], 6, '0', STR_PAD_LEFT);
-
-// Simular progresso baseado na nota lançada no bd
-$stmtNotas = $pdo->prepare("SELECT atividade, valor_nota FROM notas WHERE aprendiz_id = ?");
-$stmtNotas->execute([$aluno_id]);
-$notasDb = $stmtNotas->fetchAll();
-$progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -94,8 +195,8 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
         <div class="tn-user-name"><?= strtoupper(htmlspecialchars($nomeAluno)) ?></div>
     </div>
 
-    <a href="../index.php" class="tn-settings" title="Sair / Configurações">
-        <i data-lucide="settings"></i>
+    <a href="../auth/logout.php" class="tn-settings" title="Sair">
+        <i data-lucide="log-out"></i>
     </a>
 </nav>
 
@@ -105,15 +206,30 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
 <div class="subnav">
     <a href="../index.php" class="subnav-link"><i data-lucide="home"></i> Início</a>
     <div class="subnav-sep"></div>
+    <?php if (!$isProf): ?>
     <a href="portal_aluno.php" class="subnav-link">Portal do Aluno</a>
     <div class="subnav-sep"></div>
-    <span class="subnav-link active"><i data-lucide="book-open"></i> Meus Cursos</span>
+    <?php endif; ?>
+    <span class="subnav-link active" id="snav-home" onclick="showSec('home')"><i data-lucide="book-open"></i> <?= $isProf ? 'Minhas Turmas' : 'Meus Cursos' ?></span>
     <div class="subnav-sep"></div>
-    <span class="subnav-link" onclick="showSec('calendario')">Calendário</span>
+    <span class="subnav-link" id="snav-calendario" onclick="showSec('calendario')">Calendário</span>
+    <?php if (!$isProf): ?>
     <div class="subnav-sep"></div>
-    <span class="subnav-link" onclick="showSec('notas')">Notas</span>
+    <span class="subnav-link" id="snav-materiais" onclick="showSec('materiais')"><i data-lucide="file-text"></i> Materiais</span>
     <div class="subnav-sep"></div>
-    <span class="subnav-link" onclick="showSec('mensagens')">Mensagens</span>
+    <span class="subnav-link" id="snav-atividades" onclick="showSec('atividades')"><i data-lucide="clipboard-list"></i> Atividades</span>
+    <div class="subnav-sep"></div>
+    <span class="subnav-link" id="snav-frequencia" onclick="showSec('frequencia')"><i data-lucide="calendar-check"></i> Frequência</span>
+    <div class="subnav-sep"></div>
+    <span class="subnav-link" id="snav-notas" onclick="showSec('notas')"><i data-lucide="bar-chart-2"></i> Notas</span>
+    <div class="subnav-sep"></div>
+    <span class="subnav-link" id="snav-mensagens" onclick="showSec('mensagens')">Mensagens</span>
+    <?php else: ?>
+    <div class="subnav-sep"></div>
+    <span class="subnav-link" id="snav-mensagens" onclick="showSec('mensagens')">Mensagens</span>
+    <div class="subnav-sep"></div>
+    <a href="portal_professor.php" class="subnav-link" style="color:var(--c-brand);font-weight:700;"><i data-lucide="graduation-cap"></i> Portal do Professor</a>
+    <?php endif; ?>
 </div>
 
 <!-- ================================================================
@@ -122,7 +238,10 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
 <div class="hero">
     <img src="../assets/images/ava_hero.png" alt="Campus Sophie Link" loading="eager">
     <div class="hero-overlay">
-        <div class="hero-greeting">Olá, <?= strtoupper(htmlspecialchars($nomeAluno)) ?></div>
+        <div class="hero-greeting"><?= $isProf ? 'Bem-vindo ao AVA, Prof.' : 'Olá,' ?> <?= strtoupper(htmlspecialchars($primeiroNome)) ?></div>
+        <?php if ($isProf): ?>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.8);margin-top:6px;">Navegue pelas suas turmas e acesse o Portal do Professor para lançar notas e frequência.</div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -136,158 +255,140 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
         <!-- ======================== COLUNA ESQUERDA ======================== -->
         <div>
 
-            <!-- MEUS CURSOS -->
+            <!-- MEUS CURSOS / TURMAS -->
             <div class="panel">
                 <div class="panel-head">
                     <div class="panel-title">
                         <i data-lucide="book-open" style="width:15px;height:15px;color:var(--c-brand);"></i>
-                        Meus cursos
+                        <?= $isProf ? 'Minhas Turmas / Disciplinas' : 'Meus cursos' ?>
                     </div>
-                    <span class="panel-title-more">Filtrar ▾</span>
+                    <span class="panel-title-more"><?= $isProf ? '' : 'Filtrar ▾' ?></span>
                 </div>
 
-                <div class="courses-grid">
-
-                    <!-- Curso 1 -->
-                    <a href="#" class="course-card" onclick="openCourse(event,'eletro')">
-                        <img class="cc-thumb" src="../assets/images/ava_eletro.png" alt="Manutenção Eletromecânica">
-                        <div class="cc-body">
-                            <div class="cc-title">Manutenção Eletromecânica I</div>
-                            <div class="cc-code">MEC-101 &bull; Turma A</div>
-                            <div class="cc-status">
-                                <div class="cc-dot cc-dot-green"></div>
-                                Em Curso
+                <?php if ($isProf): ?>
+                    <!-- VISÃO PROFESSOR: lista de turmas -->
+                    <div style="padding:1rem;">
+                        <?php if (empty($turmasProfAva)): ?>
+                            <div style="padding:1rem;color:var(--c-text-muted);font-size:0.85rem;">Nenhuma disciplina atribuída ainda. Aguarde a coordenação.</div>
+                        <?php else: ?>
+                            <div style="display:flex;flex-wrap:wrap;gap:14px;">
+                            <?php foreach ($turmasProfAva as $tp): ?>
+                            <div style="width:220px;border:1px solid var(--c-border);border-radius:var(--radius);overflow:hidden;">
+                                <div style="height:80px;background:linear-gradient(135deg,var(--c-brand) 0%,#4C1D95 100%);display:flex;align-items:center;justify-content:center;">
+                                    <i data-lucide="book-open" style="width:30px;height:30px;color:rgba(255,255,255,0.85);"></i>
+                                </div>
+                                <div style="padding:10px;">
+                                    <div style="font-weight:700;font-size:0.82rem;color:var(--c-brand);"><?= htmlspecialchars($tp['disciplina_nome']) ?></div>
+                                    <div style="font-size:0.7rem;color:var(--c-text-muted);margin-top:3px;"><?= htmlspecialchars($tp['turma_nome']) ?></div>
+                                    <a href="portal_professor.php" style="display:inline-block;margin-top:8px;font-size:0.7rem;font-weight:700;color:var(--c-brand);">Lançar Notas / Chamada →</a>
+                                </div>
                             </div>
-                            <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
-                        </div>
-                    </a>
-
-                    <!-- Curso 2 -->
-                    <a href="#" class="course-card" onclick="openCourse(event,'qualidade')">
-                        <img class="cc-thumb" src="../assets/images/ava_qualidade.png" alt="Gestão da Qualidade">
-                        <div class="cc-body">
-                            <div class="cc-title">Gestão da Qualidade (ISO 9001)</div>
-                            <div class="cc-code">GQ-201 &bull; Turma B</div>
-                            <div class="cc-status">
-                                <div class="cc-dot cc-dot-green"></div>
-                                Em Curso
+                            <?php endforeach; ?>
                             </div>
-                            <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
-                        </div>
-                    </a>
+                        <?php endif; ?>
+                    </div>
+                    <div class="courses-footer">
+                        <a href="portal_professor.php">Acessar Portal do Professor →</a>
+                    </div>
 
-                    <!-- Curso 3 -->
-                    <a href="#" class="course-card" onclick="openCourse(event,'seguranca')">
-                        <img class="cc-thumb" src="../assets/images/ava_seguranca.png" alt="Saúde e Segurança">
-                        <div class="cc-body">
-                            <div class="cc-title">Saúde e Segurança do Trabalho (Mineração)</div>
-                            <div class="cc-code">SST-301 &bull; Turma A</div>
-                            <div class="cc-status">
-                                <div class="cc-dot cc-dot-amber"></div>
-                                Atenção — Freq. 72%
+                <?php else: ?>
+                    <!-- VISÃO ALUNO: cards de curso -->
+                    <div class="courses-grid">
+
+                        <a href="#" class="course-card" onclick="openCourse(event,'eletro')">
+                            <img class="cc-thumb" src="../assets/images/ava_eletro.png" alt="Manutenção Eletromecânica">
+                            <div class="cc-body">
+                                <div class="cc-title">Manutenção Eletromecânica I</div>
+                                <div class="cc-code">MEC-101 &bull; Turma A</div>
+                                <div class="cc-status"><div class="cc-dot cc-dot-green"></div>Em Curso</div>
+                                <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
                             </div>
-                            <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
-                        </div>
-                    </a>
+                        </a>
 
-                    <!-- Curso 4 -->
-                    <a href="#" class="course-card" onclick="openCourse(event,'logistica')">
-                        <img class="cc-thumb" src="../assets/images/ava_logistica.png" alt="Logística">
-                        <div class="cc-body">
-                            <div class="cc-title">Logística Aplicada e Cadeia de Suprimentos</div>
-                            <div class="cc-code">LOG-401 &bull; Turma A</div>
-                            <div class="cc-status">
-                                <div class="cc-dot cc-dot-gray"></div>
-                                Iniciando
+                        <a href="#" class="course-card" onclick="openCourse(event,'qualidade')">
+                            <img class="cc-thumb" src="../assets/images/ava_qualidade.png" alt="Gestão da Qualidade">
+                            <div class="cc-body">
+                                <div class="cc-title">Gestão da Qualidade (ISO 9001)</div>
+                                <div class="cc-code">GQ-201 &bull; Turma B</div>
+                                <div class="cc-status"><div class="cc-dot cc-dot-green"></div>Em Curso</div>
+                                <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
                             </div>
-                            <div class="cc-footer">Encerra em agosto 30, 2026 às 23:59</div>
-                        </div>
-                    </a>
+                        </a>
 
-                </div>
+                        <a href="#" class="course-card" onclick="openCourse(event,'seguranca')">
+                            <img class="cc-thumb" src="../assets/images/ava_seguranca.png" alt="Saúde e Segurança">
+                            <div class="cc-body">
+                                <div class="cc-title">Saúde e Segurança do Trabalho (Mineração)</div>
+                                <div class="cc-code">SST-301 &bull; Turma A</div>
+                                <div class="cc-status"><div class="cc-dot cc-dot-amber"></div>Atenção — Freq. 72%</div>
+                                <div class="cc-footer">Encerra em junho 18, 2026 às 23:59</div>
+                            </div>
+                        </a>
 
-                <div class="courses-footer">
-                    <a href="#">Exibir Todos os Cursos (4)</a>
-                </div>
-            </div>
+                        <a href="#" class="course-card" onclick="openCourse(event,'logistica')">
+                            <img class="cc-thumb" src="../assets/images/ava_logistica.png" alt="Logística">
+                            <div class="cc-body">
+                                <div class="cc-title">Logística Aplicada e Cadeia de Suprimentos</div>
+                                <div class="cc-code">LOG-401 &bull; Turma A</div>
+                                <div class="cc-status"><div class="cc-dot cc-dot-gray"></div>Iniciando</div>
+                                <div class="cc-footer">Encerra em agosto 30, 2026 às 23:59</div>
+                            </div>
+                        </a>
 
-            <!-- TRABALHO PENDENTE -->
+                    </div>
+                    <div class="courses-footer"><a href="#">Exibir Todos os Cursos (4)</a></div>
+                <?php endif; ?>
+
+            <!-- ATIVIDADES PENDENTES (real do BD) -->
+            <?php if (!$isProf): ?>
             <div class="panel">
                 <div class="panel-head">
                     <div class="panel-title">
                         <i data-lucide="clipboard-list" style="width:15px;height:15px;color:var(--c-brand);"></i>
-                        Trabalho pendente
-                        <i data-lucide="chevron-down" style="width:13px;height:13px;color:var(--c-text-muted);"></i>
+                        Atividades Pendentes
                     </div>
+                    <span class="panel-title-more" onclick="showSec('atividades')">Ver todas →</span>
                 </div>
                 <div class="pending-body">
-
-                    <!-- Grupo: Em Atraso -->
-                    <div class="pending-group">
-                        <div class="pending-group-head">
-                            <div class="pending-group-title" style="color:var(--c-red);">⚠ Em Atraso</div>
-                            <div class="pending-badge">1</div>
+                    <?php if (empty($atividadesAluno)): ?>
+                        <div style="padding:1rem;font-size:0.82rem;color:var(--c-text-muted);">
+                            Nenhuma atividade postada ainda. Fique de olho! 📚
                         </div>
+                    <?php else: ?>
+                        <?php foreach (array_slice($atividadesAluno, 0, 4) as $atv):
+                            $atrasado = $atv['data_entrega'] && $atv['data_entrega'] < date('Y-m-d') && !$atv['entrega_status'];
+                            $entregue = ($atv['entrega_status'] === 'entregue' || $atv['entrega_status'] === 'corrigida');
+                            $iconBg = $atrasado ? 'var(--c-red-lt)' : ($entregue ? 'var(--c-green-lt)' : 'var(--c-brand-lt)');
+                            $iconCor = $atrasado ? 'var(--c-red)' : ($entregue ? 'var(--c-green)' : 'var(--c-brand)');
+                            $icon    = $atrasado ? 'file-x' : ($entregue ? 'check-circle' : 'file-text');
+                        ?>
                         <div class="pending-item">
-                            <div class="pending-icon" style="background:var(--c-red-lt);color:var(--c-red);">
-                                <i data-lucide="file-x"></i>
+                            <div class="pending-icon" style="background:<?= $iconBg ?>;color:<?= $iconCor ?>;">
+                                <i data-lucide="<?= $icon ?>"></i>
                             </div>
                             <div class="pending-info">
-                                <div class="pending-name">Questionário — Normas NR-22 (Mineração)</div>
-                                <div class="pending-meta">Até 20 de mai &bull; Saúde e Segurança (Mineração)</div>
+                                <div class="pending-name"><?= htmlspecialchars($atv['titulo']) ?></div>
+                                <div class="pending-meta">
+                                    <?= $atv['data_entrega'] ? 'Até ' . date('d/m/Y', strtotime($atv['data_entrega'])) . ' &bull; ' : '' ?>
+                                    <?= htmlspecialchars($atv['disciplina_nome'] ?? '') ?>
+                                    <?php if ($entregue): ?>
+                                        &bull; <span style="color:var(--c-green);font-weight:600;">✓ Entregue</span>
+                                    <?php elseif ($atrasado): ?>
+                                        &bull; <span style="color:var(--c-red);font-weight:600;">⚠ Atrasada</span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="pending-divider"></div>
-
-                    <!-- Grupo: 29 maio - 11 junho -->
-                    <div class="pending-group">
-                        <div class="pending-group-head">
-                            <div class="pending-group-title">29 de maio – 11 de junho</div>
-                            <div class="pending-badge">2</div>
+                        <?php endforeach; ?>
+                        <?php if (count($atividadesAluno) > 4): ?>
+                        <div style="padding:8px 12px;font-size:0.75rem;color:var(--c-brand);font-weight:600;cursor:pointer;" onclick="showSec('atividades')">
+                            +<?= count($atividadesAluno) - 4 ?> atividades — ver todas
                         </div>
-                        <div class="pending-item">
-                            <div class="pending-icon">
-                                <i data-lucide="file-text"></i>
-                            </div>
-                            <div class="pending-info">
-                                <div class="pending-name">Questionário — Lubrificação e Rolamentos</div>
-                                <div class="pending-meta">Até 30 de mai &bull; Manutenção Eletromecânica I</div>
-                            </div>
-                        </div>
-                        <div class="pending-item">
-                            <div class="pending-icon">
-                                <i data-lucide="file-text"></i>
-                            </div>
-                            <div class="pending-info">
-                                <div class="pending-name">Estudo de Caso — Análise de Falha (Sotreq)</div>
-                                <div class="pending-meta">Até 07 de jun &bull; Gestão da Qualidade</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pending-divider"></div>
-
-                    <!-- Grupo: 11 - 30 junho -->
-                    <div class="pending-group">
-                        <div class="pending-group-head">
-                            <div class="pending-group-title">11 – 30 de junho</div>
-                            <div class="pending-badge">1</div>
-                        </div>
-                        <div class="pending-item">
-                            <div class="pending-icon" style="background:var(--c-amber-lt);color:var(--c-amber);">
-                                <i data-lucide="pen-line"></i>
-                            </div>
-                            <div class="pending-info">
-                                <div class="pending-name">Avaliação Bimestral — Módulos 1 e 2</div>
-                                <div class="pending-meta">Até 14 de jun &bull; Presencial &bull; Auditório Sophie Link</div>
-                            </div>
-                        </div>
-                    </div>
-
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
+            <?php endif; ?>
 
         </div><!-- /col-esquerda -->
 
@@ -460,12 +561,179 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
      ================================================================ -->
 <div id="sec-curso" class="page-section">
 <div class="page-wrap" style="max-width: 960px;">
-    <button onclick="closeCourse()" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--c-brand)';this.style.color='var(--c-brand)'" onmouseout="this.style.borderColor='var(--c-border)';this.style.color='var(--c-text-muted)'">
+    <button onclick="closeCourse()" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;transition:all 0.15s;">
         <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar aos cursos
     </button>
+    <div class="panel" id="curso-content"></div>
+</div>
+</div>
 
-    <div class="panel" id="curso-content">
-        <!-- Conteúdo dinâmico do curso -->
+<!-- ================================================================
+     SEÇÃO: MATERIAIS (PDFs e Avisos do professor)
+     ================================================================ -->
+<div id="sec-materiais" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel">
+        <div class="panel-head">
+            <div class="panel-title"><i data-lucide="file-text" style="width:15px;height:15px;color:var(--c-brand);"></i> Materiais e Apostilas</div>
+        </div>
+        <?php if (empty($materiaisAluno)): ?>
+            <div style="padding:2rem;text-align:center;color:var(--c-text-muted);font-size:0.85rem;">
+                <i data-lucide="inbox" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.3;"></i>
+                Nenhum material disponível ainda.<br>Quando o professor postar PDFs ou avisos, eles aparecerão aqui.
+            </div>
+        <?php else: ?>
+            <div style="display:flex;flex-direction:column;gap:0;">
+            <?php foreach ($materiaisAluno as $m):
+                $icon = $m['tipo'] === 'aviso' ? 'megaphone' : 'file-text';
+                $bg   = $m['tipo'] === 'aviso' ? '#F0FDF4' : '#EFF6FF';
+                $cor  = $m['tipo'] === 'aviso' ? '#15803D' : '#1D4ED8';
+            ?>
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-bottom:1px solid var(--c-border-lt);transition:background 0.12s;" onmouseover="this.style.background='var(--c-bg)'" onmouseout="this.style.background='transparent'">
+                <div style="width:40px;height:40px;border-radius:var(--radius);background:<?= $bg ?>;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i data-lucide="<?= $icon ?>" style="width:18px;height:18px;color:<?= $cor ?>;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="font-size:0.85rem;font-weight:700;color:var(--c-text);margin-bottom:3px;"><?= htmlspecialchars($m['titulo']) ?></div>
+                    <?php if ($m['descricao']): ?>
+                    <div style="font-size:0.75rem;color:var(--c-text-muted);margin-bottom:5px;line-height:1.5;"><?= nl2br(htmlspecialchars($m['descricao'])) ?></div>
+                    <?php endif; ?>
+                    <div style="font-size:0.68rem;color:var(--c-text-muted);">
+                        <?= htmlspecialchars($m['disciplina_nome'] ?? '') ?>
+                        &bull; Prof. <?= htmlspecialchars($m['professor_nome'] ?? '') ?>
+                        &bull; <?= date('d/m/Y', strtotime($m['criado_em'])) ?>
+                    </div>
+                </div>
+                <?php if ($m['arquivo_path']): ?>
+                <a href="download_material.php?id=<?= $m['id'] ?>" target="_blank"
+                   style="display:flex;align-items:center;gap:6px;padding:7px 12px;background:var(--c-brand);color:#fff;border-radius:var(--radius);font-size:0.75rem;font-weight:700;flex-shrink:0;text-decoration:none;">
+                    <i data-lucide="download" style="width:13px;height:13px;"></i> Baixar
+                </a>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+</div>
+
+<!-- ================================================================
+     SEÇÃO: ATIVIDADES
+     ================================================================ -->
+<div id="sec-atividades" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel">
+        <div class="panel-head">
+            <div class="panel-title"><i data-lucide="clipboard-list" style="width:15px;height:15px;color:var(--c-brand);"></i> Atividades</div>
+        </div>
+        <?php if (empty($atividadesAluno)): ?>
+            <div style="padding:2rem;text-align:center;color:var(--c-text-muted);font-size:0.85rem;">
+                <i data-lucide="check-circle" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.3;color:var(--c-green);"></i>
+                Nenhuma atividade postada ainda. Tudo em dia! 🎉
+            </div>
+        <?php else: ?>
+            <div style="display:flex;flex-direction:column;gap:0;">
+            <?php foreach ($atividadesAluno as $atv):
+                $hoje = date('Y-m-d');
+                $atrasado = $atv['data_entrega'] && $atv['data_entrega'] < $hoje && !$atv['entrega_status'];
+                $entregue = ($atv['entrega_status'] === 'entregue' || $atv['entrega_status'] === 'corrigida');
+                $borderCor = $atrasado ? 'var(--c-red)' : ($entregue ? 'var(--c-green)' : 'var(--c-brand)');
+            ?>
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-bottom:1px solid var(--c-border-lt);border-left:3px solid <?= $borderCor ?>;margin-bottom:2px;background:var(--c-surface);">
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                        <span style="font-size:0.85rem;font-weight:700;color:var(--c-text);"><?= htmlspecialchars($atv['titulo']) ?></span>
+                        <?php if ($entregue): ?>
+                            <span style="background:var(--c-green-lt);color:var(--c-green);font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:20px;">✓ Entregue</span>
+                        <?php elseif ($atrasado): ?>
+                            <span style="background:var(--c-red-lt);color:var(--c-red);font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:20px;">⚠ Atrasada</span>
+                        <?php else: ?>
+                            <span style="background:var(--c-brand-lt);color:var(--c-brand);font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:20px;">Pendente</span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if ($atv['descricao']): ?>
+                    <div style="font-size:0.75rem;color:var(--c-text-muted);margin-bottom:6px;line-height:1.5;"><?= nl2br(htmlspecialchars($atv['descricao'])) ?></div>
+                    <?php endif; ?>
+                    <div style="font-size:0.68rem;color:var(--c-text-muted);">
+                        <?= htmlspecialchars($atv['disciplina_nome'] ?? '') ?>
+                        &bull; Prof. <?= htmlspecialchars($atv['professor_nome'] ?? '') ?>
+                        <?php if ($atv['data_entrega']): ?>
+                        &bull; <strong>Prazo: <?= date('d/m/Y', strtotime($atv['data_entrega'])) ?></strong>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php if ($atv['arquivo_path']): ?>
+                <a href="download_material.php?id=<?= $atv['id'] ?>" target="_blank"
+                   style="display:flex;align-items:center;gap:5px;padding:6px 10px;background:var(--c-bg);border:1px solid var(--c-border);color:var(--c-brand);border-radius:var(--radius);font-size:0.72rem;font-weight:700;flex-shrink:0;text-decoration:none;">
+                    <i data-lucide="download" style="width:12px;height:12px;"></i> Material
+                </a>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+</div>
+
+<!-- ================================================================
+     SEÇÃO: FREQUÊNCIA
+     ================================================================ -->
+<div id="sec-frequencia" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel">
+        <div class="panel-head">
+            <div class="panel-title"><i data-lucide="calendar-check" style="width:15px;height:15px;color:var(--c-brand);"></i> Minha Frequência</div>
+            <?php if (!empty($frequenciaAluno)): ?>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.75rem;color:var(--c-text-muted);">Presença geral:</span>
+                <span style="font-weight:700;font-size:0.85rem;color:<?= $percPresenca >= 75 ? 'var(--c-green)' : 'var(--c-red)' ?>;"><?= $percPresenca ?>%</span>
+                <span style="font-size:0.65rem;color:var(--c-text-muted);"><?= $percPresenca >= 75 ? '✓ Regular' : '⚠ Abaixo do mínimo (75%)' ?></span>
+            </div>
+            <?php endif; ?>
+        </div>
+        <?php if (empty($frequenciaAluno)): ?>
+            <div style="padding:2rem;text-align:center;color:var(--c-text-muted);font-size:0.85rem;">
+                <i data-lucide="calendar" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.3;"></i>
+                Nenhuma frequência registrada ainda.
+            </div>
+        <?php else: ?>
+            <table style="width:100%;border-collapse:collapse;">
+                <thead><tr style="border-bottom:1px solid var(--c-border);">
+                    <th style="text-align:left;padding:9px 14px;font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);">Data</th>
+                    <th style="text-align:left;padding:9px 14px;font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);">Disciplina</th>
+                    <th style="text-align:center;padding:9px 14px;font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);">Entrada</th>
+                    <th style="text-align:center;padding:9px 14px;font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);">Saída</th>
+                    <th style="text-align:center;padding:9px 14px;font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);">Status</th>
+                </tr></thead>
+                <tbody>
+                <?php foreach ($frequenciaAluno as $f):
+                    $cor = $f['status'] === 'presente' ? 'green' : ($f['status'] === 'justificada' ? 'amber' : 'red');
+                    $label = $f['status'] === 'presente' ? 'Presente' : ($f['status'] === 'justificada' ? 'Justificada' : 'Falta');
+                ?>
+                <tr style="border-bottom:1px solid var(--c-border-lt);">
+                    <td style="padding:10px 14px;font-size:0.82rem;font-weight:600;"><?= date('d/m/Y', strtotime($f['data_registro'])) ?></td>
+                    <td style="padding:10px 14px;font-size:0.82rem;color:var(--c-text-muted);"><?= htmlspecialchars($f['disciplina_nome'] ?? '—') ?></td>
+                    <td style="padding:10px 14px;font-size:0.82rem;text-align:center;"><?= $f['horario_entrada'] ? substr($f['horario_entrada'],0,5) : '—' ?></td>
+                    <td style="padding:10px 14px;font-size:0.82rem;text-align:center;"><?= $f['horario_saida'] ? substr($f['horario_saida'],0,5) : '—' ?></td>
+                    <td style="padding:10px 14px;text-align:center;">
+                        <span style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:0.65rem;font-weight:700;background:var(--c-<?= $cor ?>-lt);color:var(--c-<?= $cor ?>);"><?= $label ?></span>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
     </div>
 </div>
 </div>
@@ -480,7 +748,10 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
         <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
     </button>
     <div class="panel">
-        <div class="panel-head"><div class="panel-title"><i data-lucide="bar-chart-2" style="width:15px;height:15px;color:var(--c-brand);"></i> Boletim 2026/1</div></div>
+        <div class="panel-head"><div class="panel-title"><i data-lucide="bar-chart-2" style="width:15px;height:15px;color:var(--c-brand);"></i> Boletim <?= date('Y') ?>/1 — <?= htmlspecialchars($nomeAluno) ?></div></div>
+        <?php if (empty($boletim)): ?>
+            <div style="padding:1.5rem;color:var(--c-text-muted);font-size:0.85rem;">Nenhuma nota lançada ainda. As notas aparecerão aqui conforme forem registradas pelo professor.</div>
+        <?php else: ?>
         <table style="width:100%;border-collapse:collapse;">
             <thead><tr style="border-bottom:1px solid var(--c-border);">
                 <th style="text-align:left;padding:9px 14px;font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);">Disciplina</th>
@@ -491,20 +762,30 @@ $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
                 <th style="text-align:center;padding:9px 14px;font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);">Situação</th>
             </tr></thead>
             <tbody>
-                <?php $notas = [['Manutenção Eletromecânica I','8.0','9.0','8.5','2','green','Aprovado'],['Gestão da Qualidade','9.0','9.0','9.0','0','green','Aprovado'],['Saúde e Segurança (Mineração)','6.0','7.0','6.5','4','amber','Recuperação'],['Logística Aplicada','—','—','—','0','gray','Em andamento']]; foreach ($notas as $n): ?>
+                <?php foreach ($boletim as $disc => $b):
+                    $notas = $b['notas'];
+                    $n1  = isset($notas[0]) ? number_format($notas[0], 1) : '—';
+                    $n2  = isset($notas[1]) ? number_format($notas[1], 1) : '—';
+                    $media = count($notas) > 0 ? array_sum($notas) / count($notas) : null;
+                    $mediaStr = $media !== null ? number_format($media, 1) : '—';
+                    $faltas = (int)($b['faltas'] ?? 0);
+                    $cor = $media === null ? 'gray' : ($media >= 7.0 ? 'green' : ($media >= 5.0 ? 'amber' : 'red'));
+                    $sit = $media === null ? 'Em andamento' : ($media >= 7.0 ? 'Aprovado' : ($media >= 5.0 ? 'Recuperação' : 'Reprovado'));
+                ?>
                 <tr style="border-bottom:1px solid var(--c-border-lt);transition:background 0.12s;" onmouseover="this.style.background='var(--c-bg)'" onmouseout="this.style.background='transparent'">
-                    <td style="padding:11px 14px;font-size:0.82rem;font-weight:600;color:var(--c-text);"><?= $n[0] ?></td>
-                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;"><?= $n[1] ?></td>
-                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;"><?= $n[2] ?></td>
-                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;font-weight:700;color:var(--c-<?= $n[5] == 'amber' ? 'amber' : ($n[5] == 'gray' ? 'text-muted' : 'green') ?>);"><?= $n[3] ?></td>
-                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;"><?= $n[4] ?></td>
+                    <td style="padding:11px 14px;font-size:0.82rem;font-weight:600;color:var(--c-text);"><?= htmlspecialchars($disc) ?></td>
+                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;"><?= $n1 ?></td>
+                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;"><?= $n2 ?></td>
+                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;font-weight:700;color:var(--c-<?= $cor == 'gray' ? 'text-muted' : $cor ?>);"><?= $mediaStr ?></td>
+                    <td style="padding:11px 14px;font-size:0.82rem;text-align:center;"><?= $faltas ?></td>
                     <td style="padding:11px 14px;text-align:center;">
-                        <span style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:0.65rem;font-weight:700;background:var(--c-<?= $n[5] ?>-lt);color:var(--c-<?= $n[5] == 'gray' ? 'text-muted' : $n[5] ?>);"><?= $n[6] ?></span>
+                        <span style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:0.65rem;font-weight:700;background:var(--c-<?= $cor ?>-lt);color:var(--c-<?= $cor == 'gray' ? 'text-muted' : $cor ?>);"><?= $sit ?></span>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <?php endif; ?>
     </div>
 </div>
 </div>
