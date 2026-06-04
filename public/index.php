@@ -33,11 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="assets/css/toast.css?v=18">
-    <link rel="stylesheet" href="assets/css/index.css?v=18">
+    <link rel="stylesheet" href="assets/css/toast.css?v=23">
+    <link rel="stylesheet" href="assets/css/index.css?v=23">
 
-    <link rel="stylesheet" href="assets/css/premium.css?v=18">
-    <link rel="stylesheet" href="assets/css/chatbot.css?v=1">
+    <link rel="stylesheet" href="assets/css/premium.css?v=23">
+    <link rel="stylesheet" href="assets/css/chatbot.css?v=6">
 </head>
 
 <body>
@@ -156,13 +156,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             
             <!-- Elementos Flutuantes -->
             <div class="float-box float-box-1">
-                <i data-lucide="star" style="width: 50px; height: 50px;"></i>
+                <i data-lucide="book-open"></i>
             </div>
             <div class="float-box float-box-2">
-                <i data-lucide="book-open" style="width: 40px; height: 40px;"></i>
+                <i data-lucide="sparkles"></i>
             </div>
             <div class="float-box float-box-3">
-                <span style="font-family: var(--font-display); font-size: 3.5rem; font-weight: 800;">SL</span>
+                <span>SL</span>
             </div>
         </div>
 
@@ -171,18 +171,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item active" data-index="0">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <div class="hero-tag"><i data-lucide="zap"></i> Foco na Prática</div>
-                        
-                        <h1 class="hero-title-uniaene">
-                            Sua jornada de<br>
-                            transformação começa aqui.
+                        <h1 class="hero-title-new">
+                            <div class="title-row-1">
+                                SUA JORNADA <span class="title-badge">O DIA DA</span>
+                                <span class="title-stars">
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                </span>
+                            </div>
+                            <div class="title-row-2">TRANSFORMAÇÃO!</div>
                         </h1>
-                        <p class="hero-subtitle-uniaene">Prepare-se para o mercado de trabalho com uma metodologia que valoriza o aprendizado prático e o talento de quem transforma o mundo.</p>
-
-                        <div class="carousel-nav-arrows">
-                            <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
-                            <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
-                        </div>
+                        <p class="hero-subtitle-new">Prepare-se para o mercado de trabalho com uma metodologia que valoriza o aprendizado prático e o talento de quem transforma o mundo.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
                         <img src="assets/images/ava_hero.png" alt="Profissionais Sophie Link">
@@ -194,18 +196,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item" data-index="1">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <div class="hero-tag"><i data-lucide="code"></i> Tecnologia & Inovação</div>
-                        
-                        <h1 class="hero-title-uniaene">
-                            Conecte-se às<br>
-                            exigências do futuro.
+                        <h1 class="hero-title-new">
+                            <div class="title-row-1">
+                                CONECTE-SE <span class="title-badge">AGORA</span>
+                                <span class="title-stars">
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                </span>
+                            </div>
+                            <div class="title-row-2">AO FUTURO!</div>
                         </h1>
-                        <p class="hero-subtitle-uniaene">Domine as tecnologias mais requisitadas pelas grandes indústrias e destaque-se no polo tecnológico de Carajás.</p>
-
-                        <div class="carousel-nav-arrows">
-                            <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
-                            <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
-                        </div>
+                        <p class="hero-subtitle-new">Domine as tecnologias mais requisitadas pelas grandes indústrias e destaque-se no polo tecnológico de Carajás.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
                         <img src="assets/images/tech_student_hero-removebg-preview.png" alt="Aluno de Tecnologia">
@@ -217,18 +221,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item" data-index="2">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <div class="hero-tag"><i data-lucide="hard-hat"></i> Indústria & Segurança</div>
-                        
-                        <h1 class="hero-title-uniaene">
-                            A força que move<br>
-                            grandes resultados.
+                        <h1 class="hero-title-new">
+                            <div class="title-row-1">
+                                A FORÇA QUE <span class="title-badge">MOVE</span>
+                                <span class="title-stars">
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                    <i data-lucide="star" class="fill-star"></i>
+                                </span>
+                            </div>
+                            <div class="title-row-2">RESULTADOS!</div>
                         </h1>
-                        <p class="hero-subtitle-uniaene">Treinamentos e certificações de excelência, com foco absoluto na segurança e alta produtividade operacional.</p>
-
-                        <div class="carousel-nav-arrows">
-                            <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
-                            <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
-                        </div>
+                        <p class="hero-subtitle-new">Treinamentos e certificações de excelência, com foco absoluto na segurança e alta produtividade operacional.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
                         <img src="assets/images/hero_aprendiz-removebg-preview.png" alt="Operador de Máquinas">
