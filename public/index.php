@@ -171,19 +171,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item active" data-index="0">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <div class="hero-tag"><i data-lucide="zap"></i> PRÁTICA</div>
+                        <div class="hero-tag"><i data-lucide="zap"></i> Foco na Prática</div>
                         
                         <h1 class="hero-title-uniaene">
-                            <span class="text-white">HOJE É</span> 
-                            <span class="text-highlight">DIA DE</span><br>
-                            <span class="text-white">TRANSFORMAÇÃO!</span>
+                            Sua jornada de<br>
+                            transformação começa aqui.
                         </h1>
-                        <p class="hero-subtitle-uniaene">O talento de quem transforma o mundo com seu trabalho. Prepare-se para o mercado com quem entende de prática.</p>
+                        <p class="hero-subtitle-uniaene">Prepare-se para o mercado de trabalho com uma metodologia que valoriza o aprendizado prático e o talento de quem transforma o mundo.</p>
 
-                        <div class="hero-actions">
-                            <a href="#cursos" class="btn-primary" style="background: var(--c-dark); color: #fff; border-radius: 50px; font-weight: 800; padding: 16px 36px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">VER CURSOS</a>
-                            <a href="javascript:toggleMenu()" class="btn-secondary" style="border-color: #1F2937; color: #1F2937; background: transparent; border-radius: 50px; font-weight: 800; padding: 16px 36px;">ACESSAR PORTAL</a>
-                        </div>
                         <div class="carousel-nav-arrows">
                             <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
                             <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
@@ -199,19 +194,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item" data-index="1">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <div class="hero-tag"><i data-lucide="code"></i> INOVAÇÃO</div>
+                        <div class="hero-tag"><i data-lucide="code"></i> Tecnologia & Inovação</div>
                         
                         <h1 class="hero-title-uniaene">
-                            <span class="text-white">CONECTE-SE</span> 
-                            <span class="text-highlight">AO</span><br>
-                            <span class="text-white">FUTURO!</span>
+                            Conecte-se às<br>
+                            exigências do futuro.
                         </h1>
-                        <p class="hero-subtitle-uniaene">Domine as tecnologias mais exigidas pelas grandes indústrias e destaque-se no polo tecnológico da região.</p>
+                        <p class="hero-subtitle-uniaene">Domine as tecnologias mais requisitadas pelas grandes indústrias e destaque-se no polo tecnológico de Carajás.</p>
 
-                        <div class="hero-actions">
-                            <a href="#cursos" class="btn-primary" style="background: var(--c-dark); color: #fff; border-radius: 50px; font-weight: 800; padding: 16px 36px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">VER CURSOS</a>
-                            <a href="javascript:toggleMenu()" class="btn-secondary" style="border-color: #1F2937; color: #1F2937; background: transparent; border-radius: 50px; font-weight: 800; padding: 16px 36px;">ACESSAR PORTAL</a>
-                        </div>
                         <div class="carousel-nav-arrows">
                             <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
                             <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>
@@ -227,19 +217,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item" data-index="2">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <div class="hero-tag"><i data-lucide="hard-hat"></i> INDÚSTRIA</div>
+                        <div class="hero-tag"><i data-lucide="hard-hat"></i> Indústria & Segurança</div>
                         
                         <h1 class="hero-title-uniaene">
-                            <span class="text-white">FORÇA QUE</span> 
-                            <span class="text-highlight">MOVE</span><br>
-                            <span class="text-white">RESULTADOS!</span>
+                            A força que move<br>
+                            grandes resultados.
                         </h1>
-                        <p class="hero-subtitle-uniaene">Treinamentos pesados e certificações com foco absoluto em segurança e alta produtividade operacional.</p>
+                        <p class="hero-subtitle-uniaene">Treinamentos e certificações de excelência, com foco absoluto na segurança e alta produtividade operacional.</p>
 
-                        <div class="hero-actions">
-                            <a href="#cursos" class="btn-primary" style="background: var(--c-dark); color: #fff; border-radius: 50px; font-weight: 800; padding: 16px 36px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">VER CURSOS</a>
-                            <a href="javascript:toggleMenu()" class="btn-secondary" style="border-color: #1F2937; color: #1F2937; background: transparent; border-radius: 50px; font-weight: 800; padding: 16px 36px;">ACESSAR PORTAL</a>
-                        </div>
                         <div class="carousel-nav-arrows">
                             <button class="nav-prev" onclick="prevSlide()"><i data-lucide="chevron-left"></i></button>
                             <button class="nav-next" onclick="nextSlide()"><i data-lucide="chevron-right"></i></button>

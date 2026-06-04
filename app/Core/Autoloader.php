@@ -82,4 +82,5 @@ class Autoloader
 Autoloader::register();
 Autoloader::addNamespace('Models', __DIR__ . '/../Models');
 Autoloader::addNamespace('Core', __DIR__ . '/../Core');
+Autoloader::addNamespace('Helpers', __DIR__ . '/../Helpers');
 Autoloader::addNamespace('', __DIR__ . '/');
