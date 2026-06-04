@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
     <link rel="stylesheet" href="assets/css/index.css?v=18">
 
     <link rel="stylesheet" href="assets/css/premium.css?v=18">
+    <link rel="stylesheet" href="assets/css/chatbot.css?v=1">
 </head>
 
 <body>
@@ -664,7 +665,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
 
         <script src="assets/js/toast.js"></script>
         <script src="assets/js/index.js"></script>
+
+        <!-- CHATBOT HTML -->
+        <button id="chatbot-toggle" class="chatbot-toggle-btn">
+            <i data-lucide="message-square"></i>
+        </button>
+
+        <div id="chatbot-container" class="chatbot-container hidden">
+            <div class="chatbot-header">
+                <div class="chatbot-header-info">
+                    <div class="chatbot-avatar">
+                        <i data-lucide="bot" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <strong>Assistente Sophie</strong>
+                        <span>Online agora</span>
+                    </div>
+                </div>
+
+                <div class="chatbot-header-actions">
+                    <button id="chatbot-menu-btn" class="chat-action-btn"><i data-lucide="more-vertical"></i></button>
+                    <button id="chatbot-close" class="chat-action-btn"><i data-lucide="x"></i></button>
+
+                    <div id="chatbot-dropdown" class="chatbot-dropdown hidden">
+                        <button id="chatbot-restart-menu">
+                            <i data-lucide="refresh-cw" style="width:14px; height:14px;"></i>
+                            Reiniciar Chat
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <label class="dropdown-label">Atendimento:</label>
+                        <select id="mode" class="dropdown-select">
+                            <option value="ai" selected>Inteligência Artificial</option>
+                            <option value="manual">Menu Opções</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="message bot">Olá! Sou a assistente virtual do Sophie Link. Como posso ajudar com seu futuro profissional hoje?</div>
+            </div>
+
+            <form id="chat-form" class="chatbot-input-area">
+                <input type="hidden" id="visitor_name" value="Visitante">
+                <input type="hidden" id="visitor_phone" value="">
+                <input type="hidden" id="visitor_email" value="">
+
+                <input type="text" id="message" placeholder="Escreva sua mensagem..." autocomplete="off" required>
+                <button type="submit" id="chatbot-send">
+                    <i data-lucide="send" style="width:18px; height:18px;"></i>
+                </button>
+            </form>
+        </div>
+
+        <div id="custom-confirm" class="confirm-overlay hidden">
+            <div class="confirm-card">
+                <h3>Reiniciar Chat?</h3>
+                <p>Isso apagará todo o histórico da conversa atual.</p>
+                <div class="confirm-buttons">
+                    <button id="confirm-cancel" class="btn-cancel">Cancelar</button>
+                    <button id="confirm-yes" class="btn-yes">Sim, reiniciar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chatbot Script -->
+        <script src="assets/js/chatbot.js?v=1"></script>
+        
+        <!-- Re-render lucide icons after injecting HTML -->
+        <script>
+            lucide.createIcons();
+        </script>
 </body>
-
 </html>
-
