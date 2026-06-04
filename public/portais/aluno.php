@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // portal_aluno.php — Portal do Aluno | Centro Técnico Profissionalizante Sophie Link
 session_start();
 
@@ -247,6 +247,35 @@ foreach ($horariosDb as $h) {
 }
 $events_json = json_encode($events_fc);
 
+$notasPorDisciplina = [];
+$labelsAv = [];
+$valuesAv = [];
+$mediaTurmaAv = [];
+
+foreach ($notasDb as $n) {
+    $did = $n['disciplina_id'] ?: 0;
+    if (!isset($notasPorDisciplina[$did])) {
+        $notasPorDisciplina[$did] = [];
+    }
+    $notasPorDisciplina[$did][] = [
+        'atividade' => $n['atividade'],
+        'nota' => (float)$n['valor_nota'],
+        'data' => date('d/m/Y', strtotime($n['data_registro']))
+    ];
+}
+
+$notasGrafico = array_reverse($notasDb);
+foreach ($notasGrafico as $n) {
+    $labelsAv[] = $n['atividade'];
+    $valuesAv[] = (float)$n['valor_nota'];
+    $mediaTurmaAv[] = 7.0;
+}
+
+$jsonNotasReais = json_encode($notasPorDisciplina);
+$jsonLabelsAv = json_encode($labelsAv);
+$jsonValuesAv = json_encode($valuesAv);
+$jsonMediaTurmaAv = json_encode($mediaTurmaAv);
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -264,6 +293,12 @@ $events_json = json_encode($events_fc);
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link rel="stylesheet" href="../assets/css/portais/aluno.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/premium.css?v=<?= time() ?>">
+    <script>
+        window.notasReais = <?= $jsonNotasReais ?>;
+        window.notasLabels = <?= $jsonLabelsAv ?>;
+        window.notasValues = <?= $jsonValuesAv ?>;
+        window.mediaTurmaAv = <?= $jsonMediaTurmaAv ?>;
+    </script>
 
         <style>
             /* Modo Escuro Premium */
@@ -679,7 +714,7 @@ $events_json = json_encode($events_fc);
                                                     <td style="padding: 16px; text-align: center; font-weight: 700; color: #94A3B8; font-size: 0.95rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">—</td>
                                                     <td style="padding: 16px; text-align: center; font-weight: 800; color: <?= $finalColor ?>; font-size: 1rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;"><?= $mediaStr ?></td>
                                                     <td style="padding: 16px; text-align: right; border-radius: 0 12px 12px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0;">
-                                                        <button onclick="abrirModalNotas('<?= addslashes($d['nome']) ?>', <?= $media !== null ? $media : 'null' ?>)" style="background: transparent; border: 1px solid #0EA5E9; color: #0EA5E9; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0EA5E9'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='#0EA5E9';">Ver Notas</button>
+                                                        <button onclick="abrirModalNotas('<?= $discId ?>', '<?= addslashes($d['nome']) ?>', <?= $media !== null ? $media : 'null' ?>)" style="background: transparent; border: 1px solid #0EA5E9; color: #0EA5E9; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0EA5E9'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='#0EA5E9';">Ver Notas</button>
                                                     </td>
                                                 </tr>
                                                 <?php endforeach; ?>

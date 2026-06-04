@@ -225,7 +225,7 @@ function switchNotasTab(tab, el) {
 
 // ==================== MODAL DE NOTAS DETALHADO ====================
 
-function abrirModalNotas(disciplinaNome, media) {
+function abrirModalNotas(disciplinaId, disciplinaNome, media) {
     const modal = document.getElementById('modalNotas');
     if (!modal) return;
 
@@ -234,32 +234,33 @@ function abrirModalNotas(disciplinaNome, media) {
     const tbody = document.getElementById('modalNotasBody');
     tbody.innerHTML = '';
 
-    const dadosMocks = [
-        { etapa: 'Média', dataAvaliacao: '28/04/2026', avaliacao: 'AVALIAÇÃO GERAL', valor: '3,00', nota: '2,48', notaBaixa: false, dataDevolucao: '' },
-        { etapa: 'Média', dataAvaliacao: '',            avaliacao: 'CERTIFICADO',     valor: '2,00', nota: '2,00', notaBaixa: false, dataDevolucao: '' },
-        { etapa: 'Média', dataAvaliacao: '',            avaliacao: 'TRABALHOS',        valor: '2,00', nota: '0,80', notaBaixa: true,  dataDevolucao: '' },
-        { etapa: 'Média', dataAvaliacao: '',            avaliacao: 'TRABALHO FINAL',   valor: '3,00', nota: '3,00', notaBaixa: false, dataDevolucao: '' }
-    ];
+    const avaliacoes = window.notasReais && window.notasReais[disciplinaId] ? window.notasReais[disciplinaId] : [];
 
-    dadosMocks.forEach(d => {
-        const notaBadge = d.notaBaixa
-            ? `<span style="background:#FEF2F2;color:#DC2626;padding:4px 10px;border-radius:6px;font-weight:700;border:1px solid #FECACA;">${d.nota}</span>`
-            : `<span style="background:#F0FDF4;color:#16A34A;padding:4px 10px;border-radius:6px;font-weight:700;border:1px solid #BBF7D0;">${d.nota}</span>`;
+    if (avaliacoes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: #64748B;">Nenhuma nota registrada para esta disciplina.</td></tr>';
+    } else {
+        avaliacoes.forEach(d => {
+            const isBaixa = d.nota < 7.0;
+            const notaFormatada = d.nota.toFixed(2).replace('.', ',');
+            const notaBadge = isBaixa
+                ? `<span style="background:#FEF2F2;color:#DC2626;padding:4px 10px;border-radius:6px;font-weight:700;border:1px solid #FECACA;">${notaFormatada}</span>`
+                : `<span style="background:#F0FDF4;color:#16A34A;padding:4px 10px;border-radius:6px;font-weight:700;border:1px solid #BBF7D0;">${notaFormatada}</span>`;
 
-        const tr = document.createElement('tr');
-        tr.style.cssText = 'background:#FFFFFF;border-bottom:1px solid #E2E8F0;transition:background 0.2s;';
-        tr.onmouseover = () => tr.style.background = '#F8FAFC';
-        tr.onmouseout  = () => tr.style.background = '#FFFFFF';
-        tr.innerHTML = `
-            <td style="padding:16px 20px;font-weight:600;color:#475569;">${d.etapa}</td>
-            <td style="padding:16px 20px;text-align:center;color:#64748B;font-weight:500;">${d.dataAvaliacao || '-'}</td>
-            <td style="padding:16px 20px;color:#1E293B;font-weight:600;">${d.avaliacao}</td>
-            <td style="padding:16px 20px;text-align:center;color:#64748B;font-weight:600;">${d.valor} pts</td>
-            <td style="padding:16px 20px;text-align:center;">${notaBadge}</td>
-            <td style="padding:16px 20px;text-align:center;color:#64748B;">${d.dataDevolucao || '-'}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+            const tr = document.createElement('tr');
+            tr.style.cssText = 'background:#FFFFFF;border-bottom:1px solid #E2E8F0;transition:background 0.2s;';
+            tr.onmouseover = () => tr.style.background = '#F8FAFC';
+            tr.onmouseout  = () => tr.style.background = '#FFFFFF';
+            tr.innerHTML = `
+                <td style="padding:16px 20px;font-weight:600;color:#475569;">Geral</td>
+                <td style="padding:16px 20px;text-align:center;color:#64748B;font-weight:500;">${d.data || '-'}</td>
+                <td style="padding:16px 20px;color:#1E293B;font-weight:600;">${d.atividade}</td>
+                <td style="padding:16px 20px;text-align:center;color:#64748B;font-weight:600;">-</td>
+                <td style="padding:16px 20px;text-align:center;">${notaBadge}</td>
+                <td style="padding:16px 20px;text-align:center;color:#64748B;">-</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
 
     modal.classList.add('active');
 }
@@ -319,7 +320,7 @@ function iniciarPagamento(faturaId) {
     btn.disabled = true;
     lucide.createIcons();
 
-    fetch('../api/checkout_mp.php', {
+    fetch('../api/pagamentos/checkout_mp.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: faturaId })
