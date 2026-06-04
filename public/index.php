@@ -1,15 +1,22 @@
 <?php // Landing Page Institucional — Centro Técnico Profissionalizante Sophie Link 
 session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 require_once '../includes/db.php';
 /** @var \PDO $pdo */
 $msg_contato = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'contato') {
-    try {
-        $stmt = $pdo->prepare("INSERT INTO mensagens_contato (nome, email, telefone, mensagem) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$_POST['nome'], $_POST['email'], $_POST['telefone'], $_POST['mensagem']]);
-        $msg_contato = "Sua mensagem foi enviada com sucesso! Nossa secretaria entrará em contato em breve.";
-    } catch (Exception $e) {
-        $msg_contato = "Erro ao enviar mensagem: " . $e->getMessage();
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $msg_contato = "Erro: Token de segurança inválido. Tente enviar novamente.";
+    } else {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO mensagens_contato (nome, email, telefone, mensagem) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$_POST['nome'], $_POST['email'], $_POST['telefone'], $_POST['mensagem']]);
+            $msg_contato = "Sua mensagem foi enviada com sucesso! Nossa secretaria entrará em contato em breve.";
+        } catch (Exception $e) {
+            $msg_contato = "Erro ao enviar mensagem: " . $e->getMessage();
+        }
     }
 }
 ?>
@@ -32,12 +39,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" as="style">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="assets/css/toast.css?v=23">
-    <link rel="stylesheet" href="assets/css/index.css?v=23">
+    <link rel="stylesheet" href="assets/css/toast.css?v=24">
+    <link rel="stylesheet" href="assets/css/index.css?v=24">
 
-    <link rel="stylesheet" href="assets/css/premium.css?v=23">
-    <link rel="stylesheet" href="assets/css/chatbot.css?v=6">
+    <link rel="stylesheet" href="assets/css/premium.css?v=24">
+    <link rel="stylesheet" href="assets/css/chatbot.css?v=7">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Centro Técnico Profissionalizante Sophie Link",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Avenida Amazonas, 64 - Bairro Rio Verde",
+        "addressLocality": "Parauapebas",
+        "addressRegion": "PA",
+        "addressCountry": "BR"
+      },
+      "telephone": "+55-94-99999-9999"
+    }
+    </script>
 </head>
 
 <body>
@@ -48,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <img src="assets/images/logoNome.png" alt="Sophie Link" style="width: 250px; object-fit: contain;">
         </a>
         <div class="nav-actions">
-            <button class="menu-btn" id="menuOpen"><i data-lucide="menu"></i> Menu</button>
+            <button class="menu-btn" id="menuOpen" aria-label="Abrir menu"><i data-lucide="menu"></i> Menu</button>
         </div>
     </nav>
 
@@ -60,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                 <div class="sm-head-mark">SL</div>
                 <div class="sm-head-name"><span>Sophie</span> Link</div>
             </div>
-            <button class="sm-close" id="smClose"><i data-lucide="x"></i></button>
+            <button class="sm-close" id="smClose" aria-label="Fechar menu"><i data-lucide="x"></i></button>
         </div>
 
         <div class="sm-section">Navegação</div>
@@ -71,58 +96,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         <div class="sm-section">Portais</div>
 
         <!-- Accordion: Sou Aluno -->
-        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-1">
             <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="graduation-cap" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Aluno</span>
             <i data-lucide="chevron-down"></i>
         </button>
-        <div class="sm-acc-body">
+        <div class="sm-acc-body" id="acc-1">
             <a href="auth/login_aluno.php" class="sm-sub-link">Acessar Portal do Aluno</a>
             <a href="auth/login_ava.php" class="sm-sub-link">Acessar Ambiente Virtual (AVA)</a>
         </div>
 
         <!-- Accordion: Sou Professor -->
-        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-2">
             <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="user-check" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Professor</span>
             <i data-lucide="chevron-down"></i>
         </button>
-        <div class="sm-acc-body">
+        <div class="sm-acc-body" id="acc-2">
             <a href="auth/login_professor.php" class="sm-sub-link">Acessar Portal do Professor</a>
             <a href="auth/login_ava.php" class="sm-sub-link">Acessar Ambiente Virtual (AVA)</a>
         </div>
 
         <!-- Accordion: Sou Colaborador -->
-        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-3">
             <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="briefcase" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Colaborador</span>
             <i data-lucide="chevron-down"></i>
         </button>
-        <div class="sm-acc-body">
+        <div class="sm-acc-body" id="acc-3">
             <a href="auth/login_colaborador.php" class="sm-sub-link">Painel do Colaborador</a>
         </div>
 
         <!-- Accordion: Sou Empresa -->
-        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-4">
             <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="building" style="width:16px;height:16px;color:var(--c-text-light);"></i> Sou Empresa</span>
             <i data-lucide="chevron-down"></i>
         </button>
-        <div class="sm-acc-body">
+        <div class="sm-acc-body" id="acc-4">
             <a href="auth/login_empresa.php" class="sm-sub-link">Acessar Portal da Empresa</a>
         </div>
 
         <!-- Accordion: Área Administrativa -->
-        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-5">
             <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="shield" style="width:16px;height:16px;color:var(--c-text-light);"></i> Área Administrativa</span>
             <i data-lucide="chevron-down"></i>
         </button>
-        <div class="sm-acc-body">
+        <div class="sm-acc-body" id="acc-5">
             <a href="auth/login_admin.php" class="sm-sub-link">Acesso Gerencial</a>
         </div>
 
         <!-- Accordion: Nossos Cursos -->
-        <button class="sm-acc-btn" onclick="toggleAcc(this)">
+        <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-6">
             <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="book-open" style="width:16px;height:16px;color:var(--c-text-light);"></i> Nossos Cursos</span>
             <i data-lucide="chevron-down"></i>
         </button>
-        <div class="sm-acc-body">
+        <div class="sm-acc-body" id="acc-6">
             <a href="cursos/administracao.php" class="sm-sub-link">Técnico em Administração</a>
             <a href="cursos/eletrica-industrial.php" class="sm-sub-link">Técnico em Elétrica Industrial</a>
             <a href="cursos/eletro-mecanica.php" class="sm-sub-link">Técnico em Eletromecânica</a>
@@ -187,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         <p class="hero-subtitle-new">Prepare-se para o mercado de trabalho com uma metodologia que valoriza o aprendizado prático e o talento de quem transforma o mundo.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
-                        <img src="assets/images/ava_hero.png" alt="Profissionais Sophie Link">
+                        <img src="assets/images/ava_hero.png" alt="Painel do ambiente virtual de aprendizagem">
                     </div>
                 </div>
             </div>
@@ -196,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item" data-index="1">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <h1 class="hero-title-new">
+                        <h2 class="hero-title-new">
                             <div class="title-row-1">
                                 CONECTE-SE <span class="title-badge">AGORA</span>
                                 <span class="title-stars">
@@ -208,11 +233,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                                 </span>
                             </div>
                             <div class="title-row-2">AO FUTURO!</div>
-                        </h1>
+                        </h2>
                         <p class="hero-subtitle-new">Domine as tecnologias mais requisitadas pelas grandes indústrias e destaque-se no polo tecnológico de Carajás.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
-                        <img src="assets/images/tech_student_hero-removebg-preview.png" alt="Aluno de Tecnologia">
+                        <img src="assets/images/tech_student_hero-removebg-preview.webp" alt="Estudante de tecnologia segurando um notebook">
                     </div>
                 </div>
             </div>
@@ -221,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="carousel-item" data-index="2">
                 <div class="slide-layout">
                     <div class="slide-text animate-text">
-                        <h1 class="hero-title-new">
+                        <h2 class="hero-title-new">
                             <div class="title-row-1">
                                 A FORÇA QUE <span class="title-badge">MOVE</span>
                                 <span class="title-stars">
@@ -233,11 +258,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                                 </span>
                             </div>
                             <div class="title-row-2">RESULTADOS!</div>
-                        </h1>
+                        </h2>
                         <p class="hero-subtitle-new">Treinamentos e certificações de excelência, com foco absoluto na segurança e alta produtividade operacional.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
-                        <img src="assets/images/hero_aprendiz-removebg-preview.png" alt="Operador de Máquinas">
+                        <img src="assets/images/hero_aprendiz-removebg-preview.webp" alt="Operador da indústria com EPI e capacete de segurança">
                     </div>
                 </div>
             </div>
@@ -275,16 +300,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                 progressBar.style.transition = 'none';
                 progressBar.style.width = '0%';
                 
-                setTimeout(() => {
-                    progressBar.style.transition = `width ${intervalTime}ms linear`;
-                    progressBar.style.width = '100%';
-                }, 50);
-
-                slideInterval = setInterval(nextSlide, intervalTime);
+                // Só anima se a aba estiver visível
+                if (document.visibilityState === 'visible') {
+                    setTimeout(() => {
+                        progressBar.style.transition = `width ${intervalTime}ms linear`;
+                        progressBar.style.width = '100%';
+                    }, 50);
+                    slideInterval = setInterval(nextSlide, intervalTime);
+                }
             }
 
             document.addEventListener('DOMContentLoaded', () => {
                 resetProgress();
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    resetProgress();
+                } else {
+                    clearInterval(slideInterval);
+                }
             });
         </script>
     </section>
@@ -585,6 +620,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
 
                         <form method="POST" action="#fale-conosco" class="form-clean" id="formContato">
                             <input type="hidden" name="acao" value="contato">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
 
                             <div class="fc-field">
                                 <input type="text" name="nome" id="f-nome" class="fc-input" placeholder=" " required autocomplete="name">
@@ -723,6 +759,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         <!-- Chatbot Script -->
         <script src="assets/js/chatbot.js?v=1"></script>
         
+        <!-- Form Validation Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const formContato = document.getElementById('formContato');
+                if (formContato) {
+                    const emailInput = document.getElementById('f-email');
+                    const telInput = document.getElementById('telefone');
+
+                    // Validação de email em tempo real
+                    emailInput.addEventListener('input', function() {
+                        if (this.value && !this.value.includes('@')) {
+                            this.setCustomValidity('Por favor, inclua um "@" no endereço de email.');
+                        } else {
+                            this.setCustomValidity('');
+                        }
+                    });
+
+                    // Máscara básica e validação para telefone
+                    telInput.addEventListener('input', function(e) {
+                        let val = this.value.replace(/\D/g, '');
+                        if (val.length > 11) val = val.slice(0, 11);
+                        if (val.length > 2) {
+                            val = '(' + val.slice(0,2) + ') ' + val.slice(2);
+                        }
+                        if (val.length > 10) {
+                            val = val.slice(0,10) + '-' + val.slice(10);
+                        }
+                        this.value = val;
+                        
+                        if (val.replace(/\D/g, '').length < 10) {
+                            this.setCustomValidity('O telefone deve ter no mínimo 10 dígitos com DDD.');
+                        } else {
+                            this.setCustomValidity('');
+                        }
+                    });
+                }
+            });
+        </script>
+
         <!-- Re-render lucide icons after injecting HTML -->
         <script>
             lucide.createIcons();
