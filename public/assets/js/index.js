@@ -47,3 +47,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
     reveals.forEach(el => observer.observe(el));
 });
+
+// Stats Counter Animation
+document.addEventListener('DOMContentLoaded', () => {
+    const statNums = document.querySelectorAll('.stat-num');
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const target = parseInt(el.getAttribute('data-target'));
+                const prefix = el.getAttribute('data-prefix') || '';
+                const suffix = el.getAttribute('data-suffix') || '';
+                const duration = 2000;
+                const stepTime = Math.abs(Math.floor(duration / target));
+                
+                let current = 0;
+                const timer = setInterval(() => {
+                    current += Math.ceil(target / 50);
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    el.innerText = prefix + current + suffix;
+                }, stepTime);
+                
+                obs.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    statNums.forEach(num => observer.observe(num));
+});
+
+// Course Filters
+document.addEventListener('DOMContentLoaded', () => {
+    const chips = document.querySelectorAll('.cf-chip');
+    const cards = document.querySelectorAll('.course-card-v2');
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            // Remove active from all chips
+            chips.forEach(c => c.classList.remove('cf-active'));
+            chip.classList.add('cf-active');
+
+            const filter = chip.getAttribute('data-filter');
+
+            cards.forEach(card => {
+                if (filter === 'all' || card.getAttribute('data-cat').includes(filter)) {
+                    card.classList.remove('hidden');
+                    // Reset inline styles used by absolute positioning hack in CSS
+                    card.style.position = 'relative';
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        });
+    });
+});
+

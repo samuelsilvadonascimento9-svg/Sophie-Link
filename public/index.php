@@ -1,4 +1,4 @@
-﻿<?php // Landing Page Institucional — Centro Técnico Profissionalizante Sophie Link 
+<?php // Landing Page Institucional — Centro Técnico Profissionalizante Sophie Link 
 session_start();
 require_once '../includes/db.php';
 /** @var \PDO $pdo */
@@ -300,119 +300,365 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
     <!-- Wrapper para o Efeito de Cortina Sobre o Hero -->
     <main class="content-curtain" style="position: relative; z-index: 10; background: #FFF;">
 
-        <div class="hero-stats">
-            <div class="hero-stat-item">
-                <div class="hero-stat-val">+500</div>
-                <div class="hero-stat-lbl">Alunos Formados</div>
-            </div>
-            <div class="hero-stat-item">
-                <div class="hero-stat-val">6</div>
-                <div class="hero-stat-lbl">Cursos Técnicos</div>
-            </div>
-            <div class="hero-stat-item">
-                <div class="hero-stat-val">100%</div>
-                <div class="hero-stat-lbl">Foco na Prática</div>
-            </div>
-            <div class="hero-stat-item">
-                <div class="hero-stat-val">Parauapebas</div>
-                <div class="hero-stat-lbl">No coração do mercado</div>
-            </div>
-        </div>
-        </section>
-
-
-
         <!-- ================================================================
-     PARCEIROS
-     ================================================================ -->
-        <section class="section reveal">
-            <div class="container" style="text-align: center;">
-                <div class="sec-tag">Empresas parceiras</div>
-                <div class="sec-title">Quem investe no seu futuro</div>
-                <div class="sec-sub" style="margin: 0 auto; margin-bottom: 2rem;">Empresas que financiam bolsas integrais para alunos da Sophie Link em Parauapebas.</div>
-                <div class="partners-row">
-                    <div class="partner-badge"><i data-lucide="building-2"></i> Vale S.A. — Programa Partilhar</div>
-                    <div class="partner-badge"><i data-lucide="settings"></i> Sotreq — Instituto Social</div>
-                    <div class="partner-badge"><i data-lucide="heart"></i> Comunidade Kolping</div>
+             STATS BAR — Contador Animado
+             ================================================================ -->
+        <section class="stats-bar" id="stats">
+            <div class="stats-inner">
+                <div class="stat-item">
+                    <div class="stat-num" data-target="500" data-prefix="+">0</div>
+                    <div class="stat-label">Alunos formados</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-num" data-target="11" data-prefix="">0</div>
+                    <div class="stat-label">Cursos técnicos</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-num" data-target="100" data-suffix="%" data-prefix="">0</div>
+                    <div class="stat-label">Foco na prática</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-num" data-target="8" data-suffix=" anos" data-prefix="">0</div>
+                    <div class="stat-label">De história em Parauapebas</div>
                 </div>
             </div>
         </section>
 
         <!-- ================================================================
-     CONTATO (FORM)
-     ================================================================ -->
-        <section class="section portais-bg" id="fale-conosco">
-            <div class="container container-sm">
-                <div class="sec-tag tag-center">Atendimento</div>
-                <div class="sec-title title-center">Fale Conosco</div>
-                <div class="sec-sub sub-center">Tem dúvidas sobre matrículas, cursos ou bolsas? Envie-nos uma mensagem.</div>
-
-                <?php if ($msg_contato): ?>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const isErr = <?= strpos($msg_contato, 'Erro') !== false ? 'true' : 'false' ?>;
-                            Toast.show(<?= json_encode($msg_contato) ?>, isErr ? 'error' : 'success');
-                        });
-                    </script>
-                <?php endif; ?>
-
-                <form method="POST" action="#fale-conosco" class="contact-form">
-                    <input type="hidden" name="acao" value="contato">
-                    <div class="cf-field">
-                        <label class="cf-label">Nome Completo</label>
-                        <input type="text" name="nome" class="cf-input" required>
+             PILARES — Por que a Sophie Link?
+             ================================================================ -->
+        <section class="section reveal" id="institucional">
+            <div class="container">
+                <div class="sh-header">
+                    <div>
+                        <span class="sh-label">Nossa essência</span>
+                        <h2 class="sh-title">Por que a Sophie Link?</h2>
                     </div>
-                    <div class="cf-row">
-                        <div class="cf-field">
-                            <label class="cf-label">E-mail</label>
-                            <input type="email" name="email" class="cf-input" required>
-                        </div>
-                        <div class="cf-field">
-                            <label class="cf-label">Telefone / WhatsApp</label>
-                            <input type="text" id="telefone" name="telefone" class="cf-input" maxlength="15" placeholder="(94) 90000-0000">
+                    <p class="sh-sub">Educação técnica com propósito real, preparando jovens para o mercado industrial de Parauapebas e região.</p>
+                </div>
+
+                <div class="pillars-grid">
+                    <div class="pillar-card reveal">
+                        <div class="pillar-icon"><i data-lucide="hard-hat"></i></div>
+                        <div class="pillar-body">
+                            <h3>Prática Industrial</h3>
+                            <p>Laboratórios e treinamentos com equipamentos reais do setor de mineração e eletromecânica.</p>
                         </div>
                     </div>
-                    <div class="cf-field">
-                        <label class="cf-label">Mensagem</label>
-                        <textarea name="mensagem" class="cf-textarea" required rows="4"></textarea>
+                    <div class="pillar-card reveal" style="transition-delay:.08s">
+                        <div class="pillar-icon"><i data-lucide="building-2"></i></div>
+                        <div class="pillar-body">
+                            <h3>Parceria com Empresas</h3>
+                            <p>Convênios com Vale, Sotreq e Kolping que viabilizam bolsas integrais e inserção direta no mercado.</p>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-submit-cf">Enviar Mensagem</button>
-                </form>
+                    <div class="pillar-card reveal" style="transition-delay:.16s">
+                        <div class="pillar-icon"><i data-lucide="award"></i></div>
+                        <div class="pillar-body">
+                            <h3>Certificação Reconhecida</h3>
+                            <p>Diplomas com registro no MEC, reconhecidos pela indústria regional e nacional.</p>
+                        </div>
+                    </div>
+                    <div class="pillar-card reveal" style="transition-delay:.24s">
+                        <div class="pillar-icon"><i data-lucide="users"></i></div>
+                        <div class="pillar-body">
+                            <h3>Jovem Aprendiz</h3>
+                            <p>Programa que une teoria e prática profissional para jovens entre 14 e 24 anos, com carteira assinada.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- ================================================================
-     FOOTER
-     ================================================================ -->
-        <footer class="footer" id="contato">
-            <div class="footer-grid">
-                <div>
-                    <div class="footer-brand"><span>Sophie</span> Link</div>
-                    <p class="footer-desc">Centro Técnico Profissionalizante comprometido com a formação de jovens para o mercado industrial e de mineração da Região dos Carajás.</p>
-                    <div class="footer-addr">
+             CURSOS — Grid com Filtro por Categoria
+             ================================================================ -->
+        <section class="section section-alt reveal" id="cursos">
+            <div class="container">
+                <div class="sh-header">
+                    <div>
+                        <span class="sh-label">O que oferecemos</span>
+                        <h2 class="sh-title">Nossos Cursos</h2>
+                    </div>
+                    <div class="course-filters" id="courseFilters">
+                        <button class="cf-chip cf-active" data-filter="all">Todos</button>
+                        <button class="cf-chip" data-filter="tecnico">Técnico</button>
+                        <button class="cf-chip" data-filter="industrial">Industrial</button>
+                        <button class="cf-chip" data-filter="gestao">Gestão & TI</button>
+                    </div>
+                </div>
+
+                <div class="courses-grid-v2" id="coursesGrid">
+
+                    <div class="course-card-v2" data-cat="tecnico industrial">
+                        <div class="ccv2-icon" style="background:#FFF7ED;color:#F97316"><i data-lucide="zap"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Eletromecânica</div>
+                            <div class="ccv2-meta">Industrial · 1.200h</div>
+                        </div>
+                        <a href="cursos/eletro-mecanica.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico industrial">
+                        <div class="ccv2-icon" style="background:#EFF6FF;color:#2563EB"><i data-lucide="cpu"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Elétrica Industrial</div>
+                            <div class="ccv2-meta">Industrial · 1.200h</div>
+                        </div>
+                        <a href="cursos/eletrica-industrial.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico industrial">
+                        <div class="ccv2-icon" style="background:#F0FDF4;color:#16A34A"><i data-lucide="settings-2"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Mecânica Pesada</div>
+                            <div class="ccv2-meta">Industrial · 1.600h</div>
+                        </div>
+                        <a href="cursos/mecanica-pesada.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico industrial">
+                        <div class="ccv2-icon" style="background:#FFF1F2;color:#E11D48"><i data-lucide="shield-check"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Seg. do Trabalho</div>
+                            <div class="ccv2-meta">Industrial · 1.200h</div>
+                        </div>
+                        <a href="cursos/seguranca-trabalho.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico industrial">
+                        <div class="ccv2-icon" style="background:#FDF4FF;color:#9333EA"><i data-lucide="circuit-board"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Eletrônica</div>
+                            <div class="ccv2-meta">Industrial · 1.200h</div>
+                        </div>
+                        <a href="cursos/eletronica.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico gestao">
+                        <div class="ccv2-icon" style="background:#ECFDF5;color:#059669"><i data-lucide="package"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Logística</div>
+                            <div class="ccv2-meta">Gestão · 800h</div>
+                        </div>
+                        <a href="cursos/logistica.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico gestao">
+                        <div class="ccv2-icon" style="background:#FFF7ED;color:#EA580C"><i data-lucide="briefcase"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Administração</div>
+                            <div class="ccv2-meta">Gestão · 800h</div>
+                        </div>
+                        <a href="cursos/administracao.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico gestao">
+                        <div class="ccv2-icon" style="background:#F0F9FF;color:#0284C7"><i data-lucide="bar-chart-2"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Gestão da Qualidade</div>
+                            <div class="ccv2-meta">Gestão · 800h</div>
+                        </div>
+                        <a href="cursos/gestao-qualidade.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico gestao">
+                        <div class="ccv2-icon" style="background:#FFF7ED;color:#F97316"><i data-lucide="file-text"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Rotinas Adm. e Dep. Pessoal</div>
+                            <div class="ccv2-meta">Gestão · 400h</div>
+                        </div>
+                        <a href="cursos/rotinas-adm.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="tecnico gestao">
+                        <div class="ccv2-icon" style="background:#EFF6FF;color:#1D4ED8"><i data-lucide="monitor"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Técnico em Informática</div>
+                            <div class="ccv2-meta">Gestão & TI · 1.000h</div>
+                        </div>
+                        <a href="cursos/informatica.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="gestao">
+                        <div class="ccv2-icon" style="background:#F0FDF4;color:#15803D"><i data-lucide="table-2"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Excel Avançado e Dashboards</div>
+                            <div class="ccv2-meta">Gestão & TI · 80h</div>
+                        </div>
+                        <a href="cursos/excel-avancado.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             PARCEIROS
+             ================================================================ -->
+        <section class="section reveal" id="parceiros">
+            <div class="container" style="text-align:center;">
+                <span class="sh-label">Quem investe nos nossos alunos</span>
+                <h2 class="sh-title" style="text-align:center;margin-bottom:0.5rem;">Empresas Parceiras</h2>
+                <p class="sh-sub" style="margin:0 auto 3rem;text-align:center;">Instituições que financiam bolsas integrais e abrem portas para jovens aprendizes.</p>
+                <div class="partners-strip">
+                    <div class="partner-card reveal">
+                        <div class="pc-logo"><i data-lucide="building-2"></i></div>
+                        <div class="pc-name">Vale S.A.</div>
+                        <div class="pc-prog">Programa Partilhar</div>
+                    </div>
+                    <div class="partner-card reveal" style="transition-delay:.1s">
+                        <div class="pc-logo"><i data-lucide="settings"></i></div>
+                        <div class="pc-name">Sotreq</div>
+                        <div class="pc-prog">Instituto Social</div>
+                    </div>
+                    <div class="partner-card reveal" style="transition-delay:.2s">
+                        <div class="pc-logo"><i data-lucide="heart"></i></div>
+                        <div class="pc-name">Comunidade Kolping</div>
+                        <div class="pc-prog">Parceria Institucional</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             CTA STRIP — Chamada para Matrícula
+             ================================================================ -->
+        <section class="cta-strip reveal">
+            <div class="cta-strip-inner">
+                <h2>Pronto para <span>transformar</span> sua carreira?</h2>
+                <p>Vagas limitadas por turma. Fale com nossa secretaria e garanta sua vaga agora.</p>
+                <div class="cta-strip-btns">
+                    <a href="#fale-conosco" class="cta-btn-primary">
+                        <i data-lucide="send"></i> Quero me matricular
+                    </a>
+                    <a href="#cursos" class="cta-btn-secondary">
+                        <i data-lucide="book-open"></i> Ver cursos
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             CONTATO — 2 Colunas
+             ================================================================ -->
+        <section class="section reveal" id="fale-conosco">
+            <div class="container">
+                <div class="contact-layout">
+
+                    <!-- Coluna Esquerda: Informações -->
+                    <div class="contact-info">
+                        <span class="sh-label">Secretaria</span>
+                        <h2 class="sh-title">Fale conosco</h2>
+                        <p>Tem dúvidas sobre matrículas, bolsas ou cursos? Nossa secretaria responde rapidamente.</p>
+
+                        <div class="contact-items">
+                            <div class="ci-item">
+                                <div class="ci-icon"><i data-lucide="map-pin"></i></div>
+                                <div>
+                                    <div class="ci-label">Endereço</div>
+                                    <div class="ci-val">Avenida Amazonas, 64 – Rio Verde<br>Parauapebas – PA</div>
+                                </div>
+                            </div>
+                            <div class="ci-item">
+                                <div class="ci-icon"><i data-lucide="message-circle"></i></div>
+                                <div>
+                                    <div class="ci-label">WhatsApp</div>
+                                    <a href="https://wa.me/5594999999999" class="ci-val ci-link">(94) 9 9999-9999</a>
+                                </div>
+                            </div>
+                            <div class="ci-item">
+                                <div class="ci-icon"><i data-lucide="clock"></i></div>
+                                <div>
+                                    <div class="ci-label">Horário de funcionamento</div>
+                                    <div class="ci-val">Seg – Sex, das 08h às 18h</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Formulário -->
+                    <div class="contact-form-wrap">
+                        <?php if ($msg_contato): ?>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    const isErr = <?= strpos($msg_contato, 'Erro') !== false ? 'true' : 'false' ?>;
+                                    Toast.show(<?= json_encode($msg_contato) ?>, isErr ? 'error' : 'success');
+                                });
+                            </script>
+                        <?php endif; ?>
+
+                        <form method="POST" action="#fale-conosco" class="form-clean" id="formContato">
+                            <input type="hidden" name="acao" value="contato">
+
+                            <div class="fc-field">
+                                <input type="text" name="nome" id="f-nome" class="fc-input" placeholder=" " required autocomplete="name">
+                                <label for="f-nome" class="fc-label">Nome completo</label>
+                            </div>
+
+                            <div class="fc-row">
+                                <div class="fc-field">
+                                    <input type="email" name="email" id="f-email" class="fc-input" placeholder=" " required autocomplete="email">
+                                    <label for="f-email" class="fc-label">E-mail</label>
+                                </div>
+                                <div class="fc-field">
+                                    <input type="text" name="telefone" id="telefone" class="fc-input" placeholder=" " maxlength="15" autocomplete="tel">
+                                    <label for="telefone" class="fc-label">WhatsApp</label>
+                                </div>
+                            </div>
+
+                            <div class="fc-field">
+                                <textarea name="mensagem" id="f-msg" class="fc-input fc-textarea" placeholder=" " required rows="4"></textarea>
+                                <label for="f-msg" class="fc-label">Sua mensagem</label>
+                            </div>
+
+                            <button type="submit" class="fc-submit">
+                                <i data-lucide="send"></i> Enviar mensagem
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             FOOTER — Dark Institucional
+             ================================================================ -->
+        <footer class="footer-dark" id="contato">
+            <div class="fd-inner">
+                <div class="fd-brand-col">
+                    <div class="fd-logo">Sophie <span>Link</span></div>
+                    <p class="fd-desc">Centro Técnico Profissionalizante comprometido com a formação de jovens para o mercado industrial e de mineração da Região dos Carajás.</p>
+                    <div class="fd-addr">
                         <i data-lucide="map-pin"></i>
-                        Avenida Amazonas, 64 – Bairro Rio Verde, Parauapebas – PA
+                        Av. Amazonas, 64 – Rio Verde, Parauapebas – PA
                     </div>
                 </div>
-                <div class="footer-col">
-                    <h4>Sistemas</h4>
+                <div class="fd-col">
+                    <h4>Portais</h4>
                     <ul>
                         <li><a href="auth/login_aluno.php">Portal do Aluno</a></li>
                         <li><a href="auth/login_ava.php">Ambiente Virtual (AVA)</a></li>
+                        <li><a href="auth/login_empresa.php">Portal da Empresa</a></li>
                         <li><a href="auth/login_admin.php">Área Administrativa</a></li>
                     </ul>
                 </div>
-                <div class="footer-col">
+                <div class="fd-col">
                     <h4>Institucional</h4>
                     <ul>
                         <li><a href="#institucional">Sobre a Escola</a></li>
                         <li><a href="#cursos">Nossos Cursos</a></li>
+                        <li><a href="#parceiros">Empresas Parceiras</a></li>
                         <li><a href="#fale-conosco">Fale Conosco</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                &copy; <?= date('Y') ?> Centro Técnico Profissionalizante Sophie Link · Parauapebas, PA · Todos os direitos reservados.
+            <div class="fd-bottom">
+                <span>© <?= date('Y') ?> Centro Técnico Profissionalizante Sophie Link · Parauapebas, PA</span>
+                <span class="fd-dev">Todos os direitos reservados</span>
             </div>
         </footer>
 
@@ -421,3 +667,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
 </body>
 
 </html>
+
