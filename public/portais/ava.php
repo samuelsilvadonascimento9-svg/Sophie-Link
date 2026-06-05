@@ -344,7 +344,6 @@ if (!$isProf) {
     <span class="subnav-link" id="snav-ajuda" onclick="showSec('ajuda')">Ajuda</span>
     <div class="subnav-sep"></div>
     <span class="subnav-link" id="snav-descobrir" onclick="showSec('descobrir')">Descobrir</span>
-    <div class="subnav-sep"></div>
     <a href="portal_aluno.php" class="subnav-link subnav-link-portal">Portal do aluno</a>
 </div>
 
