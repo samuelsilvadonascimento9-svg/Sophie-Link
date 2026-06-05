@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // api/get_aluno.php — Retorna dados de um aluno por ID (JSON)
 session_start();
 require_once '../../../includes/auth.php';

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Administração — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

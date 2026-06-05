@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Logística — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

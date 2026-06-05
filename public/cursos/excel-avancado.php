@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Excel Avançado — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

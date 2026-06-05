@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Mecânica Pesada — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // api/update_aluno.php — Salva edição de dados de um aluno
 session_start();
 require_once '../../../includes/auth.php';

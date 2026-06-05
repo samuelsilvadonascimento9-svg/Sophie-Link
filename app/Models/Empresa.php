@@ -15,9 +15,9 @@ class Empresa {
     public function listar(string $busca = '', string $status = ''): array {
         $sql = "
             SELECT e.*,
-                   COUNT(a.id) AS total_aprendizes
+                   COUNT(c.id) AS total_aprendizes
             FROM empresas e
-            LEFT JOIN aprendizes a ON a.empresa_id = e.id
+            LEFT JOIN contratos c ON c.empresa_id = e.id AND c.status = 'ativo'
             WHERE 1=1
         ";
         $params = [];

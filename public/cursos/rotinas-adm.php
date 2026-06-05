@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Rotinas Adm / DP — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

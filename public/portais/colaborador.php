@@ -1,12 +1,15 @@
-﻿<?php
+<?php
 // portal_colaborador.php — Portal da Secretaria / Colaborador | Sophie Link
 session_start();
 require_once '../../includes/auth.php';
 protect_page(['colaborador']);
 require_once '../../includes/db.php';
+require_once '../../app/Models/Empresa.php';
 /** @var \PDO $pdo */
 require_once '../../app/Core/Security.php';
 $csrfToken = Security::generateCsrfToken();
+
+$empresaModel = new \Models\Empresa();
 
 $nome = $_SESSION['usuario_nome'] ?? 'Secretaria';
 $primeiroNome = explode(' ', $nome)[0];
@@ -98,6 +101,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'justifi
     }
 }
 
+// Lógica CRUD: Cadastrar Professor
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'add_professor') {
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = "Requisição inválida (CSRF). Tente novamente.";
+    } else {
+        $novo_nome = trim($_POST['nome']);
+        $novo_email = trim($_POST['email']);
+        $nova_senha = $_POST['senha'];
+
+        if (empty($novo_nome) || empty($novo_email) || empty($nova_senha)) {
+            $erro = "Todos os campos do professor são obrigatórios.";
+        } else {
+            try {
+                $hash = password_hash($nova_senha, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, nivel) VALUES (?, ?, ?, 'professor')");
+                $stmt->execute([$novo_nome, $novo_email, $hash]);
+                $sucesso = "Professor <strong>" . htmlspecialchars($novo_nome) . "</strong> cadastrado com sucesso!";
+            } catch (PDOException $e) {
+                if ($e->getCode() == 23000) {
+                    $erro = "Já existe um usuário cadastrado com este e-mail.";
+                } else {
+                    $erro = "Erro ao cadastrar professor: " . $e->getMessage();
+                }
+            }
+        }
+    }
+}
+
+// Lógica CRUD: Cadastrar Empresa
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'add_empresa') {
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = "Requisição inválida (CSRF). Tente novamente.";
+    } else {
+        try {
+            $empresaModel->criar($_POST);
+            $sucesso = "Empresa adicionada com sucesso!";
+        } catch (Exception $e) {
+            $erro = "Erro ao cadastrar empresa: " . $e->getMessage();
+        }
+    }
+}
+
 // Buscar aprendizes
 $aprendizes = $pdo->query("
     SELECT a.*, e.nome AS empresa_nome, c.nome AS curso_nome, t.nome AS turma_nome
@@ -112,6 +157,12 @@ $aprendizes = $pdo->query("
 
 // Turmas para select
 $turmasDb = $pdo->query("SELECT t.id, t.nome, c.nome as curso_nome FROM turmas t JOIN cursos c ON t.curso_id = c.id ORDER BY c.nome, t.nome")->fetchAll(PDO::FETCH_ASSOC);
+
+// Buscar Professores
+$listaProfessores = $pdo->query("SELECT id, nome, email, criado_em FROM usuarios WHERE nivel = 'professor' AND deleted_at IS NULL ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
+
+// Buscar Empresas
+$listaEmpresas = $empresaModel->listar();
 
 // Métricas
 $totalAlunos  = count($aprendizes);
@@ -159,9 +210,6 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
             <div class="nav-link active" id="nav-alunos" onclick="showSec('alunos', this)">
                 <i data-lucide="users"></i> Alunos
             </div>
-            <div class="nav-link" id="nav-matricular" onclick="showSec('matricular', this)">
-                <i data-lucide="user-plus"></i> Matricular Aluno
-            </div>
             <div class="nav-link" id="nav-documentos" onclick="showSec('documentos', this)">
                 <i data-lucide="file-text"></i> Declarações
             </div>
@@ -170,6 +218,17 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                 <?php if ($faltasPendentes > 0): ?>
                 <span class="nav-badge"><?= $faltasPendentes ?></span>
                 <?php endif; ?>
+            </div>
+
+            <div class="sb-section-label">Cadastros</div>
+            <div class="nav-link" id="nav-matricular" onclick="showSec('matricular', this)">
+                <i data-lucide="user-plus"></i> Matricular Aluno
+            </div>
+            <div class="nav-link" id="nav-professores" onclick="showSec('professores', this)">
+                <i data-lucide="graduation-cap"></i> Professores
+            </div>
+            <div class="nav-link" id="nav-empresas" onclick="showSec('empresas', this)">
+                <i data-lucide="briefcase"></i> Empresas
             </div>
 
             <div class="sb-section-label">Planejamento</div>
@@ -599,7 +658,167 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                 </div>
             </div>
 
+            <!-- ===== SEÇÃO: PROFESSORES ===== -->
+            <div id="sec-professores" class="sec">
+                <div class="page-header">
+                    <h1 class="page-title">Corpo Docente</h1>
+                    <p class="page-desc">Gerencie o cadastro dos professores da instituição.</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="openModal('modalProfessor')"><i data-lucide="plus"></i> Novo Professor</button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>E-mail (Login)</th>
+                                    <th>Data de Cadastro</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($listaProfessores as $p): ?>
+                                <tr>
+                                    <td style="font-weight:500;">
+                                        <div class="aluno-cell">
+                                            <div class="aluno-avatar" style="width:28px;height:28px;font-size:11px;"><?= strtoupper(mb_substr($p['nome'], 0, 1)) ?></div>
+                                            <span><?= htmlspecialchars($p['nome']) ?></span>
+                                        </div>
+                                    </td>
+                                    <td><?= htmlspecialchars($p['email']) ?></td>
+                                    <td class="td-mono"><?= date('d/m/Y', strtotime($p['criado_em'])) ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                                <?php if(empty($listaProfessores)): ?>
+                                <tr><td colspan="3" style="text-align:center; padding: 20px;">Nenhum professor cadastrado.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SEÇÃO: EMPRESAS ===== -->
+            <div id="sec-empresas" class="sec">
+                <div class="page-header">
+                    <h1 class="page-title">Empresas Parceiras</h1>
+                    <p class="page-desc">Gerencie as empresas conveniadas ao programa de aprendizagem.</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="openModal('modalEmpresa')"><i data-lucide="plus"></i> Nova Empresa</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Razão Social</th>
+                                    <th>CNPJ</th>
+                                    <th>Responsável</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($listaEmpresas as $e): ?>
+                                <tr>
+                                    <td style="font-weight:500;"><?= htmlspecialchars($e['nome']) ?></td>
+                                    <td class="td-mono"><?= htmlspecialchars($e['cnpj']) ?></td>
+                                    <td><?= htmlspecialchars($e['responsavel']) ?><br><small style="color:var(--text-muted);"><?= htmlspecialchars($e['email']) ?></small></td>
+                                    <td>
+                                        <span class="badge <?= $e['status'] === 'ativa' ? 'badge-green' : 'badge-red' ?>">
+                                            <?= ucfirst($e['status']) ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                                <?php if(empty($listaEmpresas)): ?>
+                                <tr><td colspan="4" style="text-align:center; padding: 20px;">Nenhuma empresa cadastrada.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </main>
+    </div>
+</div>
+
+<!-- ===== MODAL: ADD PROFESSOR ===== -->
+<div id="modalProfessor" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title">Cadastrar Professor</div>
+            <button class="modal-close" onclick="closeModal('modalProfessor')"><i data-lucide="x"></i></button>
+        </div>
+        <form method="POST">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                <input type="hidden" name="acao" value="add_professor">
+                
+                <div class="form-group">
+                    <label class="form-label">Nome Completo</label>
+                    <input type="text" name="nome" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email (Login)</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Senha</label>
+                    <input type="password" name="senha" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalProfessor')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL: ADD EMPRESA ===== -->
+<div id="modalEmpresa" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title">Cadastrar Empresa</div>
+            <button class="modal-close" onclick="closeModal('modalEmpresa')"><i data-lucide="x"></i></button>
+        </div>
+        <form method="POST">
+            <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                <input type="hidden" name="acao" value="add_empresa">
+                
+                <div class="form-group">
+                    <label class="form-label">Razão Social</label>
+                    <input type="text" name="nome" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CNPJ</label>
+                    <input type="text" name="cnpj" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Responsável</label>
+                    <input type="text" name="responsavel" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email de Contato</label>
+                    <input type="email" name="email" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalEmpresa')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
     </div>
 </div>
 

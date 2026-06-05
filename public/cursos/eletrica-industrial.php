@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Elétrica Industrial — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

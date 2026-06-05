@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Gestão da Qualidade — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

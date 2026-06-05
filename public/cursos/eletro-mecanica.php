@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Eletromecânica — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

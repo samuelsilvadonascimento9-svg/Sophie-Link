@@ -134,9 +134,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sucesso = 'Notas lançadas com sucesso!';
         }
 
+        if ($acao === 'criar_materia') {
+            $nome_materia = trim($_POST['nome_materia'] ?? '');
+            $tipo_materia = trim($_POST['tipo_materia'] ?? '');
+            $turma_id     = (int)($_POST['turma_id'] ?? 0);
+            
+            if (!$nome_materia) throw new Exception('Informe o nome da matéria.');
+            if (!$turma_id) throw new Exception('Selecione a turma base.');
+
+            // Descobrir curso_id da turma
+            $stmt = $pdo->prepare("SELECT curso_id FROM turmas WHERE id = ?");
+            $stmt->execute([$turma_id]);
+            $turmaInfo = $stmt->fetch();
+            if (!$turmaInfo) throw new Exception('Turma inválida.');
+            $curso_id = $turmaInfo['curso_id'];
+
+            $imagem_capa = null;
+            if (!empty($_FILES['imagem_capa']['name'])) {
+                $ext = strtolower(pathinfo($_FILES['imagem_capa']['name'], PATHINFO_EXTENSION));
+                $allowed = ['jpg','jpeg','png','webp'];
+                if (!in_array($ext, $allowed)) throw new Exception('Imagem de capa deve ser JPG, PNG ou WEBP.');
+                
+                $imagem_nome = 'capa_' . uniqid() . '.' . $ext;
+                $imagem_path = 'public/uploads/ava/' . $imagem_nome;
+                $fullPath = __DIR__ . '/../../' . $imagem_path;
+                if (!move_uploaded_file($_FILES['imagem_capa']['tmp_name'], $fullPath)) {
+                    throw new Exception('Falha ao salvar a imagem de capa.');
+                }
+                $imagem_capa = $imagem_path;
+            }
+
+            // Inserir disciplina
+            $stmt = $pdo->prepare("INSERT INTO disciplinas (nome, curso_id, tipo, imagem_capa) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$nome_materia, $curso_id, $tipo_materia, $imagem_capa]);
+            $nova_disciplina_id = $pdo->lastInsertId();
+
+            // Vincular professor_disciplina
+            $stmt = $pdo->prepare("INSERT INTO professor_disciplina (usuario_id, disciplina_id, turma_id) VALUES (?, ?, ?)");
+            $stmt->execute([$_SESSION['usuario_id'], $nova_disciplina_id, $turma_id]);
+
+            $sucesso = 'Matéria criada com sucesso! Você já pode publicar materiais nela.';
+            
+            // Recarregar os dados após criação para que apareça no select de materiais
+            header("Location: " . $_SERVER['PHP_SELF'] . "?msg=ok");
+            exit;
+        }
+
     } catch (Exception $e) {
         $erro = 'Erro: ' . $e->getMessage();
     }
+}
+
+if (isset($_GET['msg']) && $_GET['msg'] === 'ok') {
+    $sucesso = 'Matéria criada com sucesso! Você já pode publicar materiais nela.';
 }
 
 // ─── TURMAS DO PROFESSOR ──────────────────────────────────────────────────────
@@ -263,6 +313,8 @@ $gargalosProf = $stmtGargalos->fetchAll();
 <div class="subnav">
     <div class="subnav-link active" id="btn-inicio" onclick="showSec('inicio', this)"><i data-lucide="home"></i> Início</div>
     <div class="subnav-sep"></div>
+    <div class="subnav-link" id="btn-nova-materia" onclick="showSec('nova-materia', this)"><i data-lucide="folder-plus"></i> Nova Matéria</div>
+    <div class="subnav-sep"></div>
     <div class="subnav-link" id="btn-materiais" onclick="showSec('materiais', this)"><i data-lucide="file-plus"></i> Publicar Material</div>
     <div class="subnav-sep"></div>
     <div class="subnav-link" id="btn-diario" onclick="showSec('diario', this)"><i data-lucide="book-open"></i> Lançar Notas</div>
@@ -385,6 +437,65 @@ $gargalosProf = $stmtGargalos->fetchAll();
                         </tbody>
                     </table>
                     <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SEC: NOVA MATÉRIA (DISCIPLINA)
+             ============================================================ -->
+        <div id="sec-nova-materia" class="sec">
+            <div class="widget">
+                <div class="w-head">
+                    <div class="w-title"><i data-lucide="folder-plus"></i> Nova Matéria (Disciplina)</div>
+                </div>
+                <div class="w-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="acao" value="criar_materia">
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                            <!-- Nome -->
+                            <div>
+                                <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Nome da Matéria *</label>
+                                <input type="text" name="nome_materia" class="input-field" placeholder="Ex: Matemática Aplicada" required>
+                            </div>
+                            <!-- Tipo -->
+                            <div>
+                                <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Tipo (Opcional)</label>
+                                <input type="text" name="tipo_materia" class="input-field" placeholder="Ex: Módulo Básico, Extra, EAD...">
+                            </div>
+                        </div>
+
+                        <!-- Turma -->
+                        <div style="margin-bottom:14px;">
+                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Turma Base *</label>
+                            <select name="turma_id" class="input-field" required>
+                                <option value="">Selecione a turma...</option>
+                                <?php 
+                                // Extrair turmas únicas do array de turmas que o professor ensina
+                                $turmasUnicas = [];
+                                foreach ($turmasProf as $tp) {
+                                    $turmasUnicas[$tp['turma_id']] = $tp['turma_nome'];
+                                }
+                                foreach ($turmasUnicas as $id => $nome) {
+                                    echo "<option value=\"$id\">" . htmlspecialchars($nome) . "</option>";
+                                }
+                                ?>
+                            </select>
+                            <div style="font-size:0.7rem;color:var(--c-text-muted);margin-top:4px;">A matéria será vinculada ao curso desta turma e você terá acesso automático a ela.</div>
+                        </div>
+
+                        <!-- Upload de Capa -->
+                        <div style="margin-bottom:18px;">
+                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Imagem de Capa (Opcional)</label>
+                            <input type="file" name="imagem_capa" class="input-field" style="padding: 10px;" accept=".jpg,.jpeg,.png,.webp">
+                            <div style="font-size:0.7rem;color:var(--c-text-muted);margin-top:4px;">Essa imagem aparecerá na "caixa" da matéria no portal do aluno. Use JPG ou PNG.</div>
+                        </div>
+
+                        <div style="text-align:right;">
+                            <button type="submit" class="btn-primary"><i data-lucide="check" style="width:14px;height:14px;display:inline;"></i> Criar Matéria</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

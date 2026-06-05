@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // login.php — Página de Login | Centro Técnico Profissionalizante Sophie Link
 require_once '../../app/Core/Auth.php';
 $csrf_token = Security::generateCsrfToken();

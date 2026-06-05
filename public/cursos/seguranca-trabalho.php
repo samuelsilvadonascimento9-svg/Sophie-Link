@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Segurança do Trabalho — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>

@@ -15,11 +15,13 @@ CREATE TABLE usuarios (
     UNIQUE KEY unique_email_nivel (email, nivel)
 );
 
--- Inserindo usuários padrão (admin: admin, aluno: aluno, professor: professor)
+-- Inserindo usuários padrão
 INSERT INTO usuarios (nome, email, senha, nivel) VALUES 
-('Admin', 'admin@sophielink.com.br', '$2y$10$eGfn4vk/q20wKlgzYYpICu4VmeVa6j5v6O3IC9BGkgYLIDib3UoxG', 'admin'),
+('Admin', 'admin', '$2y$10$eGfn4vk/q20wKlgzYYpICu4VmeVa6j5v6O3IC9BGkgYLIDib3UoxG', 'admin'),
 ('Aluno Teste', 'aluno', '$2y$10$I4Ubkn2OGCvvPFVKdUHLr.pLP/HrNdfLujaw1OzHiYkmCAXTApuhK', 'aluno'),
-('Professor Teste', 'professor', '$2y$10$xI0qHfnwaeJ1NxI8Bd.ZU.ImIh/7W5rFAOYmxCOQLy4CTuJ.HEJD6', 'professor');
+('Professor Teste', 'professor', '$2y$10$xI0qHfnwaeJ1NxI8Bd.ZU.ImIh/7W5rFAOYmxCOQLy4CTuJ.HEJD6', 'professor'),
+('Colaborador Teste', 'colaborador', '$2y$10$I4Ubkn2OGCvvPFVKdUHLr.pLP/HrNdfLujaw1OzHiYkmCAXTApuhK', 'colaborador'),
+('Empresa Teste', 'empresa', '$2y$10$I4Ubkn2OGCvvPFVKdUHLr.pLP/HrNdfLujaw1OzHiYkmCAXTApuhK', 'empresa');
 
 CREATE TABLE empresas (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,6 +59,8 @@ CREATE TABLE disciplinas (
     nome VARCHAR(100) NOT NULL,
     curso_id INT NOT NULL,
     carga_horaria INT,
+    tipo VARCHAR(50) NULL,
+    imagem_capa VARCHAR(255) NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE
 );

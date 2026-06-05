@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // dashboard.php — Painel Admin CMS | Sophie Link (Vercel/Stripe Style)
 session_start();
 require_once '../../includes/auth.php';

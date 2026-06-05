@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // api/justificar_falta.php — Justifica uma falta via AJAX
 session_start();
 require_once '../../../includes/auth.php';

@@ -95,7 +95,7 @@ if ($isProf) {
     $proximosEventos = [];
     if ($turma_id) {
         $stmtDiscs = $pdo->prepare("
-            SELECT DISTINCT d.id, d.nome, d.carga_horaria,
+            SELECT DISTINCT d.id, d.nome, d.carga_horaria, d.tipo, d.imagem_capa,
                    u.nome AS professor_nome
             FROM professor_disciplina pd
             JOIN disciplinas d ON d.id = pd.disciplina_id
@@ -344,6 +344,7 @@ if (!$isProf) {
     <span class="subnav-link" id="snav-ajuda" onclick="showSec('ajuda')">Ajuda</span>
     <div class="subnav-sep"></div>
     <span class="subnav-link" id="snav-descobrir" onclick="showSec('descobrir')">Descobrir</span>
+    <div class="subnav-sep"></div>
     <a href="portal_aluno.php" class="subnav-link subnav-link-portal">Portal do aluno</a>
 </div>
 
@@ -422,12 +423,22 @@ if (!$isProf) {
                             $nPend    = count(array_filter($mats['atividade'], fn($a) => !$a['entrega_status']));
                         ?>
                         <a href="#" class="course-card" onclick="openCourse(event, <?= $did ?>)">
-                            <div class="cc-thumb cc-thumb-solid">
-                                <i data-lucide="book-open" style="width:32px;height:32px;color:rgba(255,255,255,0.85);"></i>
-                            </div>
+                            <?php if (!empty($disc['imagem_capa'])): ?>
+                                <div class="cc-thumb" style="background-image: url('../<?= htmlspecialchars($disc['imagem_capa']) ?>'); background-size: cover; background-position: center;">
+                                </div>
+                            <?php else: ?>
+                                <div class="cc-thumb cc-thumb-solid">
+                                    <i data-lucide="book-open" style="width:32px;height:32px;color:rgba(255,255,255,0.85);"></i>
+                                </div>
+                            <?php endif; ?>
                             <div class="cc-body">
                                 <div class="cc-title"><?= htmlspecialchars($disc['nome']) ?></div>
-                                <div class="cc-code">Prof. <?= htmlspecialchars($disc['professor_nome'] ?? '—') ?></div>
+                                <div class="cc-code">
+                                    Prof. <?= htmlspecialchars($disc['professor_nome'] ?? '—') ?>
+                                    <?php if (!empty($disc['tipo'])): ?>
+                                        &nbsp;·&nbsp;<span style="color:var(--c-brand);font-weight:600;font-size:0.65rem;text-transform:uppercase;"><?= htmlspecialchars($disc['tipo']) ?></span>
+                                    <?php endif; ?>
+                                </div>
                                 <div class="cc-status">
                                     <div class="cc-dot cc-dot-green"></div>Em Curso
                                     <?php if ($nPend > 0): ?>

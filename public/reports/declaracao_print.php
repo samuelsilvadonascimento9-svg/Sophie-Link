@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // declaracao_print.php — Emissão de Documento Oficial | Sophie Link
 session_start();
 if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['usuario_nivel'], ['colaborador', 'coordenadora', 'admin'])) {

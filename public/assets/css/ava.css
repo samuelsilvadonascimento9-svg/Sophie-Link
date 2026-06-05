@@ -148,17 +148,13 @@ img { display: block; max-width: 100%; }
 .subnav-link:hover { color: #fff; background: rgba(255,255,255,0.08); }
 .subnav-link.active { color: #fff; border-bottom-color: var(--c-brand); font-weight: 600; }
 .subnav-link.subnav-link-portal { 
-    background: linear-gradient(90deg, transparent 0%, var(--c-brand) 35%, var(--c-brand) 100%);
-    color: #fff !important; 
-    font-weight: 600; 
-    text-decoration: none; 
-    height: var(--subnav-h);
-    padding: 0 24px 0 40px;
-    border: none;
+    color: var(--c-brand) !important; 
+    font-weight: 700; 
 }
 .subnav-link.subnav-link-portal:hover { 
-    background: linear-gradient(90deg, transparent 0%, var(--c-brand-d) 35%, var(--c-brand-d) 100%);
-    border: none; 
+    color: var(--c-brand-d) !important;
+    background: rgba(255, 255, 255, 0.08); 
+    border-bottom-color: var(--c-teal); 
 }
 .subnav-link i { width: 14px; height: 14px; opacity: 0.7; }
 .subnav-sep { width: 1px; background: rgba(255,255,255,0.15); height: 20px; margin: 0 4px; }

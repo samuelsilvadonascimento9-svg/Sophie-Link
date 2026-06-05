@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Informática — Sophie Link (Bespoke Redesign)
 ?>
 <!DOCTYPE html>
