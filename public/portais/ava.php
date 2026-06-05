@@ -138,9 +138,29 @@ if ($isProf) {
             // Compat: listas antigas
             if (in_array($tipo_mat, ['pdf', 'aviso']))    $materiaisAluno[]  = $mat;
             if ($tipo_mat === 'atividade')                 $atividadesAluno[] = $mat;
+
+            // Extrair eventos para o calendário (atividades com data de entrega)
+            if (!empty($mat['data_entrega'])) {
+                $statusColor = ($mat['entrega_status'] === 'entregue' || $mat['entrega_status'] === 'corrigida') ? 'info' : 'warning';
+                if ($mat['data_entrega'] < date('Y-m-d') && $statusColor === 'warning') {
+                    $statusColor = 'danger'; // Atrasado
+                }
+                
+                $meses = ['01'=>'Jan','02'=>'Fev','03'=>'Mar','04'=>'Abr','05'=>'Mai','06'=>'Jun','07'=>'Jul','08'=>'Ago','09'=>'Set','10'=>'Out','11'=>'Nov','12'=>'Dez'];
+                list($ano, $mes, $dia) = explode('-', $mat['data_entrega']);
+                
+                $proximosEventos[] = [
+                    'dia' => $dia,
+                    'mes' => $meses[$mes],
+                    'titulo' => $mat['titulo'],
+                    'descricao' => $mat['disciplina_nome'] . ' · Entrega ' . ($statusColor==='info'?'(Concluída)':'(Pendente)'),
+                    'cor' => $statusColor,
+                    'data_real' => $mat['data_entrega']
+                ];
+            }
         }
 
-        usort($proximosEventos, fn($a, $b) => strcmp($a['data_entrega'], $b['data_entrega']));
+        usort($proximosEventos, fn($a, $b) => strcmp($a['data_real'], $b['data_real']));
 
         // Busca os simulados da IA para a turma
         $stmtSims = $pdo->prepare("
@@ -171,6 +191,15 @@ if ($isProf) {
     $totalRegistros = count($frequenciaAluno);
     $totalPresente  = count(array_filter($frequenciaAluno, fn($f) => $f['status'] === 'presente'));
     $percPresenca   = $totalRegistros > 0 ? round(($totalPresente / $totalRegistros) * 100) : 100;
+
+    // ─── Busca de Notificações Reais ───────────────────────────────────────────
+    $stmtNotif = $pdo->prepare("SELECT * FROM ava_notificacoes WHERE aprendiz_id = ? ORDER BY criado_em DESC LIMIT 10");
+    $stmtNotif->execute([$real_aluno_id]);
+    $notificacoesAluno = $stmtNotif->fetchAll();
+    $unreadNotifCount = count(array_filter($notificacoesAluno, fn($n) => $n['lida'] == 0));
+} else {
+    $notificacoesAluno = [];
+    $unreadNotifCount = 0;
 }
 
 $primeiroNome = explode(' ', $nomeAluno)[0];
@@ -194,6 +223,7 @@ if (!$isProf) {
             'pdfs'         => array_values($mats['pdf']),
             'atividades'   => array_values($mats['atividade']),
             'avaliacoes'   => array_values($mats['avaliacao']),
+            'simulados'    => array_values(array_filter($simuladosAluno ?? [], fn($s) => $s['disciplina_id'] == $did)),
         ];
     }
 }
@@ -211,8 +241,6 @@ if (!$isProf) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 <link rel="stylesheet" href="../assets/css/ava.css">
-
-    <link rel="stylesheet" href="../assets/css/premium.css">
     <script src="../assets/js/a11y.js" defer></script>
 </head>
 <body>
@@ -258,11 +286,37 @@ if (!$isProf) {
         <button class="tn-icon-btn" title="Chat">
             <i data-lucide="message-circle"></i>
         </button>
-        <button class="tn-icon-btn" title="Notificações">
-            <i data-lucide="bell"></i>
-            <span class="tn-badge">3</span>
-        </button>
+        <div style="position: relative;">
+            <button class="tn-icon-btn" title="Notificações" onclick="toggleNotifDropdown()">
+                <i data-lucide="bell"></i>
+                <?php if ($unreadNotifCount > 0): ?>
+                    <span class="tn-badge"><?= $unreadNotifCount ?></span>
+                <?php endif; ?>
+            </button>
+            <div id="notif-dropdown" style="display:none; position:absolute; top:40px; right:0; width:300px; background:#fff; border:1px solid var(--c-border); border-radius:var(--radius); box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:9999;">
+                <div style="padding:10px 15px; border-bottom:1px solid var(--c-border); font-weight:600; font-size:0.85rem; color:var(--c-brand);">Notificações</div>
+                <div style="max-height:300px; overflow-y:auto;">
+                    <?php if (empty($notificacoesAluno)): ?>
+                        <div style="padding:15px; text-align:center; color:var(--c-text-muted); font-size:0.8rem;">Nenhuma notificação.</div>
+                    <?php else: ?>
+                        <?php foreach($notificacoesAluno as $notif): ?>
+                            <a href="<?= htmlspecialchars($notif['link'] ?? '#') ?>" style="display:block; padding:10px 15px; border-bottom:1px solid var(--c-border); text-decoration:none; color:var(--c-text); background:<?= $notif['lida'] ? '#fff' : '#f8f9fa' ?>;">
+                                <div style="font-size:0.8rem; font-weight:600;"><?= htmlspecialchars($notif['titulo']) ?></div>
+                                <div style="font-size:0.75rem; color:var(--c-text-muted); margin-top:3px;"><?= htmlspecialchars(substr($notif['mensagem'], 0, 60)) ?>...</div>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+    function toggleNotifDropdown() {
+        const dd = document.getElementById('notif-dropdown');
+        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    }
+    </script>
 
     <div style="width:1px;background:var(--c-border);height:28px;margin:0 8px;"></div>
 
@@ -914,19 +968,27 @@ if (!$isProf) {
         <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
     </button>
     <div class="panel" style="padding:1.5rem;">
-        <div style="font-size:0.95rem;font-weight:700;color:var(--c-brand);margin-bottom:1rem;">Agenda de Eventos — Maio/Junho 2026</div>
-        <?php $eventos = [['30','Mai','Questionário — Lubrificação','Manutenção Eletromecânica I · Entrega Online','warning'],['03','Jun','Reposição de Aula','Eletromecânica I · Laboratório 2, 14h-17h30','info'],['07','Jun','Estudo de Caso — Entrega','Gestão da Qualidade · Valendo nota','warning'],['14','Jun','Avaliação Bimestral','Módulos 1 e 2 · Auditório Sophie Link · 08h-12h','danger']]; foreach ($eventos as $e): ?>
-        <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--c-border-lt);">
-            <div style="width:44px;text-align:center;flex-shrink:0;">
-                <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);"><?= $e[1] ?></div>
-                <div style="font-size:1.4rem;font-weight:800;color:var(--c-accent);line-height:1;"><?= $e[0] ?></div>
+        <div style="font-size:0.95rem;font-weight:700;color:var(--c-brand);margin-bottom:1rem;">Agenda de Prazos — <?= date('Y') ?></div>
+        
+        <?php if (empty($proximosEventos)): ?>
+            <div style="text-align:center;padding:2rem;color:var(--c-text-muted);">
+                <i data-lucide="calendar" style="width:36px;height:36px;margin:0 auto 10px;opacity:0.3;"></i>
+                Nenhuma atividade com prazo pendente ou futuro.
             </div>
-            <div style="padding-left:12px;border-left:3px solid <?= $e[4]==='danger' ? 'var(--c-red)' : ($e[4]==='warning' ? 'var(--c-amber)' : 'var(--c-brand)') ?>;">
-                <div style="font-size:0.82rem;font-weight:700;color:var(--c-text);margin-bottom:3px;"><?= $e[2] ?></div>
-                <div style="font-size:0.72rem;color:var(--c-text-muted);"><?= $e[3] ?></div>
+        <?php else: ?>
+            <?php foreach ($proximosEventos as $e): ?>
+            <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--c-border-lt);">
+                <div style="width:44px;text-align:center;flex-shrink:0;">
+                    <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;color:var(--c-text-muted);"><?= htmlspecialchars($e['mes']) ?></div>
+                    <div style="font-size:1.4rem;font-weight:800;color:var(--c-accent);line-height:1;"><?= htmlspecialchars($e['dia']) ?></div>
+                </div>
+                <div style="padding-left:12px;border-left:3px solid <?= $e['cor']==='danger' ? 'var(--c-red)' : ($e['cor']==='warning' ? 'var(--c-amber)' : 'var(--c-brand)') ?>;">
+                    <div style="font-size:0.82rem;font-weight:700;color:var(--c-text);margin-bottom:3px;"><?= htmlspecialchars($e['titulo']) ?></div>
+                    <div style="font-size:0.72rem;color:var(--c-text-muted);"><?= htmlspecialchars($e['descricao']) ?></div>
+                </div>
             </div>
-        </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 </div>

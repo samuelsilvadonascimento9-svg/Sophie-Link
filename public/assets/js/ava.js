@@ -1,12 +1,32 @@
-lucide.createIcons();
+// Aguarda o DOM estar 100% pronto antes de qualquer coisa
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+
+    // Garante que apenas a seção 'active' apareça (inline style = máxima especificidade)
+    document.querySelectorAll('.page-section').forEach(function(s) {
+        if (s.classList.contains('active')) {
+            s.style.display = 'block';
+        } else {
+            s.style.display = 'none';
+        }
+    });
+});
 
 /* ----------------------------------------------------------------
    NAVEGAÇÃO ENTRE SEÇÕES
    ---------------------------------------------------------------- */
 function showSec(id) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    // Esconde todas as seções com inline style (maior especificidade que qualquer CSS)
+    document.querySelectorAll('.page-section').forEach(s => {
+        s.style.display = 'none';
+        s.classList.remove('active');
+    });
+    // Mostra a seção solicitada
     const el = document.getElementById('sec-' + id);
-    if (el) el.classList.add('active');
+    if (el) {
+        el.style.display = 'block';
+        el.classList.add('active');
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Atualiza subnav
@@ -29,6 +49,7 @@ function openCourse(evt, discId) {
         { key: 'pdfs',         label: 'ARQUIVOS',     icon: 'folder-open',     items: c.pdfs         },
         { key: 'avaliacoes',   label: 'AVALIAÇÕES',   icon: 'clipboard-check', items: c.avaliacoes   },
         { key: 'atividades',   label: 'ATIVIDADES',   icon: 'edit-3',          items: c.atividades   },
+        { key: 'simulados',    label: 'SIMULADOS',    icon: 'sparkles',        items: c.simulados    },
     ];
 
     const content = document.getElementById('curso-content');
@@ -83,6 +104,7 @@ function openCategory(catKey, discId) {
         pdfs:         'Arquivos',
         avaliacoes:   'Avaliações',
         atividades:   'Atividades',
+        simulados:    'Simulados de IA',
     };
 
     const content = document.getElementById('curso-content');
@@ -115,6 +137,25 @@ function openCategory(catKey, discId) {
 }
 
 function renderMatItem(item, catKey) {
+    if (catKey === 'simulados') {
+        return `
+            <div class="mat-card">
+                <div class="mat-card-icon" style="background:var(--c-brand-light); color:var(--c-brand);">
+                    <i data-lucide="sparkles"></i>
+                </div>
+                <div class="mat-card-info">
+                    <div class="mat-title">${escHtml(item.titulo || 'Simulado')}</div>
+                    <div class="mat-desc">Criado em: ${item.criado_em.slice(0, 10).split('-').reverse().join('/')}</div>
+                </div>
+                <div class="mat-card-action">
+                    <a href="responder_simulado.php?id=${item.id}" class="btn-dl" style="text-decoration:none; display:flex; align-items:center; gap:6px;">
+                        <i data-lucide="play" style="width:14px;height:14px;"></i> Responder
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+
     const hoje     = new Date().toISOString().slice(0, 10);
     const entregue = item.entrega_status === 'entregue' || item.entrega_status === 'corrigida';
     const atrasado = catKey === 'atividades' && item.data_entrega && item.data_entrega < hoje && !entregue;
