@@ -751,69 +751,174 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
             <div id="sec-faltas" class="sec">
                 <div class="page-header">
                     <h1 class="page-title">Justificar Faltas</h1>
-                    <p class="page-desc">Aplique justificativas (atestado médico, licença) nas ausências não justificadas.</p>
+                    <p class="page-desc">Consulte o histórico de ausências dos alunos e aplique justificativas (atestado médico, licença, etc).</p>
                 </div>
 
                 <div class="panel">
-                    <div class="panel-head">
-                        <div class="panel-title">Faltas Pendentes</div>
-                        <span class="badge badge-red"><?= $faltasPendentes ?> pendente(s)</span>
+                    <div class="panel-head" style="background:#F8FAFC;">
+                        <div class="panel-title" style="color:var(--brand);">
+                            <i data-lucide="user-x" style="width:16px;height:16px;margin-right:6px;vertical-align:-2px;"></i>
+                            Alunos com Registro de Faltas
+                        </div>
                     </div>
-                    <div class="table-wrap">
+                    <div class="table-wrap" style="padding:20px;">
+                        
                         <!-- Search Bar (Minimalist) -->
                         <div style="display:flex; align-items:center; border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; margin-bottom: 20px;">
-                            <input type="text" id="falta_search" placeholder="Pesquisar por nome do aluno ou disciplina..." style="border:none; outline:none; font-size:15px; width:100%; color:var(--text); background:transparent;" autocomplete="off">
+                            <input type="text" id="falta_search" placeholder="Pesquisar por nome do aluno ou turma..." style="border:none; outline:none; font-size:15px; width:100%; color:var(--text); background:transparent;" autocomplete="off">
                             <i data-lucide="search" style="width:20px;height:20px;color:#94A3B8;"></i>
                         </div>
 
                         <table class="data-table" style="width:100%; min-width:600px; border-bottom:1px solid var(--border);">
                             <thead>
                                 <tr>
-                                    <th style="width:15%;">Data</th>
-                                    <th style="width:40%;">Aluno</th>
-                                    <th style="width:25%;">Disciplina</th>
-                                    <th style="width:10%;">Status</th>
+                                    <th class="falta-sort" data-sort="nome" style="width:40%; cursor:pointer;">Aluno <i data-lucide="arrow-up-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i></th>
+                                    <th class="falta-sort" data-sort="curso" style="width:20%; cursor:pointer;">Turma <i data-lucide="arrow-up-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i></th>
+                                    <th class="falta-sort" data-sort="pendentes" style="width:15%; text-align:center; cursor:pointer;">Pendentes <i data-lucide="arrow-up-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i></th>
+                                    <th class="falta-sort" data-sort="justificadas" style="width:15%; text-align:center; cursor:pointer;">Justificadas <i data-lucide="arrow-up-down" style="width:12px;height:12px;opacity:0.5;margin-left:4px;"></i></th>
                                     <th style="width:10%; text-align:right;">Ação</th>
                                 </tr>
                             </thead>
                             <tbody id="faltas_tbody">
                                 <?php
                                 $stmtFaltas = $pdo->query("
-                                    SELECT f.id, f.data_registro, f.status, a.nome AS aluno_nome, d.nome AS disc_nome
+                                    SELECT f.id, f.data_registro, f.status, f.status_justificativa, f.arquivo_justificativa, f.aprendiz_id, a.nome AS aluno_nome, d.nome AS disc_nome, c.nome AS curso_nome
                                     FROM frequencia f
                                     JOIN aprendizes a ON f.aprendiz_id = a.id
                                     LEFT JOIN disciplinas d ON f.disciplina_id = d.id
-                                    WHERE f.status = 'falta'
-                                    ORDER BY f.data_registro DESC
+                                    LEFT JOIN turmas t ON a.turma_id = t.id
+                                    LEFT JOIN cursos c ON t.curso_id = c.id
+                                    WHERE f.status IN ('falta', 'justificada')
+                                    ORDER BY a.nome ASC, f.data_registro DESC
                                 ");
-                                $faltas = $stmtFaltas->fetchAll(PDO::FETCH_ASSOC);
-                                foreach ($faltas as $f):
-                                    $inicial = strtoupper(mb_substr($f['aluno_nome'], 0, 1));
+                                $todasFaltas = $stmtFaltas->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                $alunosComFaltas = [];
+                                foreach($todasFaltas as $f) {
+                                    $aid = $f['aprendiz_id'];
+                                    if (!isset($alunosComFaltas[$aid])) {
+                                        $alunosComFaltas[$aid] = [
+                                            'id' => $aid,
+                                            'nome' => $f['aluno_nome'],
+                                            'curso' => $f['curso_nome'] ?? '—',
+                                            'pendentes' => 0,
+                                            'justificadas' => 0,
+                                            'registros' => []
+                                        ];
+                                    }
+                                    if ($f['status'] === 'falta') $alunosComFaltas[$aid]['pendentes']++;
+                                    else if ($f['status'] === 'justificada') $alunosComFaltas[$aid]['justificadas']++;
+                                    
+                                    $alunosComFaltas[$aid]['registros'][] = $f;
+                                }
+                                $alunosFaltasLista = array_values($alunosComFaltas);
+
+                                foreach ($alunosFaltasLista as $aluno):
+                                    $inicial = strtoupper(mb_substr($aluno['nome'], 0, 1));
                                 ?>
-                                <tr class="falta-row" id="falta-row-<?= $f['id'] ?>" data-nome="<?= htmlspecialchars(strtolower($f['aluno_nome'])) ?>" data-disc="<?= htmlspecialchars(strtolower($f['disc_nome'] ?? 'geral')) ?>">
-                                    <td style="color:var(--text-2);"><?= date('d/m/Y', strtotime($f['data_registro'])) ?></td>
+                                <!-- MASTER ROW -->
+                                <tr class="falta-master-row" 
+                                    id="master-row-<?= $aluno['id'] ?>"
+                                    data-id="<?= $aluno['id'] ?>" 
+                                    data-nome="<?= htmlspecialchars(strtolower($aluno['nome'])) ?>" 
+                                    data-curso="<?= htmlspecialchars(strtolower($aluno['curso'])) ?>"
+                                    data-pendentes="<?= $aluno['pendentes'] ?>"
+                                    data-justificadas="<?= $aluno['justificadas'] ?>"
+                                    style="transition:0.2s;">
+                                    
                                     <td>
                                         <div style="display:flex; align-items:center; gap:10px;">
                                             <div style="width:32px;height:32px;border-radius:50%;background:var(--blue-lt);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;">
                                                 <?= $inicial ?>
                                             </div>
-                                            <span style="font-weight:500; color:var(--text-2);"><?= htmlspecialchars($f['aluno_nome']) ?></span>
+                                            <span style="font-weight:500; color:var(--text-2);"><?= htmlspecialchars($aluno['nome']) ?></span>
                                         </div>
                                     </td>
-                                    <td style="font-size:13px; color:var(--text-muted);"><?= htmlspecialchars($f['disc_nome'] ?? 'Geral') ?></td>
-                                    <td><span class="badge badge-yellow">Falta</span></td>
+                                    <td style="font-size:13px; color:var(--text-muted);"><?= htmlspecialchars($aluno['curso']) ?></td>
+                                    <td style="text-align:center;">
+                                        <span class="badge badge-red pendentes-badge" id="badge-pend-<?= $aluno['id'] ?>"><?= $aluno['pendentes'] ?></span>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="badge badge-green justificadas-badge" id="badge-just-<?= $aluno['id'] ?>"><?= $aluno['justificadas'] ?></span>
+                                    </td>
                                     <td style="text-align:right;">
-                                        <button class="btn btn-sm btn-outline" onclick="justificarFalta(<?= $f['id'] ?>, this)" style="color:var(--green); border-color:var(--green); padding:6px 12px; font-weight:600;">
-                                            <i data-lucide="check" style="width:16px;height:16px;"></i> Justificar
+                                        <button class="btn btn-sm btn-ghost" onclick="toggleFaltas(<?= $aluno['id'] ?>)" style="padding:6px 12px; font-weight:600; font-size:13px; color:var(--brand);">
+                                            Detalhes <i data-lucide="chevron-down" id="icon-expand-<?= $aluno['id'] ?>" style="width:16px;height:16px;transition:0.3s;"></i>
                                         </button>
                                     </td>
                                 </tr>
+                                
+                                <!-- DETAIL ROW (ACCORDION) -->
+                                <tr class="falta-detail-row" id="detail-row-<?= $aluno['id'] ?>" data-parent-id="<?= $aluno['id'] ?>" style="display:none; background:#f8fafc; border-bottom:2px solid var(--border);">
+                                    <td colspan="5" style="padding: 20px;">
+                                        <div style="background:#fff; border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                                            <h4 style="margin-bottom:15px; font-size:14px; font-weight:600; color:var(--text-2); display:flex; align-items:center; gap:8px;">
+                                                <i data-lucide="calendar-days" style="width:16px;height:16px;color:var(--brand);"></i> 
+                                                Histórico de Faltas - <?= htmlspecialchars($aluno['nome']) ?>
+                                            </h4>
+                                            
+                                            <table style="width:100%; font-size:13px; text-align:left; border-collapse:collapse;">
+                                                <thead>
+                                                    <tr style="border-bottom:1px solid var(--border);">
+                                                        <th style="padding:10px; color:var(--text-muted); font-weight:600;">Data</th>
+                                                        <th style="padding:10px; color:var(--text-muted); font-weight:600;">Disciplina</th>
+                                                        <th style="padding:10px; color:var(--text-muted); font-weight:600;">Status</th>
+                                                        <th style="padding:10px; color:var(--text-muted); font-weight:600; text-align:right;">Ação</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach($aluno['registros'] as $reg): ?>
+                                                    <tr id="reg-row-<?= $reg['id'] ?>" style="border-bottom:1px solid #f1f5f9;">
+                                                        <td style="padding:12px 10px; font-weight:500; color:var(--text-2);"><?= date('d/m/Y', strtotime($reg['data_registro'])) ?></td>
+                                                        <td style="padding:12px 10px; color:var(--text-muted);"><?= htmlspecialchars($reg['disc_nome'] ?? 'Geral') ?></td>
+                                                        <td style="padding:12px 10px;" id="reg-status-<?= $reg['id'] ?>">
+                                                            <?php if($reg['status'] === 'justificada'): ?>
+                                                                <span class="badge badge-green" style="background:#dcfce7;color:#166534;font-size:11.5px; padding:4px 8px;">
+                                                                    <i data-lucide="check" style="width:12px;height:12px;margin-right:2px;"></i> Justificada
+                                                                </span>
+                                                            <?php elseif(($reg['status_justificativa'] ?? 'nenhuma') === 'pendente'): ?>
+                                                                <span class="badge" style="background:#fef3c7;color:#b45309;font-size:11.5px; padding:4px 8px;">
+                                                                    <i data-lucide="paperclip" style="width:12px;height:12px;margin-right:2px;"></i> Anexo Enviado
+                                                                </span>
+                                                            <?php elseif(($reg['status_justificativa'] ?? 'nenhuma') === 'rejeitada'): ?>
+                                                                <span class="badge badge-red" style="background:#fee2e2;color:#dc2626;font-size:11.5px; padding:4px 8px;">Rejeitada</span>
+                                                            <?php else: ?>
+                                                                <span class="badge badge-red" style="font-size:11.5px; padding:4px 8px;">Pendente</span>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td style="padding:12px 10px; text-align:right;" id="reg-action-<?= $reg['id'] ?>">
+                                                            <?php if($reg['status'] === 'falta' && ($reg['status_justificativa'] ?? 'nenhuma') === 'pendente'): ?>
+                                                                <a href="../<?= htmlspecialchars($reg['arquivo_justificativa']) ?>" target="_blank" class="btn btn-sm btn-outline" style="color:#0ea5e9; border-color:#0ea5e9; padding:4px 10px; margin-right:4px;">
+                                                                    <i data-lucide="eye" style="width:14px;height:14px;"></i> Ver
+                                                                </a>
+                                                                <button class="btn btn-sm btn-outline" onclick="efetuarJustificativa(<?= $reg['id'] ?>, <?= $aluno['id'] ?>)" style="color:var(--green); border-color:var(--green); padding:4px 10px; margin-right:4px;" title="Aprovar">
+                                                                    <i data-lucide="check" style="width:14px;height:14px;"></i>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-outline" onclick="rejeitarJustificativa(<?= $reg['id'] ?>, <?= $aluno['id'] ?>)" style="color:var(--red); border-color:var(--red); padding:4px 10px;" title="Rejeitar">
+                                                                    <i data-lucide="x" style="width:14px;height:14px;"></i>
+                                                                </button>
+                                                            <?php elseif($reg['status'] === 'falta'): ?>
+                                                                <button class="btn btn-sm btn-outline" onclick="efetuarJustificativa(<?= $reg['id'] ?>, <?= $aluno['id'] ?>)" style="color:var(--green); border-color:var(--green); padding:4px 10px;">
+                                                                    <i data-lucide="check" style="width:14px;height:14px;"></i> Justificar Manualmente
+                                                                </button>
+                                                            <?php else: ?>
+                                                                <span style="color:var(--text-muted); font-size:12px;">—</span>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                    </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
                                 <?php endforeach; ?>
-                                <tr id="falta_empty" style="<?= empty($faltas) ? '' : 'display:none;' ?>">
+                                
+                                <tr id="falta_empty" style="<?= empty($alunosFaltasLista) ? '' : 'display:none;' ?>">
                                     <td colspan="5">
                                         <div class="empty-state" style="padding:40px 0;">
                                             <i data-lucide="check-circle" style="width:48px;height:48px;color:var(--green);margin-bottom:10px;opacity:0.8;"></i>
-                                            <p style="font-size:15px;color:var(--text-muted);font-weight:500;">Nenhuma falta pendente ou encontrada.</p>
+                                            <p style="font-size:15px;color:var(--text-muted);font-weight:500;">Nenhum histórico de falta encontrado para os alunos.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -821,10 +926,10 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                         </table>
 
                         <!-- Pagination Footer -->
-                        <?php if (!empty($faltas)): ?>
+                        <?php if (!empty($alunosFaltasLista)): ?>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding-top:15px; margin-top:15px; font-size:13px; color:var(--text-muted);">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <div style="width:8px;height:8px;background:var(--yellow);border-radius:50%;box-shadow:0 0 0 3px rgba(234, 179, 8, 0.2);"></div> Faltas Pendentes
+                                <div style="width:8px;height:8px;background:var(--yellow);border-radius:50%;box-shadow:0 0 0 3px rgba(234, 179, 8, 0.2);"></div> Total de Alunos: <span id="falta_total_info">0</span>
                             </div>
                             <div style="display:flex; align-items:center; gap:24px;">
                                 <div style="display:flex; align-items:center; gap:8px;">
@@ -837,7 +942,7 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div style="font-weight:500;"><span id="falta_page_info">1 - 5</span> de <span id="falta_total_info">0</span></div>
+                                <div style="font-weight:500;"><span id="falta_page_info">1 - 5</span></div>
                                 <div style="display:flex; gap:4px;">
                                     <button type="button" id="falta_btn_first" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Primeira Página"><i data-lucide="chevrons-left" style="width:16px;height:16px;"></i></button>
                                     <button type="button" id="falta_btn_prev" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Página Anterior"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></button>
@@ -848,9 +953,79 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                         </div>
 
                         <script>
+                        // ==========================================
+                        // LOGIC FOR MASTER-DETAIL AND AJAX ACTIONS
+                        // ==========================================
+                        function toggleFaltas(alunoId) {
+                            const detailRow = document.getElementById('detail-row-' + alunoId);
+                            const icon = document.getElementById('icon-expand-' + alunoId);
+                            const masterRow = document.getElementById('master-row-' + alunoId);
+                            
+                            if (detailRow.style.display === 'none') {
+                                detailRow.style.display = 'table-row';
+                                icon.style.transform = 'rotate(180deg)';
+                                masterRow.style.background = '#f8fafc';
+                            } else {
+                                detailRow.style.display = 'none';
+                                icon.style.transform = 'rotate(0deg)';
+                                masterRow.style.background = 'transparent';
+                            }
+                        }
+
+                        function efetuarJustificativa(regId, alunoId) {
+                            if (!confirm("Tem certeza que deseja justificar esta falta?")) return;
+                            
+                            fetch('../api/alunos/justificar_falta.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ falta_id: regId })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if(data.success) {
+                                    showToast("Falta justificada com sucesso!", "success");
+                                    
+                                    // 1. Atualizar o status visual na linha detalhada
+                                    const statusTd = document.getElementById('reg-status-' + regId);
+                                    statusTd.innerHTML = `<span class="badge badge-green" style="background:#dcfce7;color:#166534;font-size:11.5px; padding:4px 8px;"><i data-lucide="check" style="width:12px;height:12px;margin-right:2px;"></i> Justificada</span>`;
+                                    lucide.createIcons({root: statusTd});
+                                    
+                                    // 2. Remover o botão de ação e colocar traço
+                                    const actionTd = document.getElementById('reg-action-' + regId);
+                                    actionTd.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">—</span>`;
+                                    
+                                    // 3. Atualizar contadores no master row (Data Attributes)
+                                    const masterRow = document.getElementById('master-row-' + alunoId);
+                                    let pendentes = parseInt(masterRow.getAttribute('data-pendentes'));
+                                    let justificadas = parseInt(masterRow.getAttribute('data-justificadas'));
+                                    
+                                    pendentes = Math.max(0, pendentes - 1);
+                                    justificadas += 1;
+                                    
+                                    masterRow.setAttribute('data-pendentes', pendentes);
+                                    masterRow.setAttribute('data-justificadas', justificadas);
+                                    
+                                    // 4. Atualizar os Badges visuais no master row
+                                    document.getElementById('badge-pend-' + alunoId).textContent = pendentes;
+                                    document.getElementById('badge-just-' + alunoId).textContent = justificadas;
+                                    
+                                } else {
+                                    showToast(data.message || "Erro ao justificar falta.", "error");
+                                }
+                            })
+                            .catch(err => {
+                                showToast("Erro de conexão.", "error");
+                                console.error(err);
+                            });
+                        }
+
+                        // ==========================================
+                        // LOGIC FOR PAGINATION, SEARCH, AND SORTING
+                        // ==========================================
                         document.addEventListener('DOMContentLoaded', function() {
                             const searchInput = document.getElementById('falta_search');
-                            const rows = Array.from(document.querySelectorAll('.falta-row'));
+                            let masterRows = Array.from(document.querySelectorAll('.falta-master-row'));
+                            const tbody = document.getElementById('faltas_tbody');
                             const emptyMsg = document.getElementById('falta_empty');
                             const btnFirst = document.getElementById('falta_btn_first');
                             const btnPrev = document.getElementById('falta_btn_prev');
@@ -859,17 +1034,57 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                             const pageInfo = document.getElementById('falta_page_info');
                             const totalInfo = document.getElementById('falta_total_info');
                             const pageSizeSelect = document.getElementById('falta_page_size');
+                            const sortHeaders = document.querySelectorAll('.falta-sort');
 
-                            let filteredRows = [...rows];
+                            let filteredRows = [...masterRows];
                             let currentPage = 1;
                             let pageSize = parseInt(pageSizeSelect.value);
+                            
+                            let sortCol = 'nome';
+                            let sortAsc = true;
+
+                            function applySort() {
+                                filteredRows.sort((a, b) => {
+                                    let valA = a.getAttribute('data-' + sortCol);
+                                    let valB = b.getAttribute('data-' + sortCol);
+                                    
+                                    // Parse integer if column is numeric
+                                    if(sortCol === 'pendentes' || sortCol === 'justificadas') {
+                                        valA = parseInt(valA);
+                                        valB = parseInt(valB);
+                                    } else {
+                                        valA = valA.toString();
+                                        valB = valB.toString();
+                                    }
+
+                                    if (valA < valB) return sortAsc ? -1 : 1;
+                                    if (valA > valB) return sortAsc ? 1 : -1;
+                                    return 0;
+                                });
+                                
+                                // Re-append rows to DOM in sorted order
+                                filteredRows.forEach(row => {
+                                    tbody.appendChild(row); // Master row
+                                    const detailRow = document.getElementById('detail-row-' + row.getAttribute('data-id'));
+                                    if(detailRow) tbody.appendChild(detailRow); // Detail row right after
+                                });
+                            }
 
                             function renderTable() {
-                                // Hide all first
-                                rows.forEach(r => r.style.display = 'none');
+                                applySort();
                                 
-                                // Clean up filtered rows by removing those that might have been removed from DOM by `justificarFalta`
-                                filteredRows = filteredRows.filter(r => document.body.contains(r));
+                                // Hide ALL master and detail rows
+                                masterRows.forEach(r => {
+                                    r.style.display = 'none';
+                                    const detailRow = document.getElementById('detail-row-' + r.getAttribute('data-id'));
+                                    if(detailRow) detailRow.style.display = 'none';
+                                    
+                                    // Reset chevron and background on hide
+                                    const icon = document.getElementById('icon-expand-' + r.getAttribute('data-id'));
+                                    if(icon) icon.style.transform = 'rotate(0deg)';
+                                    r.style.background = 'transparent';
+                                });
+                                
                                 const total = filteredRows.length;
                                 totalInfo.textContent = total;
                                 
@@ -896,6 +1111,7 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                 
                                 for (let i = startIdx; i < endIdx; i++) {
                                     filteredRows[i].style.display = 'table-row';
+                                    // Note: We don't display the detail row automatically, user has to click to expand
                                 }
                                 
                                 btnFirst.disabled = currentPage === 1;
@@ -912,6 +1128,35 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                 btnLast.style.opacity = btnLast.disabled ? '0.3' : '1';
                             }
 
+                            // Sorting Events
+                            sortHeaders.forEach(th => {
+                                th.addEventListener('click', function() {
+                                    const col = this.getAttribute('data-sort');
+                                    if(sortCol === col) {
+                                        sortAsc = !sortAsc; // toggle direction
+                                    } else {
+                                        sortCol = col;
+                                        sortAsc = true;
+                                    }
+                                    
+                                    // Update visual icons
+                                    sortHeaders.forEach(h => {
+                                        const i = h.querySelector('i');
+                                        if(h === this) {
+                                            i.style.opacity = '1';
+                                            i.setAttribute('data-lucide', sortAsc ? 'arrow-up' : 'arrow-down');
+                                        } else {
+                                            i.style.opacity = '0.5';
+                                            i.setAttribute('data-lucide', 'arrow-up-down');
+                                        }
+                                    });
+                                    lucide.createIcons();
+                                    
+                                    currentPage = 1;
+                                    renderTable();
+                                });
+                            });
+
                             pageSizeSelect.addEventListener('change', function() {
                                 pageSize = parseInt(this.value);
                                 currentPage = 1; 
@@ -920,10 +1165,8 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
 
                             searchInput.addEventListener('input', function() {
                                 const val = this.value.toLowerCase();
-                                // Refresh current valid rows
-                                const activeRows = Array.from(document.querySelectorAll('.falta-row'));
-                                filteredRows = activeRows.filter(r => {
-                                    return r.dataset.nome.includes(val) || r.dataset.disc.includes(val);
+                                filteredRows = masterRows.filter(r => {
+                                    return r.getAttribute('data-nome').includes(val) || r.getAttribute('data-curso').includes(val);
                                 });
                                 currentPage = 1;
                                 renderTable();
@@ -936,26 +1179,6 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                 const maxPage = Math.ceil(filteredRows.length / pageSize);
                                 if(currentPage < maxPage) { currentPage = maxPage; renderTable(); } 
                             });
-
-                            // Hook into the justificarFalta function to update pagination when a row is removed
-                            const originalJustificar = window.justificarFalta;
-                            window.justificarFalta = function(id, btn) {
-                                // Add a listener to re-render table after the row fades out
-                                const row = document.getElementById('falta-row-' + id);
-                                if (row) {
-                                    // Watch for its removal
-                                    const observer = new MutationObserver(function(mutations) {
-                                        if(!document.body.contains(row)) {
-                                            renderTable();
-                                            observer.disconnect();
-                                        }
-                                    });
-                                    observer.observe(row.parentNode, { childList: true });
-                                }
-                                if(originalJustificar) {
-                                    originalJustificar(id, btn);
-                                }
-                            };
 
                             renderTable();
                         });

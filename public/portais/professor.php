@@ -36,6 +36,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+// Lógica de Criação de Turma pelo Professor
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'criar_turma') {
+    $curso_id = $_POST['curso_id'] ?? null;
+    $disciplina_id = $_POST['disciplina_id'] ?? null;
+    $nome_turma = trim($_POST['nome_turma'] ?? '');
+    $turno = $_POST['turno'] ?? null;
+    $ano_semestre = trim($_POST['ano_semestre'] ?? '');
+
+    if ($curso_id && $disciplina_id && $nome_turma && $turno && $ano_semestre) {
+        try {
+            $pdo->beginTransaction();
+            
+            // 1. Criar a Turma
+            $stmt = $pdo->prepare("INSERT INTO turmas (curso_id, nome, turno, ano_semestre) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$curso_id, $nome_turma, $turno, $ano_semestre]);
+            $nova_turma_id = $pdo->lastInsertId();
+            
+            // 2. Vincular Professor à Turma e Disciplina recém-criada
+            $stmtVinc = $pdo->prepare("INSERT INTO professor_disciplina (usuario_id, turma_id, disciplina_id) VALUES (?, ?, ?)");
+            $stmtVinc->execute([$usuario_id, $nova_turma_id, $disciplina_id]);
+            
+            $pdo->commit();
+            $sucesso = "Turma '$nome_turma' criada e vinculada a você com sucesso!";
+            
+            // Recarregar a aba ativa para exibir a nova turma
+            echo "<script>window.addEventListener('DOMContentLoaded', () => { showSec('turmas', document.querySelectorAll('.nav-link')[1]); });</script>";
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $erro = "Erro ao criar turma: " . $e->getMessage();
+        }
+    } else {
+        $erro = "Preencha todos os campos obrigatórios para criar a turma.";
+    }
+}
+
 // Buscar Turmas do Professor
 $stmtTurmas = $pdo->prepare("
     SELECT pd.*, t.nome AS turma_nome, t.turno, c.nome AS curso_nome, d.nome AS disciplina_nome
@@ -66,6 +101,12 @@ if (!empty($turmaIds)) {
         $alunosPorTurma[$a['turma_id']][] = $a;
     }
 }
+
+// Buscar Todos os Cursos para o Modal de Criar Turma
+$cursosAtivos = $pdo->query("SELECT id, nome FROM cursos ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
+
+// Buscar Todas as Disciplinas para o Modal de Criar Turma
+$disciplinasAtivas = $pdo->query("SELECT id, nome, curso_id FROM disciplinas ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -116,6 +157,13 @@ if (!empty($turmaIds)) {
         .data-table th { background: rgba(0,0,0,0.02); font-weight: 600; color: var(--c-text-muted); font-size: 12px; text-transform: uppercase; }
         .sec { display: none; }
         .sec.active { display: block; }
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--c-surface); width: 100%; max-width: 500px; border-radius: var(--radius-lg); box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--c-border); background: rgba(0,0,0,0.02); display: flex; justify-content: flex-end; gap: 12px; }
     </style>
 </head>
 <body>
@@ -195,9 +243,14 @@ if (!empty($turmaIds)) {
 
             <!-- SEC: TURMAS -->
             <div id="sec-turmas" class="sec">
-                <div class="page-hdr">
-                    <div class="ph-title">Minhas Turmas</div>
-                    <div class="ph-sub">Lista de disciplinas e turmas que você ministra.</div>
+                <div class="page-hdr" style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <div class="ph-title">Minhas Turmas</div>
+                        <div class="ph-sub">Lista de disciplinas e turmas que você ministra.</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="abrirModalNovaTurma()"><i data-lucide="plus" style="width:16px;"></i> Nova Turma</button>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -280,6 +333,66 @@ if (!empty($turmaIds)) {
     </div>
 </div>
 
+<!-- Modal Nova Turma -->
+<div id="modalNovaTurma" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 style="font-family:'Syne', sans-serif; font-size:18px; margin:0; color:var(--c-text);">Criar Nova Turma</h3>
+            <button class="btn" style="padding:4px; background:transparent; border:none; color:var(--c-text-muted);" onclick="fecharModalNovaTurma()"><i data-lucide="x"></i></button>
+        </div>
+        <form method="POST">
+            <div class="modal-body">
+                <input type="hidden" name="action" value="criar_turma">
+                
+                <div class="form-group">
+                    <label class="form-label">Curso *</label>
+                    <select name="curso_id" id="modalCurso" class="form-control" required onchange="filtrarDisciplinas()">
+                        <option value="">Selecione o Curso...</option>
+                        <?php foreach($cursosAtivos as $c): ?>
+                            <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['nome']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Sua Disciplina nesta Turma *</label>
+                    <select name="disciplina_id" id="modalDisciplina" class="form-control" required>
+                        <option value="">Selecione o curso primeiro...</option>
+                    </select>
+                    <div style="font-size:12px; color:var(--c-text-muted); margin-top:4px;">
+                        Você será automaticamente vinculado a esta disciplina na nova turma.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nome da Turma *</label>
+                    <input type="text" name="nome_turma" class="form-control" placeholder="Ex: Turma A, 1º Semestre" required>
+                </div>
+
+                <div style="display:flex; gap:16px;">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Turno *</label>
+                        <select name="turno" class="form-control" required>
+                            <option value="Manhã">Manhã</option>
+                            <option value="Tarde">Tarde</option>
+                            <option value="Noite">Noite</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Ano/Semestre *</label>
+                        <input type="text" name="ano_semestre" class="form-control" placeholder="Ex: 2026/1" required>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background:#fff; border:1px solid var(--c-border); color:var(--c-text);" onclick="fecharModalNovaTurma()">Cancelar</button>
+                <button type="submit" class="btn btn-primary"><i data-lucide="check" style="width:16px;"></i> Criar Turma</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     // Dados de alunos passados do PHP para o JS para filtrar o select dinamicamente
     const alunosPorTurma = <?= json_encode($alunosPorTurma) ?>;
@@ -311,6 +424,37 @@ if (!empty($turmaIds)) {
             });
         } else if (turmaId) {
             alunoSelect.innerHTML = '<option value="">Nenhum aluno ativo nesta turma.</option>';
+        }
+    }
+
+    // --- Modal Nova Turma ---
+    const disciplinasDB = <?= json_encode($disciplinasAtivas) ?>;
+
+    function abrirModalNovaTurma() {
+        document.getElementById('modalNovaTurma').classList.add('active');
+    }
+    function fecharModalNovaTurma() {
+        document.getElementById('modalNovaTurma').classList.remove('active');
+    }
+    
+    function filtrarDisciplinas() {
+        const cursoId = document.getElementById('modalCurso').value;
+        const discSelect = document.getElementById('modalDisciplina');
+        discSelect.innerHTML = '<option value="">Selecione a disciplina...</option>';
+        
+        if(cursoId) {
+            const vinculadas = disciplinasDB.filter(d => d.curso_id == cursoId);
+            vinculadas.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.id;
+                opt.textContent = d.nome;
+                discSelect.appendChild(opt);
+            });
+            if(vinculadas.length === 0) {
+                discSelect.innerHTML = '<option value="">Nenhuma disciplina encontrada para este curso.</option>';
+            }
+        } else {
+            discSelect.innerHTML = '<option value="">Selecione o curso primeiro...</option>';
         }
     }
 

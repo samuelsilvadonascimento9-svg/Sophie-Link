@@ -1,5 +1,5 @@
 <?php
-// api/justificar_falta.php — Justifica uma falta via AJAX
+// api/rejeitar_justificativa_falta.php — Rejeita uma justificativa de falta
 session_start();
 require_once '../../../includes/auth.php';
 protect_page(['colaborador', 'admin']);
@@ -20,14 +20,14 @@ if (!$id) {
 }
 
 try {
-    $stmt = $pdo->prepare("UPDATE frequencia SET status = 'justificada', status_justificativa = 'nenhuma' WHERE id = ? AND status = 'falta'");
+    $stmt = $pdo->prepare("UPDATE frequencia SET status_justificativa = 'rejeitada' WHERE id = ? AND status = 'falta'");
     $stmt->execute([$id]);
 
     if ($stmt->rowCount() === 0) {
-        echo json_encode(['success' => false, 'error' => 'Falta não encontrada ou já justificada.']); exit;
+        echo json_encode(['success' => false, 'error' => 'Falta não encontrada ou já processada.']); exit;
     }
 
-    echo json_encode(['success' => true, 'message' => 'Falta justificada com sucesso!']);
+    echo json_encode(['success' => true, 'message' => 'Justificativa rejeitada.']);
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'error' => 'Erro: ' . $e->getMessage()]);
 }

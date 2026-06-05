@@ -42,7 +42,8 @@ if (!$aluno) {
         'nome' => $_SESSION['usuario_nome'],
         'curso' => 'Curso Genérico',
         'situacao_aluno' => 'cursando',
-        'empresa_nome' => 'Nenhuma'
+        'empresa_nome' => 'Nenhuma',
+        'turma_id' => null
     ];
 }
 
@@ -251,7 +252,7 @@ $stmtHorarios = $pdo->prepare("SELECT h.*, d.nome AS disciplina_nome
                                FROM horarios_aulas h 
                                JOIN disciplinas d ON h.disciplina_id = d.id 
                                WHERE h.turma_id = ?");
-$stmtHorarios->execute([$aluno['turma_id']]);
+$stmtHorarios->execute([$aluno['turma_id'] ?? null]);
 $horariosDb = $stmtHorarios->fetchAll(PDO::FETCH_ASSOC);
 
 // Mapear para quadro de horários
@@ -672,6 +673,96 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                             </div>
                         </div>
 
+                        <!-- Modal Justificativa de Falta -->
+                        <div id="modalJustificativa" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+                            <div style="background: var(--c-surface, #fff); width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden;">
+                                <div style="padding: 20px 24px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="margin:0; font-size: 1.1rem; color: #1E293B;">Enviar Justificativa de Falta</h3>
+                                    <button onclick="document.getElementById('modalJustificativa').style.display='none'" style="background:transparent; border:none; cursor:pointer; color:#94A3B8;"><i data-lucide="x"></i></button>
+                                </div>
+                                <div style="padding: 24px;">
+                                    <p style="font-size: 0.9rem; color: #64748B; margin-bottom: 20px;">Anexe um atestado médico ou documento comprobatório para avaliação da coordenação. (PDF, JPG ou PNG - Máx 5MB)</p>
+                                    <form id="formJustificativa">
+                                        <input type="hidden" id="falta_id_just" name="frequencia_id" value="">
+                                        
+                                        <div style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 30px 20px; text-align: center; margin-bottom: 20px; background: #F8FAFC; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('arquivoJustificativa').click()" id="dropZoneJust">
+                                            <i data-lucide="file-up" style="width: 32px; height: 32px; color: #94A3B8; margin-bottom: 10px;"></i>
+                                            <div style="font-size: 0.9rem; font-weight: 600; color: #334155;">Clique para selecionar um arquivo</div>
+                                            <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 5px;" id="fileNameDisplay">Nenhum arquivo selecionado</div>
+                                        </div>
+                                        <input type="file" id="arquivoJustificativa" name="arquivo" accept=".pdf,image/jpeg,image/png" style="display: none;" onchange="document.getElementById('fileNameDisplay').innerText = this.files[0] ? this.files[0].name : 'Nenhum arquivo selecionado'">
+                                        
+                                        <div id="msgJustificativa" style="display:none; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 16px;"></div>
+
+                                        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                                            <button type="button" onclick="document.getElementById('modalJustificativa').style.display='none'" style="padding: 10px 16px; border-radius: 6px; border: 1px solid #E2E8F0; background: #fff; color: #64748B; cursor: pointer; font-weight: 600;">Cancelar</button>
+                                            <button type="button" onclick="enviarJustificativa()" id="btnEnviarJust" style="padding: 10px 16px; border-radius: 6px; border: none; background: #FF6B00; color: #fff; cursor: pointer; font-weight: 600; display:flex; align-items:center; gap:8px;">
+                                                <i data-lucide="upload-cloud" style="width:16px;"></i> Enviar Documento
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            function abrirModalJustificativa(id) {
+                                document.getElementById('falta_id_just').value = id;
+                                document.getElementById('arquivoJustificativa').value = '';
+                                document.getElementById('fileNameDisplay').innerText = 'Nenhum arquivo selecionado';
+                                document.getElementById('msgJustificativa').style.display = 'none';
+                                document.getElementById('modalJustificativa').style.display = 'flex';
+                            }
+
+                            async function enviarJustificativa() {
+                                const form = document.getElementById('formJustificativa');
+                                const fileInput = document.getElementById('arquivoJustificativa');
+                                const msgDiv = document.getElementById('msgJustificativa');
+                                const btn = document.getElementById('btnEnviarJust');
+
+                                if(!fileInput.files.length) {
+                                    msgDiv.style.display = 'block';
+                                    msgDiv.style.background = '#FEE2E2';
+                                    msgDiv.style.color = '#B91C1C';
+                                    msgDiv.innerText = 'Por favor, selecione um arquivo.';
+                                    return;
+                                }
+
+                                const formData = new FormData(form);
+                                btn.disabled = true;
+                                btn.innerHTML = '<i data-lucide="loader" class="spin" style="width:16px;"></i> Enviando...';
+
+                                try {
+                                    const response = await fetch('../api/alunos/solicitar_justificativa.php', {
+                                        method: 'POST',
+                                        body: formData
+                                    });
+                                    const result = await response.json();
+                                    
+                                    msgDiv.style.display = 'block';
+                                    if(result.success) {
+                                        msgDiv.style.background = '#D1FAE5';
+                                        msgDiv.style.color = '#065F46';
+                                        msgDiv.innerText = 'Justificativa enviada com sucesso! Aguarde a avaliação.';
+                                        setTimeout(() => { location.reload(); }, 1500);
+                                    } else {
+                                        msgDiv.style.background = '#FEE2E2';
+                                        msgDiv.style.color = '#B91C1C';
+                                        msgDiv.innerText = result.error || 'Erro ao enviar justificativa.';
+                                        btn.disabled = false;
+                                        btn.innerHTML = '<i data-lucide="upload-cloud" style="width:16px;"></i> Enviar Documento';
+                                    }
+                                } catch(e) {
+                                    msgDiv.style.display = 'block';
+                                    msgDiv.style.background = '#FEE2E2';
+                                    msgDiv.style.color = '#B91C1C';
+                                    msgDiv.innerText = 'Erro de comunicação com o servidor.';
+                                    btn.disabled = false;
+                                    btn.innerHTML = '<i data-lucide="upload-cloud" style="width:16px;"></i> Enviar Documento';
+                                }
+                            }
+                        </script>
+
                         <!-- Main Table Section -->
                         <div class="notas-table-section" style="margin-top: 1.5rem;">
                             <!-- Controles Modernos -->
@@ -689,6 +780,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                 <div style="display: inline-flex; background: #F1F5F9; padding: 4px; border-radius: 10px; border: 1px solid #E2E8F0;">
                                     <button class="notas-tab active" onclick="switchNotasTab('etapas', this)" style="padding: 8px 20px; border: none; background: transparent; border-radius: 6px; font-weight: 600; font-size: 0.85rem; color: #64748B; cursor: pointer; transition: all 0.2s;">Visão por Etapas</button>
                                     <button class="notas-tab" onclick="switchNotasTab('avaliacoes', this)" style="padding: 8px 20px; border: none; background: transparent; border-radius: 6px; font-weight: 600; font-size: 0.85rem; color: #64748B; cursor: pointer; transition: all 0.2s;">Histórico de Avaliações</button>
+                                    <button class="notas-tab" onclick="switchNotasTab('faltas', this)" style="padding: 8px 20px; border: none; background: transparent; border-radius: 6px; font-weight: 600; font-size: 0.85rem; color: #64748B; cursor: pointer; transition: all 0.2s;">Registro de Faltas</button>
                                     <style>
                                         .notas-tab.active { background: #FFFFFF !important; color: #FF6B00 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
                                         .notas-tab:hover:not(.active) { color: #1E293B !important; }
@@ -764,6 +856,59 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                             <div id="tab-notas-avaliacoes" class="notas-tab-content" style="display: none; margin-top: 1.5rem;">
                                 <div class="inst-card"><div style="padding: 2rem; text-align: center; color: #64748B;">Nenhuma avaliação avulsa selecionada. Use a aba "Visão por Etapas".</div></div>
                             </div>
+                            <!-- Tab 3: Registro de Faltas -->
+                            <div id="tab-notas-faltas" class="notas-tab-content" style="display: none;">
+                                <div style="overflow-x: auto; padding-bottom: 10px;">
+                                    <table style="min-width: 800px; width: 100%; border-spacing: 0 10px; border-collapse: separate;">
+                                        <thead>
+                                            <tr>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: left;">Data</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: left;">Disciplina</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: center;">Situação</th>
+                                                <th style="padding: 0 16px; font-weight: 700; font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; text-align: right;">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php 
+                                            $faltasAluno = array_filter($freqDb, function($f) { return in_array($f['status'], ['falta', 'justificada']); });
+                                            if (empty($faltasAluno)): ?>
+                                                <tr><td colspan="4" style="text-align:center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #E2E8F0; color: #64748B;">Você não possui faltas registradas neste período.</td></tr>
+                                            <?php else: ?>
+                                                <?php foreach ($faltasAluno as $f): 
+                                                    $discNome = 'Indefinida';
+                                                    foreach($disciplinasCurso as $dc) { if($dc['id'] == $f['disciplina_id']) { $discNome = $dc['nome']; break; } }
+                                                ?>
+                                                <tr style="background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                                                    <td style="padding: 16px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0;">
+                                                        <span style="font-weight: 600; color: #1E293B; font-size: 0.95rem;"><?= date('d/m/Y', strtotime($f['data_registro'])) ?></span>
+                                                    </td>
+                                                    <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                                                        <span style="color: #64748B; font-size: 0.9rem; font-weight: 500;"><?= htmlspecialchars($discNome) ?></span>
+                                                    </td>
+                                                    <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; text-align: center;">
+                                                        <?php if($f['status'] === 'justificada'): ?>
+                                                            <span style="background: #D1FAE5; color: #065F46; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">JUSTIFICADA</span>
+                                                        <?php elseif(($f['status_justificativa'] ?? 'nenhuma') === 'pendente'): ?>
+                                                            <span style="background: #FEF3C7; color: #B45309; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">EM ANÁLISE</span>
+                                                        <?php elseif(($f['status_justificativa'] ?? 'nenhuma') === 'rejeitada'): ?>
+                                                            <span style="background: #FEE2E2; color: #B91C1C; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">REJEITADA</span>
+                                                        <?php else: ?>
+                                                            <span style="background: #FEF2F2; color: #DC2626; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">FALTA</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td style="padding: 16px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; text-align: right;">
+                                                        <?php if($f['status'] === 'falta' && ($f['status_justificativa'] ?? 'nenhuma') !== 'pendente'): ?>
+                                                            <button class="inst-btn-primary" style="font-size: 0.75rem; padding: 6px 12px;" onclick="abrirModalJustificativa(<?= $f['id'] ?>)"><i data-lucide="upload-cloud" style="width:14px; margin-right:4px;"></i> Justificar</button>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         </div>
                     </div><!-- /sec-notas -->
 
