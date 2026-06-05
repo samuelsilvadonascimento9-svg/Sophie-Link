@@ -26,6 +26,8 @@ if ($isProf) {
     $avisosTurma = [];
     $proximosEventos = [];
     $percPresenca = 100;
+    $notificacoesAluno = [];
+    $unreadNotifCount = 0;
 
     $stmtTurmasProf = $pdo->prepare("
         SELECT pd.*, t.nome AS turma_nome, d.nome AS disciplina_nome
@@ -194,12 +196,9 @@ if ($isProf) {
 
     // ─── Busca de Notificações Reais ───────────────────────────────────────────
     $stmtNotif = $pdo->prepare("SELECT * FROM ava_notificacoes WHERE aprendiz_id = ? ORDER BY criado_em DESC LIMIT 10");
-    $stmtNotif->execute([$real_aluno_id]);
+    $stmtNotif->execute([$aluno_id]);
     $notificacoesAluno = $stmtNotif->fetchAll();
     $unreadNotifCount = count(array_filter($notificacoesAluno, fn($n) => $n['lida'] == 0));
-} else {
-    $notificacoesAluno = [];
-    $unreadNotifCount = 0;
 }
 
 $primeiroNome = explode(' ', $nomeAluno)[0];
@@ -336,8 +335,6 @@ if (!$isProf) {
 <div class="subnav">
     <span class="subnav-link active" id="snav-home" onclick="showSec('home')">Ferramentas</span>
     <div class="subnav-sep"></div>
-        <a href="portal_aluno.php" class="subnav-link">Portal do aluno</a>
-    <div class="subnav-sep"></div>
     <span class="subnav-link" id="snav-notas" onclick="showSec('notas')">Boletim</span>
     <div class="subnav-sep"></div>
     <span class="subnav-link" id="snav-frequencia" onclick="showSec('frequencia')">Frequência</span>
@@ -347,6 +344,8 @@ if (!$isProf) {
     <span class="subnav-link" id="snav-ajuda" onclick="showSec('ajuda')">Ajuda</span>
     <div class="subnav-sep"></div>
     <span class="subnav-link" id="snav-descobrir" onclick="showSec('descobrir')">Descobrir</span>
+    <div class="subnav-sep"></div>
+    <a href="portal_aluno.php" class="subnav-link subnav-link-portal">Portal do aluno</a>
 </div>
 
 <!-- ================================================================
@@ -444,6 +443,7 @@ if (!$isProf) {
                     <div class="courses-footer"><a href="#">Exibir Todas as Disciplinas (<?= count($disciplinasAluno) ?>)</a></div>
                     <?php endif; ?>
                 <?php endif; ?>
+            </div>
 
             <!-- ATIVIDADES PENDENTES (real do BD) -->
             <?php if (!$isProf): ?>

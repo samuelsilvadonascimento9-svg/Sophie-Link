@@ -92,7 +92,6 @@ $meses_pt = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','A
         /* Tabela de empresa */
         .empresa-box { border: 1px solid #000; border-top: none; padding: 12px 16px; font-size: 11px; line-height: 1.9; }
         .empresa-box-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .emp-field { }
         .emp-label { font-weight: 700; font-size: 9px; text-transform: uppercase; color: #555; }
         .emp-val   { font-size: 11px; }
 
