@@ -501,95 +501,247 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                     <div class="panel-head">
                         <div class="panel-title">Gerar Novo Documento</div>
                     </div>
-                    <form action="../reports/declaracao_print.php" method="GET" target="_blank" style="padding: 30px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                            <div class="form-group" style="grid-column: 1/-1; position:relative;">
-                                <label class="form-label">Pesquisar Aluno</label>
-                                <input type="hidden" name="aluno_id" id="doc_aluno_id" required>
-                                <input type="text" id="doc_aluno_search" class="form-control" placeholder="🔍 Digite o nome do aluno..." autocomplete="off">
+                    <form action="../reports/declaracao_print.php" method="GET" target="_blank" style="padding: 24px;" onsubmit="if(!document.getElementById('doc_aluno_id').value){ alert('⚠️ Atenção: Por favor, selecione um aluno clicando em uma das linhas da tabela antes de gerar o documento.'); return false; }">
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start;">
+                            
+                            <!-- COLUNA ESQUERDA: LISTA DE ALUNOS -->
+                            <div style="flex: 1 1 500px;">
+                                <label class="form-label" style="font-size:15px; margin-bottom:15px;"><i data-lucide="users" style="width:18px;height:18px;vertical-align:-4px;margin-right:6px;color:var(--brand);"></i>1. Selecione o Aluno</label>
+                                <input type="hidden" name="aluno_id" id="doc_aluno_id">
                                 
-                                <div id="doc_aluno_dropdown" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; max-height:220px; overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:var(--radius-sm); z-index:50; box-shadow:var(--shadow-lg);">
-                                    <?php foreach ($aprendizes as $a): ?>
-                                    <div class="doc-aluno-item" data-id="<?= $a['id'] ?>" data-nome="<?= htmlspecialchars($a['nome']) ?>" style="padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f8fafc; transition:0.1s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
-                                        <div style="font-weight:600;"><?= htmlspecialchars($a['nome']) ?></div>
-                                        <div style="font-size:11px;color:var(--text-muted);">RA: <?= str_pad($a['id'], 6, '0', STR_PAD_LEFT) ?></div>
+                                <div style="border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                                    
+                                    <!-- Search Bar (Minimalist) -->
+                                    <div style="display:flex; align-items:center; border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; margin-bottom: 20px;">
+                                        <input type="text" id="doc_aluno_search" placeholder="Pesquisar por nome do aluno..." style="border:none; outline:none; font-size:15px; width:100%; color:var(--text); background:transparent;" autocomplete="off">
+                                        <i data-lucide="search" style="width:20px;height:20px;color:#94A3B8;"></i>
                                     </div>
-                                    <?php endforeach; ?>
-                                    <?php if(empty($aprendizes)): ?>
-                                    <div style="padding:10px 14px; font-size:13px; color:var(--text-muted);">Nenhum aluno encontrado.</div>
-                                    <?php endif; ?>
+                                    
+                                    <!-- Table -->
+                                    <div class="table-wrap" style="overflow-x:auto;">
+                                        <table class="data-table" style="width:100%; min-width:450px; border-bottom:1px solid var(--border);">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:60%;">Aluno</th>
+                                                    <th style="width:30%;">Turma</th>
+                                                    <th style="width:10%; text-align:center;">Selecionar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="doc_aluno_tbody">
+                                                <?php 
+                                                usort($aprendizes, function($a, $b) { return strcmp($a['nome'], $b['nome']); });
+                                                foreach ($aprendizes as $a): 
+                                                ?>
+                                                <tr class="doc-aluno-row" data-nome="<?= htmlspecialchars(strtolower($a['nome'])) ?>" data-id="<?= $a['id'] ?>" style="cursor:pointer; transition:0.1s;">
+                                                    <td style="font-weight:500; color:var(--text-2);">
+                                                        <div style="display:flex; align-items:center; gap:8px;">
+                                                            <div style="width:32px;height:32px;border-radius:50%;background:var(--blue-lt);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;">
+                                                                <?= substr($a['nome'], 0, 1) ?>
+                                                            </div>
+                                                            <?= htmlspecialchars($a['nome']) ?>
+                                                        </div>
+                                                    </td>
+                                                    <td style="font-size:12px; color:var(--text-muted);"><?= htmlspecialchars($a['curso_nome'] ?? '—') ?></td>
+                                                    <td style="text-align:center;">
+                                                        <div class="doc-radio" style="width:20px;height:20px;border:2px solid var(--border);border-radius:50%;margin:0 auto;position:relative;">
+                                                            <div class="doc-radio-inner" style="width:10px;height:10px;background:var(--brand);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);transition:0.2s;"></div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                                <tr id="doc_aluno_empty" style="display:none;">
+                                                    <td colspan="3" style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum aluno encontrado para sua pesquisa.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Pagination Footer -->
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding-top:15px; margin-top:15px; font-size:13px; color:var(--text-muted);">
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <div style="width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 0 3px var(--green-lt);"></div> Alunos Ativos
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:24px;">
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                Exibir: 
+                                                <select id="doc_page_size" style="border:none; border-bottom:2px solid var(--border); background:transparent; font-size:13px; font-weight:600; color:var(--text-2); cursor:pointer; outline:none; padding-bottom:2px;">
+                                                    <option value="5">5</option>
+                                                    <option value="10">10</option>
+                                                    <option value="20">20</option>
+                                                    <option value="50">50</option>
+                                                    <option value="100">100</option>
+                                                </select>
+                                            </div>
+                                            <div style="font-weight:500;"><span id="doc_page_info">1 - 5</span> de <span id="doc_total_info">0</span></div>
+                                            <div style="display:flex; gap:4px;">
+                                                <button type="button" id="doc_btn_first" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Primeira Página"><i data-lucide="chevrons-left" style="width:16px;height:16px;"></i></button>
+                                                <button type="button" id="doc_btn_prev" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Página Anterior"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></button>
+                                                <button type="button" id="doc_btn_next" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Próxima Página"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button>
+                                                <button type="button" id="doc_btn_last" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Última Página"><i data-lucide="chevrons-right" style="width:16px;height:16px;"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 
+                                <style>
+                                    .doc-aluno-row:hover { background: #f8fafc; }
+                                    .doc-aluno-row.selected { background: var(--blue-lt); }
+                                    .doc-aluno-row.selected .doc-radio { border-color: var(--brand); }
+                                    .doc-aluno-row.selected .doc-radio-inner { transform: translate(-50%,-50%) scale(1); }
+                                </style>
+
                                 <script>
                                 document.addEventListener('DOMContentLoaded', function() {
                                     const searchInput = document.getElementById('doc_aluno_search');
-                                    const dropdown = document.getElementById('doc_aluno_dropdown');
                                     const hiddenInput = document.getElementById('doc_aluno_id');
-                                    const items = document.querySelectorAll('.doc-aluno-item');
+                                    const rows = Array.from(document.querySelectorAll('.doc-aluno-row'));
+                                    const emptyMsg = document.getElementById('doc_aluno_empty');
+                                    const btnFirst = document.getElementById('doc_btn_first');
+                                    const btnPrev = document.getElementById('doc_btn_prev');
+                                    const btnNext = document.getElementById('doc_btn_next');
+                                    const btnLast = document.getElementById('doc_btn_last');
+                                    const pageInfo = document.getElementById('doc_page_info');
+                                    const totalInfo = document.getElementById('doc_total_info');
+                                    const pageSizeSelect = document.getElementById('doc_page_size');
 
-                                    searchInput.addEventListener('focus', () => { dropdown.style.display = 'block'; searchInput.dispatchEvent(new Event('input')); });
-                                    searchInput.addEventListener('input', function() {
-                                        dropdown.style.display = 'block';
-                                        const val = this.value.toLowerCase();
-                                        items.forEach(item => {
-                                            if (item.innerText.toLowerCase().includes(val)) {
-                                                item.style.display = 'block';
-                                            } else {
-                                                item.style.display = 'none';
-                                            }
-                                        });
-                                    });
-                                    document.addEventListener('click', function(e) {
-                                        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-                                            dropdown.style.display = 'none';
+                                    let filteredRows = [...rows];
+                                    let currentPage = 1;
+                                    let pageSize = parseInt(pageSizeSelect.value);
+
+                                    function renderTable() {
+                                        // Hide all first
+                                        rows.forEach(r => r.style.display = 'none');
+                                        
+                                        const total = filteredRows.length;
+                                        totalInfo.textContent = total;
+                                        
+                                        if (total === 0) {
+                                            emptyMsg.style.display = 'table-row';
+                                            pageInfo.textContent = '0 - 0';
+                                            btnFirst.disabled = true;
+                                            btnPrev.disabled = true;
+                                            btnNext.disabled = true;
+                                            btnLast.disabled = true;
+                                            updateBtnStyles();
+                                            return;
                                         }
+                                        
+                                        emptyMsg.style.display = 'none';
+                                        const maxPage = Math.ceil(total / pageSize);
+                                        if (currentPage > maxPage) currentPage = maxPage;
+                                        if (currentPage < 1) currentPage = 1;
+
+                                        const startIdx = (currentPage - 1) * pageSize;
+                                        const endIdx = Math.min(startIdx + pageSize, total);
+                                        
+                                        pageInfo.textContent = `${startIdx + 1} - ${endIdx}`;
+                                        
+                                        for (let i = startIdx; i < endIdx; i++) {
+                                            filteredRows[i].style.display = 'table-row';
+                                        }
+                                        
+                                        btnFirst.disabled = currentPage === 1;
+                                        btnPrev.disabled = currentPage === 1;
+                                        btnNext.disabled = currentPage === maxPage;
+                                        btnLast.disabled = currentPage === maxPage;
+                                        updateBtnStyles();
+                                    }
+
+                                    function updateBtnStyles() {
+                                        btnFirst.style.opacity = btnFirst.disabled ? '0.3' : '1';
+                                        btnPrev.style.opacity = btnPrev.disabled ? '0.3' : '1';
+                                        btnNext.style.opacity = btnNext.disabled ? '0.3' : '1';
+                                        btnLast.style.opacity = btnLast.disabled ? '0.3' : '1';
+                                    }
+
+                                    pageSizeSelect.addEventListener('change', function() {
+                                        pageSize = parseInt(this.value);
+                                        currentPage = 1; // Reset to page 1 on size change
+                                        renderTable();
                                     });
-                                    items.forEach(item => {
-                                        item.addEventListener('click', function() {
-                                            searchInput.value = this.dataset.nome;
+
+                                    searchInput.addEventListener('input', function() {
+                                        const val = this.value.toLowerCase();
+                                        filteredRows = rows.filter(r => r.dataset.nome.includes(val));
+                                        currentPage = 1;
+                                        renderTable();
+                                    });
+
+                                    btnFirst.addEventListener('click', () => { if(currentPage > 1) { currentPage = 1; renderTable(); } });
+                                    btnPrev.addEventListener('click', () => { if(currentPage > 1) { currentPage--; renderTable(); } });
+                                    btnNext.addEventListener('click', () => { if(currentPage * pageSize < filteredRows.length) { currentPage++; renderTable(); } });
+                                    btnLast.addEventListener('click', () => { 
+                                        const maxPage = Math.ceil(filteredRows.length / pageSize);
+                                        if(currentPage < maxPage) { currentPage = maxPage; renderTable(); } 
+                                    });
+
+                                    rows.forEach(row => {
+                                        row.addEventListener('click', function() {
+                                            rows.forEach(r => r.classList.remove('selected'));
+                                            this.classList.add('selected');
                                             hiddenInput.value = this.dataset.id;
-                                            dropdown.style.display = 'none';
                                         });
                                     });
+
+                                    renderTable();
                                 });
                                 </script>
                             </div>
 
-                            <div class="form-group" style="grid-column: 1/-1;">
-                                <label class="form-label">Tipo de Documento</label>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-                                    <label style="cursor:pointer; display:flex; align-items:center; gap:10px; padding:14px 16px; border:1px solid var(--border); border-radius:8px; transition:0.15s;" class="doc-option">
-                                        <input type="radio" name="tipo" value="matricula" checked style="accent-color:var(--brand);">
-                                        <i data-lucide="file-badge" style="width:20px;height:20px;color:var(--brand);"></i>
-                                        <div>
-                                            <div style="font-weight:600;font-size:13px;">Declaração de Matrícula</div>
-                                            <div style="font-size:11.5px;color:var(--text-muted);">Comprova vínculo ativo</div>
-                                        </div>
+                            <!-- COLUNA DIREITA: OPÇÕES E BOTÃO -->
+                            <div style="flex: 0 0 350px; position: sticky; top: 20px;">
+                                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);">
+                                    <label class="form-label" style="font-size:15px; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                                        <i data-lucide="settings-2" style="width:18px;height:18px;color:var(--brand);"></i> 
+                                        2. Configurar Emissão
                                     </label>
-                                    <label style="cursor:pointer; display:flex; align-items:center; gap:10px; padding:14px 16px; border:1px solid var(--border); border-radius:8px; transition:0.15s;" class="doc-option">
-                                        <input type="radio" name="tipo" value="frequencia" style="accent-color:var(--brand);">
-                                        <i data-lucide="calendar-check" style="width:20px;height:20px;color:var(--green);"></i>
-                                        <div>
-                                            <div style="font-weight:600;font-size:13px;">Atestado de Frequência</div>
-                                            <div style="font-size:11.5px;color:var(--text-muted);">Percentual de presença</div>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                                        <label style="cursor:pointer; display:flex; align-items:center; gap:12px; padding:16px; border:2px solid var(--border); border-radius:10px; transition:0.2s; background:#fff;" class="doc-option-card">
+                                            <input type="radio" name="tipo" value="matricula" checked style="accent-color:var(--brand); transform:scale(1.2);">
+                                            <i data-lucide="file-badge" style="width:22px;height:22px;color:var(--brand);"></i>
+                                            <div>
+                                                <div style="font-weight:600;font-size:14px;color:var(--text-2);">Matrícula</div>
+                                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Comprova vínculo ativo</div>
+                                            </div>
+                                        </label>
+                                        <label style="cursor:pointer; display:flex; align-items:center; gap:12px; padding:16px; border:2px solid var(--border); border-radius:10px; transition:0.2s; background:#fff;" class="doc-option-card">
+                                            <input type="radio" name="tipo" value="frequencia" style="accent-color:var(--brand); transform:scale(1.2);">
+                                            <i data-lucide="calendar-check" style="width:22px;height:22px;color:var(--green);"></i>
+                                            <div>
+                                                <div style="font-weight:600;font-size:14px;color:var(--text-2);">Frequência</div>
+                                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Percentual de presença</div>
+                                            </div>
+                                        </label>
+                                        <label style="cursor:pointer; display:flex; align-items:center; gap:12px; padding:16px; border:2px solid var(--border); border-radius:10px; transition:0.2s; background:#fff;" class="doc-option-card">
+                                            <input type="radio" name="tipo" value="historico" style="accent-color:var(--brand); transform:scale(1.2);">
+                                            <i data-lucide="scroll-text" style="width:22px;height:22px;color:var(--yellow);"></i>
+                                            <div>
+                                                <div style="font-weight:600;font-size:14px;color:var(--text-2);">Histórico Parcial</div>
+                                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Notas e disciplinas</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <style>
+                                        .doc-option-card:has(input:checked) {
+                                            border-color: var(--brand) !important;
+                                            background: var(--blue-lt) !important;
+                                        }
+                                    </style>
+
+                                    <div style="padding-top:20px; border-top:1px dashed #cbd5e1;">
+                                        <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:15px; display:flex; justify-content:center; gap:8px; border-radius:10px; box-shadow:0 4px 10px rgba(79, 70, 229, 0.2);">
+                                            <i data-lucide="printer" style="width:18px;height:18px;"></i> Gerar Documento
+                                        </button>
+                                        <div style="text-align:center; font-size:11.5px; color:var(--text-muted); margin-top:10px;">
+                                            O documento será aberto em uma nova aba para impressão.
                                         </div>
-                                    </label>
-                                    <label style="cursor:pointer; display:flex; align-items:center; gap:10px; padding:14px 16px; border:1px solid var(--border); border-radius:8px; transition:0.15s;" class="doc-option">
-                                        <input type="radio" name="tipo" value="historico" style="accent-color:var(--brand);">
-                                        <i data-lucide="scroll-text" style="width:20px;height:20px;color:var(--yellow);"></i>
-                                        <div>
-                                            <div style="font-weight:600;font-size:13px;">Histórico Parcial</div>
-                                            <div style="font-size:11.5px;color:var(--text-muted);">Notas e disciplinas</div>
-                                        </div>
-                                    </label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div style="display:flex; justify-content:flex-end; margin-top:30px; border-top:1px solid var(--border); padding-top:20px;">
-                            <button type="submit" class="btn btn-primary" style="padding:12px 24px; font-size:15px;">
-                                <i data-lucide="printer"></i> Gerar Documento (PDF)
-                            </button>
                         </div>
                     </form>
                 </div>
@@ -608,17 +760,23 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                         <span class="badge badge-red"><?= $faltasPendentes ?> pendente(s)</span>
                     </div>
                     <div class="table-wrap">
-                        <table class="data-table" id="faltasTable">
+                        <!-- Search Bar (Minimalist) -->
+                        <div style="display:flex; align-items:center; border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; margin-bottom: 20px;">
+                            <input type="text" id="falta_search" placeholder="Pesquisar por nome do aluno ou disciplina..." style="border:none; outline:none; font-size:15px; width:100%; color:var(--text); background:transparent;" autocomplete="off">
+                            <i data-lucide="search" style="width:20px;height:20px;color:#94A3B8;"></i>
+                        </div>
+
+                        <table class="data-table" style="width:100%; min-width:600px; border-bottom:1px solid var(--border);">
                             <thead>
                                 <tr>
-                                    <th>Data</th>
-                                    <th>Aluno</th>
-                                    <th>Disciplina</th>
-                                    <th>Status</th>
-                                    <th>Ação</th>
+                                    <th style="width:15%;">Data</th>
+                                    <th style="width:40%;">Aluno</th>
+                                    <th style="width:25%;">Disciplina</th>
+                                    <th style="width:10%;">Status</th>
+                                    <th style="width:10%; text-align:right;">Ação</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="faltas_tbody">
                                 <?php
                                 $stmtFaltas = $pdo->query("
                                     SELECT f.id, f.data_registro, f.status, a.nome AS aluno_nome, d.nome AS disc_nome
@@ -627,41 +785,182 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                     LEFT JOIN disciplinas d ON f.disciplina_id = d.id
                                     WHERE f.status = 'falta'
                                     ORDER BY f.data_registro DESC
-                                    LIMIT 50
                                 ");
                                 $faltas = $stmtFaltas->fetchAll(PDO::FETCH_ASSOC);
                                 foreach ($faltas as $f):
                                     $inicial = strtoupper(mb_substr($f['aluno_nome'], 0, 1));
                                 ?>
-                                <tr id="falta-row-<?= $f['id'] ?>">
-                                    <td><?= date('d/m/Y', strtotime($f['data_registro'])) ?></td>
+                                <tr class="falta-row" id="falta-row-<?= $f['id'] ?>" data-nome="<?= htmlspecialchars(strtolower($f['aluno_nome'])) ?>" data-disc="<?= htmlspecialchars(strtolower($f['disc_nome'] ?? 'geral')) ?>">
+                                    <td style="color:var(--text-2);"><?= date('d/m/Y', strtotime($f['data_registro'])) ?></td>
                                     <td>
-                                        <div class="aluno-cell">
-                                            <div class="aluno-avatar" style="width:28px;height:28px;font-size:11px;"><?= $inicial ?></div>
-                                            <span style="font-weight:600;"><?= htmlspecialchars($f['aluno_nome']) ?></span>
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <div style="width:32px;height:32px;border-radius:50%;background:var(--blue-lt);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;">
+                                                <?= $inicial ?>
+                                            </div>
+                                            <span style="font-weight:500; color:var(--text-2);"><?= htmlspecialchars($f['aluno_nome']) ?></span>
                                         </div>
                                     </td>
-                                    <td><?= htmlspecialchars($f['disc_nome'] ?? 'Geral') ?></td>
+                                    <td style="font-size:13px; color:var(--text-muted);"><?= htmlspecialchars($f['disc_nome'] ?? 'Geral') ?></td>
                                     <td><span class="badge badge-yellow">Falta</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline" onclick="justificarFalta(<?= $f['id'] ?>, this)" style="color:var(--green); border-color:var(--green);">
-                                            <i data-lucide="check"></i> Justificar
+                                    <td style="text-align:right;">
+                                        <button class="btn btn-sm btn-outline" onclick="justificarFalta(<?= $f['id'] ?>, this)" style="color:var(--green); border-color:var(--green); padding:6px 12px; font-weight:600;">
+                                            <i data-lucide="check" style="width:16px;height:16px;"></i> Justificar
                                         </button>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
-                                <?php if (empty($faltas)): ?>
-                                <tr>
+                                <tr id="falta_empty" style="<?= empty($faltas) ? '' : 'display:none;' ?>">
                                     <td colspan="5">
-                                        <div class="empty-state">
-                                            <i data-lucide="check-circle"></i>
-                                            <p>Nenhuma falta pendente. Tudo em dia!</p>
+                                        <div class="empty-state" style="padding:40px 0;">
+                                            <i data-lucide="check-circle" style="width:48px;height:48px;color:var(--green);margin-bottom:10px;opacity:0.8;"></i>
+                                            <p style="font-size:15px;color:var(--text-muted);font-weight:500;">Nenhuma falta pendente ou encontrada.</p>
                                         </div>
                                     </td>
                                 </tr>
-                                <?php endif; ?>
                             </tbody>
                         </table>
+
+                        <!-- Pagination Footer -->
+                        <?php if (!empty($faltas)): ?>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:15px; margin-top:15px; font-size:13px; color:var(--text-muted);">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:8px;height:8px;background:var(--yellow);border-radius:50%;box-shadow:0 0 0 3px rgba(234, 179, 8, 0.2);"></div> Faltas Pendentes
+                            </div>
+                            <div style="display:flex; align-items:center; gap:24px;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    Exibir: 
+                                    <select id="falta_page_size" style="border:none; border-bottom:2px solid var(--border); background:transparent; font-size:13px; font-weight:600; color:var(--text-2); cursor:pointer; outline:none; padding-bottom:2px;">
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div style="font-weight:500;"><span id="falta_page_info">1 - 5</span> de <span id="falta_total_info">0</span></div>
+                                <div style="display:flex; gap:4px;">
+                                    <button type="button" id="falta_btn_first" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Primeira Página"><i data-lucide="chevrons-left" style="width:16px;height:16px;"></i></button>
+                                    <button type="button" id="falta_btn_prev" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Página Anterior"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></button>
+                                    <button type="button" id="falta_btn_next" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Próxima Página"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button>
+                                    <button type="button" id="falta_btn_last" class="btn btn-sm btn-ghost" style="padding:6px;border-radius:6px;" title="Última Página"><i data-lucide="chevrons-right" style="width:16px;height:16px;"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const searchInput = document.getElementById('falta_search');
+                            const rows = Array.from(document.querySelectorAll('.falta-row'));
+                            const emptyMsg = document.getElementById('falta_empty');
+                            const btnFirst = document.getElementById('falta_btn_first');
+                            const btnPrev = document.getElementById('falta_btn_prev');
+                            const btnNext = document.getElementById('falta_btn_next');
+                            const btnLast = document.getElementById('falta_btn_last');
+                            const pageInfo = document.getElementById('falta_page_info');
+                            const totalInfo = document.getElementById('falta_total_info');
+                            const pageSizeSelect = document.getElementById('falta_page_size');
+
+                            let filteredRows = [...rows];
+                            let currentPage = 1;
+                            let pageSize = parseInt(pageSizeSelect.value);
+
+                            function renderTable() {
+                                // Hide all first
+                                rows.forEach(r => r.style.display = 'none');
+                                
+                                // Clean up filtered rows by removing those that might have been removed from DOM by `justificarFalta`
+                                filteredRows = filteredRows.filter(r => document.body.contains(r));
+                                const total = filteredRows.length;
+                                totalInfo.textContent = total;
+                                
+                                if (total === 0) {
+                                    emptyMsg.style.display = 'table-row';
+                                    pageInfo.textContent = '0 - 0';
+                                    btnFirst.disabled = true;
+                                    btnPrev.disabled = true;
+                                    btnNext.disabled = true;
+                                    btnLast.disabled = true;
+                                    updateBtnStyles();
+                                    return;
+                                }
+                                
+                                emptyMsg.style.display = 'none';
+                                const maxPage = Math.ceil(total / pageSize);
+                                if (currentPage > maxPage) currentPage = maxPage;
+                                if (currentPage < 1) currentPage = 1;
+
+                                const startIdx = (currentPage - 1) * pageSize;
+                                const endIdx = Math.min(startIdx + pageSize, total);
+                                
+                                pageInfo.textContent = `${startIdx + 1} - ${endIdx}`;
+                                
+                                for (let i = startIdx; i < endIdx; i++) {
+                                    filteredRows[i].style.display = 'table-row';
+                                }
+                                
+                                btnFirst.disabled = currentPage === 1;
+                                btnPrev.disabled = currentPage === 1;
+                                btnNext.disabled = currentPage === maxPage;
+                                btnLast.disabled = currentPage === maxPage;
+                                updateBtnStyles();
+                            }
+
+                            function updateBtnStyles() {
+                                btnFirst.style.opacity = btnFirst.disabled ? '0.3' : '1';
+                                btnPrev.style.opacity = btnPrev.disabled ? '0.3' : '1';
+                                btnNext.style.opacity = btnNext.disabled ? '0.3' : '1';
+                                btnLast.style.opacity = btnLast.disabled ? '0.3' : '1';
+                            }
+
+                            pageSizeSelect.addEventListener('change', function() {
+                                pageSize = parseInt(this.value);
+                                currentPage = 1; 
+                                renderTable();
+                            });
+
+                            searchInput.addEventListener('input', function() {
+                                const val = this.value.toLowerCase();
+                                // Refresh current valid rows
+                                const activeRows = Array.from(document.querySelectorAll('.falta-row'));
+                                filteredRows = activeRows.filter(r => {
+                                    return r.dataset.nome.includes(val) || r.dataset.disc.includes(val);
+                                });
+                                currentPage = 1;
+                                renderTable();
+                            });
+
+                            btnFirst.addEventListener('click', () => { if(currentPage > 1) { currentPage = 1; renderTable(); } });
+                            btnPrev.addEventListener('click', () => { if(currentPage > 1) { currentPage--; renderTable(); } });
+                            btnNext.addEventListener('click', () => { if(currentPage * pageSize < filteredRows.length) { currentPage++; renderTable(); } });
+                            btnLast.addEventListener('click', () => { 
+                                const maxPage = Math.ceil(filteredRows.length / pageSize);
+                                if(currentPage < maxPage) { currentPage = maxPage; renderTable(); } 
+                            });
+
+                            // Hook into the justificarFalta function to update pagination when a row is removed
+                            const originalJustificar = window.justificarFalta;
+                            window.justificarFalta = function(id, btn) {
+                                // Add a listener to re-render table after the row fades out
+                                const row = document.getElementById('falta-row-' + id);
+                                if (row) {
+                                    // Watch for its removal
+                                    const observer = new MutationObserver(function(mutations) {
+                                        if(!document.body.contains(row)) {
+                                            renderTable();
+                                            observer.disconnect();
+                                        }
+                                    });
+                                    observer.observe(row.parentNode, { childList: true });
+                                }
+                                if(originalJustificar) {
+                                    originalJustificar(id, btn);
+                                }
+                            };
+
+                            renderTable();
+                        });
+                        </script>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
