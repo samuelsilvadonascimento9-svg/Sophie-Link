@@ -164,8 +164,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $obs = $_POST['observacoes'] ?? '';
     if ($tipo) {
         $protocolo = date('YmdHi') . rand(10,99);
-        $stmtReq = $pdo->prepare("INSERT INTO requerimentos (aprendiz_id, tipo, observacoes, protocolo) VALUES (?, ?, ?, ?)");
-        $stmtReq->execute([$aluno_id, $tipo, $obs, $protocolo]);
+        $arquivo_anexo = null;
+        
+        if (isset($_FILES['arquivo_anexo']) && $_FILES['arquivo_anexo']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../uploads/requerimentos/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $ext = pathinfo($_FILES['arquivo_anexo']['name'], PATHINFO_EXTENSION);
+            $newFileName = 'req_' . $aluno_id . '_' . time() . '_' . bin2hex(random_bytes(2)) . '.' . $ext;
+            if (move_uploaded_file($_FILES['arquivo_anexo']['tmp_name'], $uploadDir . $newFileName)) {
+                $arquivo_anexo = 'uploads/requerimentos/' . $newFileName;
+            }
+        }
+
+        $stmtReq = $pdo->prepare("INSERT INTO requerimentos (aprendiz_id, tipo, observacoes, protocolo, arquivo_anexo) VALUES (?, ?, ?, ?, ?)");
+        $stmtReq->execute([$aluno_id, $tipo, $obs, $protocolo, $arquivo_anexo]);
         
         header("Location: portal_aluno.php?req=sucesso#sec-secretaria");
         exit;
@@ -685,12 +699,17 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     <form id="formJustificativa">
                                         <input type="hidden" id="falta_id_just" name="frequencia_id" value="">
                                         
-                                        <div style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 30px 20px; text-align: center; margin-bottom: 20px; background: #F8FAFC; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('arquivoJustificativa').click()" id="dropZoneJust">
-                                            <i data-lucide="file-up" style="width: 32px; height: 32px; color: #94A3B8; margin-bottom: 10px;"></i>
-                                            <div style="font-size: 0.9rem; font-weight: 600; color: #334155;">Clique para selecionar um arquivo</div>
-                                            <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 5px;" id="fileNameDisplay">Nenhum arquivo selecionado</div>
+                                        <div style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 30px 20px; text-align: center; margin-bottom: 20px; background: #F8FAFC; cursor: pointer; transition: all 0.2s; position: relative;" id="dropZoneJust">
+                                            <div onclick="document.getElementById('arquivoJustificativa').click()" style="width: 100%; height: 100%;">
+                                                <i data-lucide="file-up" style="width: 32px; height: 32px; color: #94A3B8; margin-bottom: 10px;"></i>
+                                                <div style="font-size: 0.9rem; font-weight: 600; color: #334155;">Clique para selecionar um arquivo</div>
+                                                <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 5px;" id="fileNameDisplay">Nenhum arquivo selecionado</div>
+                                            </div>
+                                            <button type="button" id="btnRemoveFileJust" style="display: none; position: absolute; top: 10px; right: 10px; background: #FEE2E2; border: none; border-radius: 50%; width: 28px; height: 28px; color: #DC2626; cursor: pointer; align-items: center; justify-content: center;" onclick="removerArquivoJust(event)" title="Remover arquivo">
+                                                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                                            </button>
                                         </div>
-                                        <input type="file" id="arquivoJustificativa" name="arquivo" accept=".pdf,image/jpeg,image/png" style="display: none;" onchange="document.getElementById('fileNameDisplay').innerText = this.files[0] ? this.files[0].name : 'Nenhum arquivo selecionado'">
+                                        <input type="file" id="arquivoJustificativa" name="arquivo" accept=".pdf,image/jpeg,image/png" style="display: none;" onchange="atualizarArquivoJust(this)">
                                         
                                         <div id="msgJustificativa" style="display:none; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 16px;"></div>
 
@@ -708,10 +727,34 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                         <script>
                             function abrirModalJustificativa(id) {
                                 document.getElementById('falta_id_just').value = id;
-                                document.getElementById('arquivoJustificativa').value = '';
-                                document.getElementById('fileNameDisplay').innerText = 'Nenhum arquivo selecionado';
+                                const input = document.getElementById('arquivoJustificativa');
+                                input.value = '';
+                                atualizarArquivoJust(input);
                                 document.getElementById('msgJustificativa').style.display = 'none';
                                 document.getElementById('modalJustificativa').style.display = 'flex';
+                            }
+                            
+                            function atualizarArquivoJust(input) {
+                                const fileNameDiv = document.getElementById('fileNameDisplay');
+                                const btnRemove = document.getElementById('btnRemoveFileJust');
+                                if (input.files && input.files[0]) {
+                                    fileNameDiv.innerText = input.files[0].name;
+                                    fileNameDiv.style.color = '#0EA5E9';
+                                    fileNameDiv.style.fontWeight = '600';
+                                    btnRemove.style.display = 'flex';
+                                } else {
+                                    fileNameDiv.innerText = 'Nenhum arquivo selecionado';
+                                    fileNameDiv.style.color = '#94A3B8';
+                                    fileNameDiv.style.fontWeight = 'normal';
+                                    btnRemove.style.display = 'none';
+                                }
+                            }
+
+                            function removerArquivoJust(event) {
+                                event.stopPropagation();
+                                const input = document.getElementById('arquivoJustificativa');
+                                input.value = '';
+                                atualizarArquivoJust(input);
                             }
 
                             async function enviarJustificativa() {
@@ -1583,50 +1626,166 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
 
                         <!-- ABA DISPONÍVEIS -->
                         <div id="tab-sec-disponiveis">
-                            <div class="inst-card" style="max-width: 700px; border-top: 4px solid #0EA5E9;">
-                                <div class="inst-card-header" style="border-bottom: 1px solid var(--premium-border);">
-                                    <div><i data-lucide="folder-plus" class="inst-icon"></i> Solicitar Documentos</div>
+                            <?php if(isset($_GET['req']) && $_GET['req'] == 'sucesso'): ?>
+                                <div style="background: #D1FAE5; border: 1px solid #34D399; color: #065F46; padding: 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
+                                    <i data-lucide="check-circle" style="width: 20px;"></i> Sua solicitação foi enviada com sucesso! Acompanhe em "Meus Pedidos".
                                 </div>
-                                <div style="padding: 2rem;">
-                                    <?php if(isset($_GET['req']) && $_GET['req'] == 'sucesso'): ?>
-                                        <div style="background: #D1FAE5; border: 1px solid #34D399; color: #065F46; padding: 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
-                                            <i data-lucide="check-circle" style="width: 20px;"></i> Sua solicitação foi enviada com sucesso! Acompanhe em "Meus Pedidos".
-                                        </div>
-                                        <script>
-                                            setTimeout(() => { switchSecretariaTab('solicitados', document.querySelectorAll('.sec-tab')[1]); }, 2500);
-                                        </script>
-                                    <?php endif; ?>
-                                    <form method="POST" action="portal_aluno.php">
+                                <script>
+                                    setTimeout(() => { switchSecretariaTab('solicitados', document.querySelectorAll('.sec-tab')[1]); }, 2500);
+                                </script>
+                            <?php endif; ?>
+
+                            <style>
+                            .service-grid {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                                gap: 20px;
+                                margin-bottom: 30px;
+                            }
+                            .service-card {
+                                background: #FFFFFF;
+                                border: 1px solid #E2E8F0;
+                                border-radius: 12px;
+                                padding: 24px;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-start;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                position: relative;
+                                overflow: hidden;
+                            }
+                            .service-card:hover {
+                                transform: translateY(-5px);
+                                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+                                border-color: #0EA5E9;
+                            }
+                            .service-icon {
+                                width: 48px;
+                                height: 48px;
+                                border-radius: 12px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                margin-bottom: 16px;
+                            }
+                            .service-title {
+                                font-size: 1.1rem;
+                                font-weight: 600;
+                                color: #1E293B;
+                                margin-bottom: 8px;
+                            }
+                            .service-desc {
+                                font-size: 0.85rem;
+                                color: #64748B;
+                                line-height: 1.5;
+                            }
+                            </style>
+
+                            <div class="service-grid">
+                                <div class="service-card" onclick="abrirModalRequerimento('Declaração de Matrícula')">
+                                    <div class="service-icon" style="background: #EFF6FF; color: #2563EB;"><i data-lucide="file-badge"></i></div>
+                                    <div class="service-title">Declaração de Matrícula</div>
+                                    <div class="service-desc">Documento oficial comprovando vínculo ativo com a instituição.</div>
+                                </div>
+                                <div class="service-card" onclick="abrirModalRequerimento('Atestado de Frequência')">
+                                    <div class="service-icon" style="background: #ECFDF5; color: #059669;"><i data-lucide="bar-chart"></i></div>
+                                    <div class="service-title">Atestado de Frequência</div>
+                                    <div class="service-desc">Relatório detalhado de presenças e faltas do período atual.</div>
+                                </div>
+                                <div class="service-card" onclick="abrirModalRequerimento('Justificativa de Falta')">
+                                    <div class="service-icon" style="background: #FEF2F2; color: #DC2626;"><i data-lucide="file-warning"></i></div>
+                                    <div class="service-title">Justificativa de Falta</div>
+                                    <div class="service-desc">Envie seu atestado médico ou comprovante para justificar ausência.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Requerimento -->
+                        <div id="modalRequerimento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+                            <div style="background: #fff; width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; animation: slideUp 0.3s ease;">
+                                <div style="padding: 20px 24px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="margin:0; font-size: 1.1rem; color: #1E293B; display: flex; align-items: center; gap: 8px;"><i data-lucide="file-plus" style="color:#0EA5E9;"></i> Nova Solicitação</h3>
+                                    <button onclick="document.getElementById('modalRequerimento').style.display='none'" style="background:transparent; border:none; cursor:pointer; color:#94A3B8;"><i data-lucide="x"></i></button>
+                                </div>
+                                <div style="padding: 24px;">
+                                    <form method="POST" action="portal_aluno.php" enctype="multipart/form-data">
                                         <input type="hidden" name="action" value="novo_requerimento">
+                                        <input type="hidden" name="tipo_solicitacao" id="req_tipo_hidden">
                                         
-                                        <div class="perfil-input-group" style="margin-bottom: 20px;">
-                                            <label>Tipo de Solicitação</label>
-                                            <div class="perfil-input-wrapper">
-                                                <i data-lucide="file-text"></i>
-                                                <select name="tipo_solicitacao" required style="cursor: pointer;">
-                                                    <option value="" disabled selected>Selecione um documento...</option>
-                                                    <option value="Declaração de Matrícula">Declaração de Matrícula</option>
-                                                    <option value="Atestado de Frequência">Atestado de Frequência</option>
-                                                    <option value="Envio de Folha de Ponto (Empresa)">Envio de Folha de Ponto (Empresa)</option>
-                                                    <option value="Justificativa de Falta (Atestado Médico)">Justificativa de Falta (Atestado Médico)</option>
-                                                </select>
-                                            </div>
+                                        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                                            <div style="font-size: 0.8rem; color: #64748B; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Documento Solicitado</div>
+                                            <div id="req_tipo_display" style="font-size: 1.05rem; font-weight: 700; color: #0EA5E9;"></div>
                                         </div>
-                                        
+
+                                        <div class="perfil-input-group" style="margin-bottom: 15px;">
+                                            <label style="font-weight: 600; color: #334155; margin-bottom: 8px; display: block;">Anexar Arquivo (Atestado, Boletim, etc) - Opcional</label>
+                                            <div style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 15px; text-align: center; background: #F8FAFC; cursor: pointer; transition: all 0.2s; position: relative;" id="reqDropZone">
+                                                <div onclick="document.getElementById('arquivoReq').click()" style="width: 100%; height: 100%;">
+                                                    <i data-lucide="upload-cloud" style="color: #94A3B8; margin-bottom: 5px;"></i>
+                                                    <div id="reqFileName" style="font-size: 0.9rem; color: #64748B;">Clique para escolher um arquivo (PDF, JPG, PNG)</div>
+                                                </div>
+                                                <button type="button" id="btnRemoveFileReq" style="display: none; position: absolute; top: 10px; right: 10px; background: #FEE2E2; border: none; border-radius: 50%; width: 24px; height: 24px; color: #DC2626; cursor: pointer; align-items: center; justify-content: center;" onclick="removerArquivoReq(event)" title="Remover arquivo">
+                                                    <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                                                </button>
+                                            </div>
+                                            <input type="file" id="arquivoReq" name="arquivo_anexo" accept=".pdf,image/jpeg,image/png" style="display: none;" onchange="atualizarArquivoReq(this)">
+                                        </div>
+
                                         <div class="perfil-input-group" style="margin-bottom: 25px;">
-                                            <label>Observações Adicionais</label>
-                                            <div style="background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 6px; overflow: hidden; padding: 5px;">
-                                                <textarea name="observacoes" style="width:100%; height:100px; border: none; outline: none; background: transparent; color: var(--premium-text); font-family: inherit; font-size: 0.9rem; padding: 10px;" placeholder="Descreva sua solicitação detalhadamente..."></textarea>
+                                            <label style="font-weight: 600; color: #334155; margin-bottom: 8px; display: block;">Observações Adicionais (Opcional)</label>
+                                            <div style="background: #fff; border: 1px solid #CBD5E1; border-radius: 8px; overflow: hidden; padding: 5px; transition: border-color 0.2s;" onfocusin="this.style.borderColor='#0EA5E9'" onfocusout="this.style.borderColor='#CBD5E1'">
+                                                <textarea name="observacoes" style="width:100%; height:100px; border: none; outline: none; background: transparent; color: #1E293B; font-family: inherit; font-size: 0.95rem; padding: 10px;" placeholder="Detalhes para a secretaria, período específico, etc..."></textarea>
                                             </div>
                                         </div>
                                         
-                                        <div style="display: flex; justify-content: flex-end;">
-                                            <button type="submit" class="inst-btn-primary" style="padding: 12px 24px; font-size: 1rem;"><i data-lucide="send" style="width: 18px; margin-right: 8px;"></i> Enviar Solicitação</button>
+                                        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                                            <button type="button" onclick="document.getElementById('modalRequerimento').style.display='none'" style="padding: 10px 16px; border-radius: 6px; border: 1px solid #E2E8F0; background: #fff; color: #64748B; cursor: pointer; font-weight: 600;">Cancelar</button>
+                                            <button type="submit" style="padding: 10px 20px; border-radius: 6px; border: none; background: #0EA5E9; color: #fff; cursor: pointer; font-weight: 600; display:flex; align-items:center; gap:8px;">
+                                                <i data-lucide="send" style="width:16px;"></i> Confirmar Pedido
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                        <script>
+                        function abrirModalRequerimento(tipo) {
+                            document.getElementById('req_tipo_hidden').value = tipo;
+                            document.getElementById('req_tipo_display').innerText = tipo;
+                            
+                            // Reset file input
+                            const input = document.getElementById('arquivoReq');
+                            input.value = '';
+                            atualizarArquivoReq(input);
+                            
+                            document.getElementById('modalRequerimento').style.display = 'flex';
+                            lucide.createIcons();
+                        }
+                        
+                        function atualizarArquivoReq(input) {
+                            const fileNameDiv = document.getElementById('reqFileName');
+                            const btnRemove = document.getElementById('btnRemoveFileReq');
+                            if (input.files && input.files[0]) {
+                                fileNameDiv.innerText = input.files[0].name;
+                                fileNameDiv.style.color = '#0EA5E9';
+                                fileNameDiv.style.fontWeight = '600';
+                                btnRemove.style.display = 'flex';
+                            } else {
+                                fileNameDiv.innerText = 'Clique para escolher um arquivo (PDF, JPG, PNG)';
+                                fileNameDiv.style.color = '#64748B';
+                                fileNameDiv.style.fontWeight = 'normal';
+                                btnRemove.style.display = 'none';
+                            }
+                        }
+
+                        function removerArquivoReq(event) {
+                            event.stopPropagation();
+                            const input = document.getElementById('arquivoReq');
+                            input.value = '';
+                            atualizarArquivoReq(input);
+                        }
+                        </script>
 
                         <!-- ABA SOLICITADOS -->
                         <div id="tab-sec-solicitados" style="display: none;">
@@ -1658,10 +1817,20 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                                 if ($req['status'] === 'em_andamento') { $statusClass = 'status-warn'; $statusText = 'Em Andamento'; }
                                                 if ($req['status'] === 'concluido') { $statusClass = 'status-ok'; $statusText = 'Concluído'; }
                                                 if ($req['status'] === 'recusado') { $statusClass = 'status-warn'; $statusText = 'Recusado'; }
+                                                
+                                                // Icon selection
+                                                $tipoIcon = 'file-text';
+                                                if(stripos($req['tipo'], 'matrícula') !== false) $tipoIcon = 'file-badge';
+                                                elseif(stripos($req['tipo'], 'frequência') !== false) $tipoIcon = 'bar-chart';
+                                                elseif(stripos($req['tipo'], 'passe') !== false) $tipoIcon = 'bus';
+                                                elseif(stripos($req['tipo'], 'histórico') !== false) $tipoIcon = 'graduation-cap';
+                                                elseif(stripos($req['tipo'], 'ponto') !== false) $tipoIcon = 'clipboard-list';
+                                                elseif(stripos($req['tipo'], 'carteirinha') !== false) $tipoIcon = 'id-card';
+                                                elseif(stripos($req['tipo'], 'justificativa') !== false) $tipoIcon = 'file-warning';
                                             ?>
                                                 <tr>
                                                     <td class="td-primary" style="font-weight: 600;">#<?= htmlspecialchars($req['protocolo']) ?></td>
-                                                    <td style="color: var(--premium-text);"><?= htmlspecialchars($req['tipo']) ?></td>
+                                                    <td style="color: var(--premium-text); font-weight: 500;"><i data-lucide="<?= $tipoIcon ?>" style="width: 16px; color: #0EA5E9; margin-right: 8px; vertical-align: -3px;"></i><?= htmlspecialchars($req['tipo']) ?></td>
                                                     <td style="color: var(--premium-text-muted);"><i data-lucide="calendar" style="width: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> <?= date('d/m/Y', strtotime($req['data_solicitacao'])) ?></td>
                                                     <td style="text-align:right;"><span class="inst-status <?= $statusClass ?>"><?= $statusText ?></span></td>
                                                 </tr>
