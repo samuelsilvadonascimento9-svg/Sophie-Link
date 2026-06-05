@@ -185,6 +185,61 @@ function initFreqChart() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// GRÁFICO DE ROI (RETORNO SOBRE INVESTIMENTO)
+// ══════════════════════════════════════════════════════════════════════════════
+function initRoiChart() {
+    const ctx = document.getElementById('roiChart');
+    if (!ctx) return;
+
+    const labels = window._chartFreqLabels || [];
+    const dados  = window._chartRoiDados   || [];
+    const notas  = window._chartNotasDados || [];
+    if (!labels.length) return;
+
+    const cores = dados.map(v => v >= 80 ? '#10B981' : (v >= 60 ? '#F59E0B' : '#EF4444'));
+
+    new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'ROI (%)',
+                data: dados,
+                backgroundColor: cores,
+                borderRadius: 4,
+                barThickness: Math.max(14, Math.min(44, Math.floor(560 / Math.max(labels.length, 1)))),
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: { 
+                    callbacks: { 
+                        label: function(c) {
+                            let idx = c.dataIndex;
+                            return [
+                                ` ROI: ${c.parsed.y}%`,
+                                ` Frequência: ${window._chartFreqDados[idx]}%`,
+                                ` Média Notas: ${notas[idx] > 0 ? notas[idx] : 'N/A'}`
+                            ];
+                        } 
+                    } 
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true, max: 100,
+                    grid: { color: '#F1F5F9' },
+                    ticks: { callback: v => v + '%' }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // GRÁFICO DE EVOLUÇÃO FINANCEIRA
 // ══════════════════════════════════════════════════════════════════════════════
 function initEvolChart() {
@@ -307,5 +362,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicializar gráficos
     initFreqChart();
+    initRoiChart();
     initEvolChart();
 });

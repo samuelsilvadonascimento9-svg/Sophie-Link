@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // portal_professor.php — Portal do Professor | Sophie Link
 session_start();
 require_once '../../includes/auth.php';
@@ -177,6 +177,23 @@ $stmtMats = $pdo->prepare("
 ");
 $stmtMats->execute([$_SESSION['usuario_id']]);
 $materiaisProf = $stmtMats->fetchAll();
+
+// ─── GARGALOS DE ENSINO (IA) ────────────────────────────────────────────────
+$stmtGargalos = $pdo->prepare("
+    SELECT 
+        q.id, q.enunciado, s.titulo AS simulado_titulo, d.nome AS disciplina_nome,
+        COUNT(r.id) AS total_respostas,
+        SUM(CASE WHEN r.correta = 0 THEN 1 ELSE 0 END) AS total_erros
+    FROM ava_questoes q
+    JOIN ava_simulados s ON q.simulado_id = s.id
+    JOIN disciplinas d ON s.disciplina_id = d.id
+    LEFT JOIN ava_respostas r ON r.questao_id = q.id
+    WHERE s.professor_id = ?
+    GROUP BY q.id
+    HAVING total_respostas > 0 AND (total_erros / total_respostas) > 0.7
+");
+$stmtGargalos->execute([$_SESSION['usuario_id']]);
+$gargalosProf = $stmtGargalos->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -251,6 +268,8 @@ $materiaisProf = $stmtMats->fetchAll();
     <div class="subnav-link" id="btn-diario" onclick="showSec('diario', this)"><i data-lucide="book-open"></i> Lançar Notas</div>
     <div class="subnav-sep"></div>
     <div class="subnav-link" id="btn-frequencia" onclick="showSec('frequencia', this)"><i data-lucide="calendar-check"></i> Lançar Frequência</div>
+    <div class="subnav-sep"></div>
+    <div class="subnav-link" id="btn-ia" onclick="showSec('ia', this)"><i data-lucide="sparkles"></i> Simulado com IA</div>
     <div class="subnav-sep"></div>
     <a href="ava.php" class="subnav-link" style="color:#a78bfa;font-weight:700;"><i data-lucide="monitor-play"></i> Ver AVA</a>
 </div>
@@ -558,6 +577,56 @@ $materiaisProf = $stmtMats->fetchAll();
             </div>
         </div>
 
+        <!-- ============================================================
+             SEC: GERAR SIMULADO POR IA
+             ============================================================ -->
+        <div id="sec-ia" class="sec">
+            <div class="widget">
+                <div class="w-head">
+                    <div class="w-title"><i data-lucide="sparkles" style="color: #8B5CF6;"></i> Gerador de Simulado (IA)</div>
+                </div>
+                <div class="w-body">
+                    <p style="font-size:0.85rem;color:var(--c-text-muted);margin-bottom:20px;">Use a Inteligência Artificial para gerar um simulado de múltipla escolha instantaneamente para seus alunos.</p>
+                    
+                    <form id="form-ia" onsubmit="gerarSimulado(event)">
+                        <div style="display:flex;gap:15px;margin-bottom:15px;">
+                            <div style="flex:1;">
+                                <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Turma e Disciplina</label>
+                                <select id="ia_disciplina_turma" class="input-field" required>
+                                    <option value="">Selecione...</option>
+                                    <?php foreach ($turmasProf as $tp): ?>
+                                        <option value="<?= $tp['disc_id'] . '-' . $tp['turma_id'] ?>">
+                                            <?= htmlspecialchars($tp['turma_nome'] . ' — ' . $tp['disciplina_nome']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Quantidade de Questões</label>
+                                <select id="ia_qtd" class="input-field">
+                                    <option value="5">5 Questões</option>
+                                    <option value="10">10 Questões</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Tema do Simulado</label>
+                            <input type="text" id="ia_tema" class="input-field" placeholder="Ex: Ética Profissional no Ambiente de Trabalho" required>
+                        </div>
+                        
+                        <div style="text-align:right;">
+                            <button type="submit" id="btn-gerar-ia" class="btn-primary" style="background:#8B5CF6; border-color:#8B5CF6;">
+                                <i data-lucide="sparkles" style="width:14px;height:14px;display:inline;"></i> Gerar com IA
+                            </button>
+                        </div>
+                        <div id="ia-loading" style="display:none; text-align:center; padding:20px; font-size:0.9rem; color:#8B5CF6;">
+                            <i data-lucide="loader-2" style="animation:spin 1s linear infinite;"></i> Gerando simulado... Isso pode levar alguns segundos.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div><!-- /col-main -->
 
     <!-- COLUNA LATERAL -->
@@ -593,6 +662,36 @@ $materiaisProf = $stmtMats->fetchAll();
                     <span style="color:var(--c-brand);">👩‍🎓 Alunos nas turmas</span>
                     <span style="font-weight:700;color:var(--c-brand);"><?= $totalAlunos ?></span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Gargalos de Ensino (IA) -->
+        <div class="widget">
+            <div class="w-head"><div class="w-title"><i data-lucide="brain" style="color: #EF4444;"></i> Gargalos de Ensino (IA)</div></div>
+            <div class="w-body">
+                <?php if (empty($gargalosProf)): ?>
+                    <div style="font-size:0.82rem;color:var(--c-text-muted);">Nenhum gargalo de aprendizado detectado nos simulados recentes.</div>
+                <?php else: ?>
+                    <div style="font-size:0.8rem;color:var(--c-text-muted);margin-bottom:10px;">
+                        A IA detectou questões com <strong>taxa de erro > 70%</strong>. Considere revisar estes tópicos em sala de aula.
+                    </div>
+                    <?php foreach ($gargalosProf as $gargalo): 
+                        $taxa_erro = round(($gargalo['total_erros'] / $gargalo['total_respostas']) * 100);
+                    ?>
+                        <div style="margin-bottom:12px; padding:10px; border-left:3px solid #EF4444; background:#FEF2F2; border-radius:0 4px 4px 0;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <span style="font-size:0.75rem; font-weight:700; color:#B91C1C;">Erro: <?= $taxa_erro ?>%</span>
+                                <span style="font-size:0.65rem; color:#7F1D1D;"><?= htmlspecialchars($gargalo['disciplina_nome']) ?></span>
+                            </div>
+                            <div style="font-size:0.82rem; font-weight:600; color:#7F1D1D; margin-bottom:2px;">
+                                "<?= htmlspecialchars($gargalo['enunciado']) ?>"
+                            </div>
+                            <div style="font-size:0.7rem; color:#991B1B;">
+                                Simulado: <?= htmlspecialchars($gargalo['simulado_titulo']) ?> (<?= $gargalo['total_erros'] ?> erros em <?= $gargalo['total_respostas'] ?> respostas)
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
 

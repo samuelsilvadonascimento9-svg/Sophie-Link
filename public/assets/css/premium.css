@@ -188,3 +188,55 @@ h1, h2, h3, h4, h5, h6, .ph-title, .section-header h2 {
     background: var(--premium-surface) !important;
     border-bottom: 1px solid var(--premium-border) !important;
 }
+
+/* =========================================================================
+   ACESSIBILIDADE ABSOLUTA (Alto Contraste)
+   ========================================================================= */
+html.high-contrast {
+    /* Cores Extremas para Alto Contraste */
+    --premium-bg: #000000 !important;
+    --premium-surface: #000000 !important;
+    --premium-text: #FFFF00 !important;
+    --premium-text-muted: #FFFFFF !important;
+    --premium-border: #FFFF00 !important;
+    
+    --premium-primary: #FFFF00 !important;
+    --premium-primary-hover: #FFFFFF !important;
+    --premium-primary-light: #000000 !important;
+
+    /* Ava Vars */
+    --c-brand: #FFFF00 !important;
+    --c-bg: #000000 !important;
+    --c-surface: #000000 !important;
+    --c-text: #FFFF00 !important;
+    --c-text-muted: #FFFFFF !important;
+    --c-border: #FFFF00 !important;
+    --c-border-lt: #FFFF00 !important;
+}
+
+html.high-contrast body,
+html.high-contrast .panel,
+html.high-contrast .card,
+html.high-contrast .topbar,
+html.high-contrast .subnav,
+html.high-contrast .sidebar,
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea,
+html.high-contrast .btn-secondary {
+    background: #000 !important;
+    color: #FF0 !important;
+    border-color: #FF0 !important;
+}
+
+html.high-contrast a,
+html.high-contrast i,
+html.high-contrast .nav-link {
+    color: #0FF !important;
+}
+
+html.high-contrast .btn-primary {
+    background: #FF0 !important;
+    color: #000 !important;
+    font-weight: 900 !important;
+}

@@ -22,6 +22,8 @@ if ($isProf) {
     $materiaisAluno = [];
     $atividadesAluno= [];
     $frequenciaAluno= [];
+    $disciplinasAluno = [];
+    $percPresenca = 100;
 
     $stmtTurmasProf = $pdo->prepare("
         SELECT pd.*, t.nome AS turma_nome, d.nome AS disciplina_nome
@@ -131,6 +133,17 @@ if ($isProf) {
             if (in_array($tipo_mat, ['pdf', 'aviso']))    $materiaisAluno[]  = $mat;
             if ($tipo_mat === 'atividade')                 $atividadesAluno[] = $mat;
         }
+
+        // Busca os simulados da IA para a turma
+        $stmtSims = $pdo->prepare("
+            SELECT s.*, d.nome AS disciplina_nome 
+            FROM ava_simulados s 
+            JOIN disciplinas d ON s.disciplina_id = d.id 
+            WHERE s.turma_id = ? 
+            ORDER BY s.criado_em DESC
+        ");
+        $stmtSims->execute([$turma_id]);
+        $simuladosAluno = $stmtSims->fetchAll();
     }
 
     // ─── Frequência real do aluno (últimas 30 presenças) ───────────────────────
@@ -192,6 +205,7 @@ if (!$isProf) {
 <link rel="stylesheet" href="../assets/css/ava.css">
 
     <link rel="stylesheet" href="../assets/css/premium.css">
+    <script src="../assets/js/a11y.js" defer></script>
 </head>
 <body>
 
@@ -213,6 +227,19 @@ if (!$isProf) {
     <div class="tn-spacer"></div>
 
     <div class="tn-icons">
+        <!-- Acessibilidade (a11y) -->
+        <button class="tn-icon-btn" title="Alto Contraste" id="a11y-contrast">
+            <i data-lucide="contrast"></i>
+        </button>
+        <button class="tn-icon-btn" title="Aumentar Fonte" id="a11y-font-inc">
+            <i data-lucide="zoom-in"></i>
+        </button>
+        <button class="tn-icon-btn" title="Diminuir Fonte" id="a11y-font-dec">
+            <i data-lucide="zoom-out"></i>
+        </button>
+        
+        <div style="width:1px;background:var(--c-border);height:20px;margin:0 4px;"></div>
+
         <button class="tn-icon-btn" title="Apps">
             <i data-lucide="layout-grid"></i>
         </button>
@@ -399,6 +426,38 @@ if (!$isProf) {
                         </div>
                         <?php endif; ?>
                     <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- SIMULADOS DA IA -->
+            <?php if (!$isProf && !empty($simuladosAluno)): ?>
+            <div class="panel" style="margin-top:20px;">
+                <div class="panel-head">
+                    <div class="panel-title">
+                        <i data-lucide="sparkles" style="width:15px;height:15px;color:#8B5CF6;"></i>
+                        Simulados Recomendados (IA)
+                    </div>
+                </div>
+                <div class="pending-body">
+                    <?php foreach (array_slice($simuladosAluno, 0, 4) as $sim): ?>
+                    <div class="pending-item">
+                        <div class="pending-icon" style="background:#EDE9FE;color:#8B5CF6;">
+                            <i data-lucide="brain"></i>
+                        </div>
+                        <div class="pending-info">
+                            <div class="pending-name">
+                                <a href="responder_simulado.php?id=<?= $sim['id'] ?>" style="color:var(--c-text);text-decoration:none;">
+                                    <?= htmlspecialchars($sim['titulo']) ?>
+                                </a>
+                            </div>
+                            <div class="pending-meta">
+                                <?= htmlspecialchars($sim['disciplina_nome'] ?? '') ?>
+                            </div>
+                        </div>
+                        <a href="responder_simulado.php?id=<?= $sim['id'] ?>" class="btn-primary" style="background:#8B5CF6; border-color:#8B5CF6; padding:4px 10px; font-size:0.75rem; color:#fff; text-decoration:none; border-radius:4px;">Responder</a>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
             <?php endif; ?>

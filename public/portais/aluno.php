@@ -204,6 +204,43 @@ $stmtVagas = $pdo->query("SELECT o.*, e.nome AS empresa_nome_rel
                           ORDER BY o.data_publicacao DESC");
 $vagasDb = $stmtVagas->fetchAll(PDO::FETCH_ASSOC);
 
+// ================= LÓGICA DE MATCHMAKING (IA) =================
+foreach ($vagasDb as &$vaga) {
+    $match_score = 85; // Base score genérico
+    
+    if (!empty($vaga['disciplinas_alvo'])) {
+        $alvos = array_filter(array_map('trim', explode(',', $vaga['disciplinas_alvo'])));
+        $alvos_encontrados = 0;
+        $alvos_aprovados = 0;
+        
+        foreach ($alvos as $disc_id) {
+            if (isset($boletim[$disc_id])) {
+                $alvos_encontrados++;
+                $media = $boletim[$disc_id]['qtd_notas'] > 0 ? $boletim[$disc_id]['soma_notas'] / $boletim[$disc_id]['qtd_notas'] : null;
+                if ($media !== null && $media >= 7.0) {
+                    $alvos_aprovados++;
+                }
+            }
+        }
+        
+        if ($alvos_encontrados > 0) {
+            $match_score = 50 + (50 * ($alvos_aprovados / $alvos_encontrados));
+        } else {
+            // Aluno não cursou as disciplinas cruciais para a vaga
+            $match_score = 35;
+        }
+    }
+    
+    $vaga['match_score'] = round($match_score);
+}
+unset($vaga);
+
+// Ordenar as vagas por Match Score (Maior compatibilidade primeiro)
+usort($vagasDb, function($a, $b) {
+    return $b['match_score'] <=> $a['match_score'];
+});
+
+
 // Buscar minhas candidaturas
 $stmtMinhasCand = $pdo->prepare("SELECT oportunidade_id FROM candidaturas WHERE aprendiz_id = ?");
 $stmtMinhasCand->execute([$aluno_id]);
@@ -1581,7 +1618,14 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                                     <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem; margin-bottom: 4px;"><?= htmlspecialchars($vaga['titulo']) ?></div>
                                                     <div style="font-size: 0.85rem; color: #64748B;"><i data-lucide="building" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> <?= htmlspecialchars($empresa) ?></div>
                                                 </div>
-                                                <span style="background: <?= $badgeBg ?>; color: <?= $badgeColor ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;"><?= $badgeText ?></span>
+                                                <div style="display: flex; gap: 8px;">
+                                                    <?php if (isset($vaga['match_score'])): ?>
+                                                    <span style="background: <?= $vaga['match_score'] >= 80 ? '#dcfce7' : ($vaga['match_score'] >= 50 ? '#fef9c3' : '#fee2e2') ?>; color: <?= $vaga['match_score'] >= 80 ? '#166534' : ($vaga['match_score'] >= 50 ? '#854d0e' : '#991b1b') ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px;" title="Score de afinidade com suas disciplinas e notas">
+                                                        <i data-lucide="zap" style="width: 12px; height: 12px;"></i> Match: <?= $vaga['match_score'] ?>%
+                                                    </span>
+                                                    <?php endif; ?>
+                                                    <span style="background: <?= $badgeBg ?>; color: <?= $badgeColor ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;"><?= $badgeText ?></span>
+                                                </div>
                                             </div>
                                             <div style="font-size: 0.85rem; color: #475569; margin-bottom: 16px; line-height: 1.4;"><?= nl2br(htmlspecialchars($vaga['descricao'])) ?></div>
                                             <div style="display: flex; gap: 12px; font-size: 0.8rem; color: #64748B;">

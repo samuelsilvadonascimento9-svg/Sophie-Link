@@ -68,7 +68,7 @@ echo json_encode([
     'reply' => $responseText,
 ]);
 
-function getManualResponse($message, $studioProfile)
+function getManualResponse(string $message, array $studioProfile): string
 {
     $normalized = mb_strtolower(trim($message));
 
@@ -110,7 +110,7 @@ function getManualResponse($message, $studioProfile)
     return "Não entendi sua solicitação. Por favor, escolha uma opção digitando o NÚMERO:\n\n" . buildManualMenu();
 }
 
-function buildManualMenu()
+function buildManualMenu(): string
 {
     return "1 - 📅 Matrículas / Fale Conosco\n"
         . "2 - 📚 Conhecer nossos cursos técnicos\n"
@@ -118,7 +118,7 @@ function buildManualMenu()
         . "4 - 📲 Falar com a secretaria (WhatsApp)";
 }
 
-function getAiResponse($userMessage, $companyName, $openRouter, $studioProfile, $history = [])
+function getAiResponse(string $userMessage, string $companyName, array $openRouter, array $studioProfile, array $history = []): string
 {
     if (empty($openRouter['api_key'])) {
         return 'Integração IA indisponível. Verifique o .env.';
@@ -159,7 +159,7 @@ function getAiResponse($userMessage, $companyName, $openRouter, $studioProfile, 
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    $data = json_decode($result, true);
+    $data = json_decode((string)$result, true);
 
     if ($httpCode !== 200) {
         return "Desculpe, nossos servidores estão ocupados no momento. Tente novamente.";
@@ -169,7 +169,7 @@ function getAiResponse($userMessage, $companyName, $openRouter, $studioProfile, 
     return $content ? sanitizeAiText($content) : 'Tente novamente em alguns instantes.';
 }
 
-function buildStudioContext($profile)
+function buildStudioContext(array $profile): string
 {
     $lines = [];
     $lines[] = 'Nome: ' . ($profile['nome'] ?? '');
@@ -179,7 +179,7 @@ function buildStudioContext($profile)
     return implode("\n", $lines);
 }
 
-function buildMessagesForAi($systemPrompt, $history, $currentMessage)
+function buildMessagesForAi(string $systemPrompt, array $history, string $currentMessage): array
 {
     $messages = [['role' => 'system', 'content' => $systemPrompt]];
     foreach ($history as $msg) {
@@ -189,13 +189,13 @@ function buildMessagesForAi($systemPrompt, $history, $currentMessage)
     return $messages;
 }
 
-function sanitizeAiText($text)
+function sanitizeAiText(string $text): string
 {
-    $text = preg_replace('/```[\s\S]*?```/u', '', $text);
+    $text = preg_replace('/```[\s\S]*?```/u', '', $text) ?? '';
     $text = str_replace(['**', '__', '*', '`'], '', $text);
-    $text = preg_replace("/\n{3,}/", "\n\n", $text);
-    $text = preg_replace('/"\}\s*$/u', '', trim($text));
+    $text = preg_replace("/\n{3,}/", "\n\n", $text) ?? '';
+    $text = preg_replace('/"\}\s*$/u', '', trim($text)) ?? '';
     $text = str_replace('"}', '', $text);
-    $text = preg_replace('/"$/u', '', trim($text));
+    $text = preg_replace('/"$/u', '', trim($text)) ?? '';
     return trim($text);
 }

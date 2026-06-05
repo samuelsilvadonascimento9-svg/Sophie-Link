@@ -131,7 +131,7 @@ a { text-decoration: none; color: inherit; }
 
 /* ── CONTRATOS EXPIRANDO ────────────────────────────────────────── */
 .expiring-panel { border-color: #FDE68A; margin-bottom: 1.5rem; }
-.expiring-list { }
+
 .expiring-item {
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 1.75rem; border-bottom: 1px solid var(--c-border);

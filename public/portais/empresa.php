@@ -79,13 +79,14 @@ try {
 try {
     $stmtApr = $pdo->prepare("
         SELECT
-            a.id, a.nome, a.cpf, a.telefone, a.email,
+            a.id, a.nome, a.cpf, a.telefone, a.email, a.status_risco,
             c.data_inicio, c.data_fim, c.valor AS valor_contrato,
             COALESCE(cu.nome, 'Não informado') AS curso_nome,
             COALESCE(t.nome,  'Sem turma')     AS turma_nome,
-            COUNT(f.id)                                              AS total_aulas,
+            COUNT(DISTINCT f.id)                                     AS total_aulas,
             SUM(CASE WHEN f.status = 'presente' THEN 1 ELSE 0 END) AS presencas,
-            DATEDIFF(c.data_fim, CURDATE())                         AS dias_fim_contrato
+            DATEDIFF(c.data_fim, CURDATE())                         AS dias_fim_contrato,
+            (SELECT AVG(valor_nota) FROM notas n WHERE n.aprendiz_id = a.id) AS media_notas
         FROM contratos c
         JOIN aprendizes a   ON c.aprendiz_id = a.id
         LEFT JOIN turmas t  ON a.turma_id    = t.id
@@ -219,10 +220,20 @@ try {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// 6. PREPARAR DADOS PARA CHARTS
+// 6. PREPARAR DADOS PARA CHARTS E ROI
 // ══════════════════════════════════════════════════════════════════════════════
 $nomesChart = json_encode(array_map(fn($a) => explode(' ', $a['nome'])[0], $listaAprendizes));
 $freqsChart = json_encode(array_map(fn($a) => $a['freq_perc'], $listaAprendizes));
+$notasChart = json_encode(array_map(fn($a) => isset($a['media_notas']) ? round((float)$a['media_notas'], 1) : 0, $listaAprendizes));
+
+$roiScores = array_map(function($a) {
+    $notaP = isset($a['media_notas']) ? ((float)$a['media_notas'] * 10) : 0; // 0 a 100
+    $freqP = $a['freq_perc'];
+    // Se não tiver notas registradas, o ROI baseia-se apenas na frequência
+    if ($notaP == 0) return $freqP;
+    return round(($notaP + $freqP) / 2);
+}, $listaAprendizes);
+$roiChart = json_encode($roiScores);
 
 $meses_pt   = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 $evolLabels = json_encode(array_map(fn($r) => $meses_pt[(int)substr($r['mes'],5,2)] . '/' . substr($r['mes'],2,2), $evolucaoFin));
@@ -300,6 +311,8 @@ function urlFin(string $status = '', string $mes = ''): string {
         // Dados para charts — injetados pelo PHP antes do JS externo
         window._chartFreqLabels  = <?= $nomesChart ?>;
         window._chartFreqDados   = <?= $freqsChart ?>;
+        window._chartNotasDados  = <?= $notasChart ?>;
+        window._chartRoiDados    = <?= $roiChart ?>;
         window._chartEvolLabels  = <?= $evolLabels ?>;
         window._chartEvolPago    = <?= $evolPago ?>;
         window._chartEvolPend    = <?= $evolPend ?>;
@@ -479,6 +492,21 @@ function urlFin(string $status = '', string $mes = ''): string {
         </div>
     </div>
 
+    <!-- Gráfico de ROI -->
+    <div class="panel" style="margin-top:1.5rem;">
+        <div class="panel-head">
+            <div class="panel-title"><i data-lucide="pie-chart" style="width:18px;height:18px;vertical-align:middle;margin-right:8px;"></i>Retorno sobre Investimento (ROI)</div>
+            <div style="font-size:0.8rem;color:#64748B;">Cruzamento de Notas e Frequência</div>
+        </div>
+        <div style="padding:2rem;">
+            <?php if ($qtdAtivos > 0): ?>
+            <canvas id="roiChart" height="80"></canvas>
+            <?php else: ?>
+            <div class="empty-state"><i data-lucide="pie-chart" style="opacity:.3;width:40px;height:40px;"></i><p>Nenhum aprendiz ativo para exibir.</p></div>
+            <?php endif; ?>
+        </div>
+    </div>
+
     <!-- Gráfico de evolução financeira -->
     <div class="panel" style="margin-top:1.5rem;">
         <div class="panel-head">
@@ -529,6 +557,7 @@ function urlFin(string $status = '', string $mes = ''): string {
                     <th class="sortable" data-sort="3">Turma <span class="sort-icon">↕</span></th>
                     <th class="sortable" data-sort="4" style="text-align:center;">Fim Contrato <span class="sort-icon">↕</span></th>
                     <th class="sortable" data-sort="5" style="text-align:center;">Frequência <span class="sort-icon">↕</span></th>
+                    <th style="text-align:center;">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -542,6 +571,11 @@ function urlFin(string $status = '', string $mes = ''): string {
                 <tr class="<?= $critico ? 'row-critical' : '' ?> <?= $expClass ?>">
                     <td>
                         <div style="font-weight:600;color:var(--c-brand);"><?= htmlspecialchars($a['nome']) ?></div>
+                        <?php if ($a['status_risco'] === 'Alto'): ?>
+                        <div style="font-size:0.72rem;color:#DC2626;margin-top:2px; font-weight:bold;"><i data-lucide="siren" style="width:11px;height:11px;vertical-align:middle;"></i> Alto Risco de Evasão</div>
+                        <?php elseif ($a['status_risco'] === 'Medio'): ?>
+                        <div style="font-size:0.72rem;color:#D97706;margin-top:2px;"><i data-lucide="alert-circle" style="width:11px;height:11px;vertical-align:middle;"></i> Risco Médio de Evasão</div>
+                        <?php endif; ?>
                         <?php if ($critico): ?>
                         <div style="font-size:0.72rem;color:#DC2626;margin-top:1px;"><i data-lucide="alert-triangle" style="width:11px;height:11px;vertical-align:middle;"></i> Frequência crítica</div>
                         <?php endif; ?>
@@ -559,6 +593,11 @@ function urlFin(string $status = '', string $mes = ''): string {
                         <span class="freq-badge" style="background:<?= $freqBg ?>;color:<?= $freqCol ?>;">
                             <?= $a['freq_perc'] ?>%
                         </span>
+                    </td>
+                    <td style="text-align:center;">
+                        <a href="../reports/auditoria_mte.php?aprendiz_id=<?= $a['id'] ?>" target="_blank" class="btn btn-outline btn-sm" title="Dossiê do Ministério do Trabalho" style="padding:4px 8px; font-size:0.75rem; border-color: #CBD5E1;">
+                            <i data-lucide="printer" style="width:12px;height:12px;margin-right:4px;"></i> MTE
+                        </a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
