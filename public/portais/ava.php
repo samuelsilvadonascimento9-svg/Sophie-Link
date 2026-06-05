@@ -11,6 +11,24 @@ require_once '../../includes/db.php';
 $nivelUsuario = $_SESSION['usuario_nivel'] ?? 'aluno';
 $isProf = ($nivelUsuario === 'professor' || $nivelUsuario === 'admin');
 
+// ─── PROCESSAMENTO POST ───────────────────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'solicitar_documento') {
+    if ($nivelUsuario === 'aluno') {
+        $stmtAluno = $pdo->prepare("SELECT a.id FROM aprendizes a JOIN usuarios u ON u.email = a.email OR u.nome = a.nome WHERE u.id = ? LIMIT 1");
+        $stmtAluno->execute([$_SESSION['usuario_id']]);
+        $aId = $stmtAluno->fetchColumn();
+        if ($aId) {
+            $tipo = $_POST['tipo_documento'] ?? 'matricula';
+            if (in_array($tipo, ['matricula', 'frequencia', 'historico'])) {
+                $pdo->prepare("INSERT INTO solicitacoes_documentos (aprendiz_id, tipo_documento) VALUES (?, ?)")->execute([$aId, $tipo]);
+                $_SESSION['flash_msg'] = "Solicitação de $tipo enviada com sucesso!";
+            }
+        }
+    }
+    header("Location: ava.php");
+    exit;
+}
+
 // ─── PROFESSOR ────────────────────────────────────────────────────────────────
 if ($isProf) {
     $nomeAluno      = $_SESSION['usuario_nome'] ?? 'Professor';
@@ -584,6 +602,45 @@ if (!$isProf) {
                 </div>
             </div>
 
+            <!-- SECRETARIA VIRTUAL (Aluno) -->
+            <?php if (!$isProf): ?>
+            <?php
+            // Buscar solicitações recentes
+            $stmtSol = $pdo->prepare("SELECT * FROM solicitacoes_documentos WHERE aprendiz_id = ? ORDER BY criado_em DESC LIMIT 3");
+            $stmtSol->execute([$aluno_id]);
+            $solicitacoes = $stmtSol->fetchAll();
+            ?>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-title">
+                        <i data-lucide="building" style="width:15px;height:15px;color:var(--c-brand);"></i>
+                        Secretaria Virtual
+                    </div>
+                </div>
+                <div style="padding:1rem;">
+                    <button class="btn-primary" style="width:100%; justify-content:center;" onclick="document.getElementById('modalSolicitar').classList.add('active')">
+                        <i data-lucide="file-plus"></i> Solicitar Documento
+                    </button>
+                    
+                    <?php if (!empty($solicitacoes)): ?>
+                    <div style="margin-top:15px;">
+                        <div style="font-size:0.75rem; font-weight:600; color:var(--c-text-muted); margin-bottom:8px; text-transform:uppercase;">Minhas Solicitações</div>
+                        <?php foreach($solicitacoes as $sol): ?>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--c-border); font-size:0.8rem;">
+                            <span style="text-transform:capitalize; color:var(--c-text-2);"><?= $sol['tipo_documento'] ?></span>
+                            <?php if ($sol['status'] === 'concluido'): ?>
+                                <span style="background:var(--c-green-lt); color:var(--c-green-dk); padding:2px 6px; border-radius:4px; font-weight:600; font-size:0.7rem;">Concluído</span>
+                            <?php else: ?>
+                                <span style="background:var(--c-amber-lt); color:var(--c-amber-dk); padding:2px 6px; border-radius:4px; font-weight:600; font-size:0.7rem;">Pendente</span>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- PROGRESSO DOS MÓDULOS -->
             <div class="panel">
                 <div class="panel-head">
@@ -1079,6 +1136,37 @@ if (!$isProf) {
             <div style="display:flex;justify-content:flex-end;gap:10px;">
                 <button type="button" onclick="closeDeliveryModal()" style="padding:8px 15px;background:var(--c-bg-alt);border:1px solid var(--c-border);border-radius:var(--radius);color:var(--c-text);font-size:0.8rem;cursor:pointer;font-weight:600;">Cancelar</button>
                 <button type="submit" style="padding:8px 15px;background:var(--c-brand);border:none;border-radius:var(--radius);color:#fff;font-size:0.8rem;cursor:pointer;font-weight:600;">Enviar Atividade</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================================================================
+     MODAL DE SOLICITAÇÃO DE DOCUMENTO (SECRETARIA VIRTUAL)
+     ================================================================ -->
+<div id="modalSolicitar" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--c-bg);width:100%;max-width:400px;border-radius:var(--radius);box-shadow:0 10px 25px rgba(0,0,0,0.2);overflow:hidden;">
+        <div style="padding:15px 20px;border-bottom:1px solid var(--c-border);display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:700;color:var(--c-brand);display:flex;align-items:center;gap:8px;">
+                <i data-lucide="file-plus" style="width:18px;height:18px;"></i> Solicitar Documento
+            </div>
+            <button onclick="document.getElementById('modalSolicitar').classList.remove('active')" style="background:none;border:none;cursor:pointer;color:var(--c-text-muted);"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
+        </div>
+        <form action="ava.php" method="POST" style="padding:20px;">
+            <input type="hidden" name="acao" value="solicitar_documento">
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--c-text-muted);margin-bottom:8px;">Tipo de Declaração</label>
+                <select name="tipo_documento" required style="width:100%;padding:10px;border:1px solid var(--c-border);border-radius:var(--radius);background:var(--c-bg-alt);color:var(--c-text);font-size:0.85rem;">
+                    <option value="matricula">Declaração de Matrícula</option>
+                    <option value="frequencia">Declaração de Frequência</option>
+                    <option value="historico">Histórico Escolar</option>
+                </select>
+                <div style="font-size:0.7rem;color:var(--c-text-muted);margin-top:6px;">O prazo de emissão é de até 48 horas úteis.</div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <button type="button" onclick="document.getElementById('modalSolicitar').classList.remove('active')" style="padding:8px 15px;background:var(--c-bg-alt);border:1px solid var(--c-border);border-radius:var(--radius);color:var(--c-text);font-size:0.8rem;cursor:pointer;font-weight:600;">Cancelar</button>
+                <button type="submit" style="padding:8px 15px;background:var(--c-brand);border:none;border-radius:var(--radius);color:#fff;font-size:0.8rem;cursor:pointer;font-weight:600;">Enviar Solicitação</button>
             </div>
         </form>
     </div>

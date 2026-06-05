@@ -98,11 +98,23 @@ a { text-decoration: none; color: inherit; }
 .sb-brand span { color: var(--brand); }
 
 .sb-menu { flex: 1; padding: 16px 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.sb-section-group { margin-bottom: 4px; }
 .sb-section-label {
     font-size: 10px; font-weight: 700; color: #475569;
     text-transform: uppercase; letter-spacing: 1.2px;
-    padding: 12px 12px 6px;
+    padding: 12px 12px 6px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none; transition: var(--transition);
 }
+.sb-section-label:hover { color: #94A3B8; }
+.sb-section-label i { width: 12px; height: 12px; transition: transform 0.2s; }
+.sb-section-group.collapsed .sb-section-label i { transform: rotate(-90deg); }
+.sb-section-content {
+    display: flex; flex-direction: column; gap: 2px; overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s;
+    max-height: 500px; opacity: 1;
+}
+.sb-section-group.collapsed .sb-section-content { max-height: 0; opacity: 0; pointer-events: none; }
 .nav-link {
     display: flex; align-items: center; gap: 10px;
     padding: 9px 12px; border-radius: var(--radius-sm);

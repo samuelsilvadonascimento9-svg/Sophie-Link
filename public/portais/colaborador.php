@@ -45,6 +45,17 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 $erro = '';
 $sucesso = '';
 
+// Lógica CRUD: Concluir Solicitação de Documento
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'concluir_solicitacao') {
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = "Sessão expirada. Atualize a página e tente novamente.";
+    } else {
+        $sol_id = (int)$_POST['solicitacao_id'];
+        $pdo->prepare("UPDATE solicitacoes_documentos SET status = 'concluido' WHERE id = ?")->execute([$sol_id]);
+        $sucesso = "Solicitação concluída com sucesso!";
+    }
+}
+
 // Lógica CRUD: Matricular novo aluno
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'matricular') {
     if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
@@ -206,34 +217,55 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
         </div>
 
         <nav class="sb-menu">
-            <div class="sb-section-label">Gestão</div>
-            <div class="nav-link active" id="nav-alunos" onclick="showSec('alunos', this)">
-                <i data-lucide="users"></i> Alunos
-            </div>
-            <div class="nav-link" id="nav-documentos" onclick="showSec('documentos', this)">
-                <i data-lucide="file-text"></i> Declarações
-            </div>
-            <div class="nav-link" id="nav-faltas" onclick="showSec('faltas', this)">
-                <i data-lucide="user-x"></i> Justificar Faltas
-                <?php if ($faltasPendentes > 0): ?>
-                <span class="nav-badge"><?= $faltasPendentes ?></span>
-                <?php endif; ?>
-            </div>
-
-            <div class="sb-section-label">Cadastros</div>
-            <div class="nav-link" id="nav-matricular" onclick="showSec('matricular', this)">
-                <i data-lucide="user-plus"></i> Matricular Aluno
-            </div>
-            <div class="nav-link" id="nav-professores" onclick="showSec('professores', this)">
-                <i data-lucide="graduation-cap"></i> Professores
-            </div>
-            <div class="nav-link" id="nav-empresas" onclick="showSec('empresas', this)">
-                <i data-lucide="briefcase"></i> Empresas
+            <!-- Gestão -->
+            <div class="sb-section-group" id="group-gestao">
+                <div class="sb-section-label" onclick="this.parentElement.classList.toggle('collapsed')">
+                    Gestão <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="sb-section-content">
+                    <div class="nav-link active" id="nav-alunos" onclick="showSec('alunos', this)">
+                        <i data-lucide="users"></i> Alunos
+                    </div>
+                    <div class="nav-link" id="nav-documentos" onclick="showSec('documentos', this)">
+                        <i data-lucide="file-text"></i> Declarações
+                    </div>
+                    <div class="nav-link" id="nav-faltas" onclick="showSec('faltas', this)">
+                        <i data-lucide="user-x"></i> Justificar Faltas
+                        <?php if ($faltasPendentes > 0): ?>
+                        <span class="nav-badge"><?= $faltasPendentes ?></span>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
 
-            <div class="sb-section-label">Planejamento</div>
-            <div class="nav-link" id="nav-calendario" onclick="showSec('calendario', this)">
-                <i data-lucide="calendar"></i> Calendário Letivo
+            <!-- Cadastros -->
+            <div class="sb-section-group collapsed" id="group-cadastros">
+                <div class="sb-section-label" onclick="this.parentElement.classList.toggle('collapsed')">
+                    Cadastros <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="sb-section-content">
+                    <div class="nav-link" id="nav-matricular" onclick="showSec('matricular', this)">
+                        <i data-lucide="user-plus"></i> Matricular Aluno
+                    </div>
+                    <div class="nav-link" id="nav-professores" onclick="showSec('professores', this)">
+                        <i data-lucide="graduation-cap"></i> Professores
+                    </div>
+                    <div class="nav-link" id="nav-empresas" onclick="showSec('empresas', this)">
+                        <i data-lucide="briefcase"></i> Empresas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planejamento -->
+            <div class="sb-section-group collapsed" id="group-planejamento">
+                <div class="sb-section-label" onclick="this.parentElement.classList.toggle('collapsed')">
+                    Planejamento <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="sb-section-content">
+                    <div class="nav-link" id="nav-calendario" onclick="showSec('calendario', this)">
+                        <i data-lucide="calendar"></i> Calendário Letivo
+                    </div>
+                </div>
             </div>
         </nav>
 
@@ -398,7 +430,71 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
             <div id="sec-documentos" class="sec">
                 <div class="page-header">
                     <h1 class="page-title">Emissão de Documentos</h1>
-                    <p class="page-desc">Selecione o aluno e o tipo de documento para gerar o PDF oficial.</p>
+                    <p class="page-desc">Selecione o aluno e o tipo de documento para gerar o PDF oficial, ou atenda as solicitações pendentes.</p>
+                </div>
+                
+                <?php
+                // Buscar solicitações pendentes
+                $stmtPendentes = $pdo->query("
+                    SELECT s.*, a.nome AS aluno_nome
+                    FROM solicitacoes_documentos s
+                    JOIN aprendizes a ON s.aprendiz_id = a.id
+                    WHERE s.status = 'pendente'
+                    ORDER BY s.criado_em ASC
+                ");
+                $solPendentes = $stmtPendentes->fetchAll();
+                ?>
+                <div class="panel" style="margin-bottom: 24px;">
+                    <div class="panel-head" style="background:#F8FAFC;">
+                        <div class="panel-title" style="color:var(--brand);">
+                            <i data-lucide="bell" style="width:16px;height:16px;margin-right:6px;vertical-align:-2px;"></i>
+                            Solicitações Pendentes dos Alunos
+                        </div>
+                        <?php if (count($solPendentes) > 0): ?>
+                        <span class="badge badge-red"><?= count($solPendentes) ?> pendente(s)</span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if (empty($solPendentes)): ?>
+                        <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:13px;">
+                            <i data-lucide="check-circle" style="width:30px;height:30px;opacity:0.3;margin-bottom:10px;display:inline-block;"></i><br>
+                            Nenhuma solicitação pendente no momento.
+                        </div>
+                    <?php else: ?>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Aluno</th>
+                                    <th>Documento Solicitado</th>
+                                    <th style="text-align:right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($solPendentes as $sol): ?>
+                                <tr>
+                                    <td><?= date('d/m/Y', strtotime($sol['criado_em'])) ?></td>
+                                    <td style="font-weight:600;"><?= htmlspecialchars($sol['aluno_nome']) ?></td>
+                                    <td style="text-transform:capitalize;"><?= $sol['tipo_documento'] ?></td>
+                                    <td style="text-align:right;">
+                                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                                            <a href="../reports/declaracao_print.php?aluno_id=<?= $sol['aprendiz_id'] ?>&tipo=<?= $sol['tipo_documento'] ?>" target="_blank" class="btn btn-sm btn-outline" style="color:var(--blue-dk); border-color:var(--blue-dk);" title="Gerar e Imprimir PDF">
+                                                <i data-lucide="printer"></i> Imprimir
+                                            </a>
+                                            <form method="POST" style="display:inline;">
+                                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                                                <input type="hidden" name="acao" value="concluir_solicitacao">
+                                                <input type="hidden" name="solicitacao_id" value="<?= $sol['id'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-outline" style="color:var(--green); border-color:var(--green);" title="Marcar como Concluído">
+                                                    <i data-lucide="check"></i> Concluir
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
                 </div>
 
                 <div class="panel">
@@ -407,14 +503,56 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                     </div>
                     <form action="../reports/declaracao_print.php" method="GET" target="_blank" style="padding: 30px;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                            <div class="form-group" style="grid-column: 1/-1;">
-                                <label class="form-label">Selecionar Aluno</label>
-                                <select name="aluno_id" class="form-control" required>
-                                    <option value="">— Selecione o aluno —</option>
+                            <div class="form-group" style="grid-column: 1/-1; position:relative;">
+                                <label class="form-label">Pesquisar Aluno</label>
+                                <input type="hidden" name="aluno_id" id="doc_aluno_id" required>
+                                <input type="text" id="doc_aluno_search" class="form-control" placeholder="🔍 Digite o nome do aluno..." autocomplete="off">
+                                
+                                <div id="doc_aluno_dropdown" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; max-height:220px; overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:var(--radius-sm); z-index:50; box-shadow:var(--shadow-lg);">
                                     <?php foreach ($aprendizes as $a): ?>
-                                    <option value="<?= $a['id'] ?>"><?= htmlspecialchars($a['nome']) ?> (RA: <?= str_pad($a['id'], 6, '0', STR_PAD_LEFT) ?>)</option>
+                                    <div class="doc-aluno-item" data-id="<?= $a['id'] ?>" data-nome="<?= htmlspecialchars($a['nome']) ?>" style="padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f8fafc; transition:0.1s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
+                                        <div style="font-weight:600;"><?= htmlspecialchars($a['nome']) ?></div>
+                                        <div style="font-size:11px;color:var(--text-muted);">RA: <?= str_pad($a['id'], 6, '0', STR_PAD_LEFT) ?></div>
+                                    </div>
                                     <?php endforeach; ?>
-                                </select>
+                                    <?php if(empty($aprendizes)): ?>
+                                    <div style="padding:10px 14px; font-size:13px; color:var(--text-muted);">Nenhum aluno encontrado.</div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const searchInput = document.getElementById('doc_aluno_search');
+                                    const dropdown = document.getElementById('doc_aluno_dropdown');
+                                    const hiddenInput = document.getElementById('doc_aluno_id');
+                                    const items = document.querySelectorAll('.doc-aluno-item');
+
+                                    searchInput.addEventListener('focus', () => { dropdown.style.display = 'block'; searchInput.dispatchEvent(new Event('input')); });
+                                    searchInput.addEventListener('input', function() {
+                                        dropdown.style.display = 'block';
+                                        const val = this.value.toLowerCase();
+                                        items.forEach(item => {
+                                            if (item.innerText.toLowerCase().includes(val)) {
+                                                item.style.display = 'block';
+                                            } else {
+                                                item.style.display = 'none';
+                                            }
+                                        });
+                                    });
+                                    document.addEventListener('click', function(e) {
+                                        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                                            dropdown.style.display = 'none';
+                                        }
+                                    });
+                                    items.forEach(item => {
+                                        item.addEventListener('click', function() {
+                                            searchInput.value = this.dataset.nome;
+                                            hiddenInput.value = this.dataset.id;
+                                            dropdown.style.display = 'none';
+                                        });
+                                    });
+                                });
+                                </script>
                             </div>
 
                             <div class="form-group" style="grid-column: 1/-1;">

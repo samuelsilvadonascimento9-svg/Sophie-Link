@@ -286,3 +286,12 @@ CREATE TABLE IF NOT EXISTS ava_respostas (
     FOREIGN KEY (aprendiz_id) REFERENCES aprendizes(id) ON DELETE CASCADE,
     UNIQUE KEY(questao_id, aprendiz_id)
 );
+
+CREATE TABLE IF NOT EXISTS solicitacoes_documentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aprendiz_id INT NOT NULL,
+    tipo_documento ENUM('matricula', 'frequencia', 'historico') NOT NULL,
+    status ENUM('pendente', 'concluido') DEFAULT 'pendente',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aprendiz_id) REFERENCES aprendizes(id) ON DELETE CASCADE
+);
