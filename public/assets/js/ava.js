@@ -57,11 +57,11 @@ function renderCatCard(cat, discId) {
     return `
     <div class="cat-card" onclick="openCategory('${cat.key}', ${discId})">
         <div class="cat-card-thumb">
-            <i data-lucide="${cat.icon}" style="width:36px;height:36px;color:rgba(255,255,255,0.9);"></i>
+            <i data-lucide="${cat.icon}" style="width:40px;height:40px;color:rgba(255,255,255,0.9);z-index:2;margin-bottom:4px;"></i>
             <span class="cat-card-label">${cat.label}</span>
         </div>
         <div class="cat-card-body">
-            <div class="cat-card-title">${labelTitle}</div>
+            <div class="cat-card-title" style="text-transform: capitalize;">${labelTitle}</div>
             <div class="cat-progress-bar"><div class="cat-progress-fill" style="width:${pct}%;"></div></div>
             <div class="cat-card-meta">${n}/${n} Tópico(s) disponível(is)</div>
             <div class="cat-check">${n > 0 ? '✓' : ''}</div>
@@ -145,10 +145,16 @@ function renderMatItem(item, catKey) {
                 ${item.data_entrega ? ` &bull; <strong>Prazo: ${formatDate(item.data_entrega)}</strong>` : ''}
             </div>
         </div>
-        ${item.arquivo_path ? `
-        <a href="download_material.php?id=${item.id}" target="_blank" class="mat-item-btn">
-            <i data-lucide="download" style="width:13px;height:13px;"></i> Baixar
-        </a>` : ''}
+        <div style="display:flex;gap:8px;">
+            ${item.arquivo_path ? `
+            <a href="download_material.php?id=${item.id}" target="_blank" class="mat-item-btn">
+                <i data-lucide="download" style="width:13px;height:13px;"></i> Baixar
+            </a>` : ''}
+            ${(catKey === 'atividades' && !entregue) ? `
+            <button onclick="openDeliveryModal(${item.id}, '${escHtml(item.titulo)}')" class="mat-item-btn" style="background:var(--c-brand);color:#fff;border-color:var(--c-brand);">
+                <i data-lucide="upload" style="width:13px;height:13px;"></i> Entregar
+            </button>` : ''}
+        </div>
     </div>`;
 }
 
@@ -164,6 +170,19 @@ function formatDate(d) {
 }
 
 function closeCourse() { showSec('home'); }
+
+function openDeliveryModal(materialId, materialTitle) {
+    const modal = document.getElementById('delivery-modal');
+    if (!modal) return;
+    document.getElementById('delivery-material-id').value = materialId;
+    document.getElementById('delivery-title').textContent = materialTitle;
+    modal.style.display = 'flex';
+}
+
+function closeDeliveryModal() {
+    const modal = document.getElementById('delivery-modal');
+    if (modal) modal.style.display = 'none';
+}
 
 /* ----------------------------------------------------------------
    AVISOS CAROUSEL

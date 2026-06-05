@@ -133,14 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <a href="auth/login_empresa.php" class="sm-sub-link">Acessar Portal da Empresa</a>
         </div>
 
-        <!-- Accordion: Área Administrativa -->
-        <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-5">
-            <span style="display:flex;align-items:center;gap:10px;"><i data-lucide="shield" style="width:16px;height:16px;color:var(--c-text-light);"></i> Área Administrativa</span>
-            <i data-lucide="chevron-down"></i>
-        </button>
-        <div class="sm-acc-body" id="acc-5">
-            <a href="auth/login_admin.php" class="sm-sub-link">Acesso Gerencial</a>
-        </div>
+
 
         <!-- Accordion: Nossos Cursos -->
         <button class="sm-acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="acc-6">
@@ -665,15 +658,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         Av. Amazonas, 64 – Rio Verde, Parauapebas – PA
                     </div>
                 </div>
-                <div class="fd-col">
-                    <h4>Portais</h4>
-                    <ul>
-                        <li><a href="auth/login_aluno.php">Portal do Aluno</a></li>
-                        <li><a href="auth/login_ava.php">Ambiente Virtual (AVA)</a></li>
-                        <li><a href="auth/login_empresa.php">Portal da Empresa</a></li>
-                        <li><a href="auth/login_admin.php">Área Administrativa</a></li>
-                    </ul>
-                </div>
+
                 <div class="fd-col">
                     <h4>Institucional</h4>
                     <ul>

@@ -18,10 +18,13 @@ if (session_status() === PHP_SESSION_NONE) {
  * Se níveis forem fornecidos, verifica se o usuário possui um deles.
  */
 function protect_page(array $allowed_levels = []) {
+    $script = $_SERVER['SCRIPT_NAME'];
+    $pos = strpos($script, '/public/');
+    $base = ($pos !== false) ? substr($script, 0, $pos) : '';
+
     if (!isset($_SESSION['usuario_id'])) {
-        // Redireciona para a raiz do projeto no XAMPP
-        $base = dirname(dirname($_SERVER['SCRIPT_NAME']));
-        header('Location: ' . rtrim($base, '/') . '/public/auth/login_aluno.php');
+        // Redireciona para login
+        header('Location: ' . $base . '/public/auth/login_aluno.php');
         exit;
     }
     
@@ -29,8 +32,7 @@ function protect_page(array $allowed_levels = []) {
     if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
         session_unset();
         session_destroy();
-        $base = dirname(dirname($_SERVER['SCRIPT_NAME']));
-        header('Location: ' . rtrim($base, '/') . '/public/auth/login_aluno.php?msg=Sessao+expirada');
+        header('Location: ' . $base . '/public/auth/login_aluno.php?msg=Sessao+expirada');
         exit;
     }
     
@@ -46,8 +48,7 @@ function protect_page(array $allowed_levels = []) {
     
     // Verifica permissão
     if (!empty($allowed_levels) && !in_array($_SESSION['usuario_nivel'], $allowed_levels)) {
-        $base = dirname(dirname($_SERVER['SCRIPT_NAME']));
-        header('Location: ' . rtrim($base, '/') . '/public/404.php');
+        header('Location: ' . $base . '/public/404.php');
         exit;
     }
 }

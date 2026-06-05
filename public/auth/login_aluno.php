@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // login.php — Página de Login | Centro Técnico Profissionalizante Sophie Link
 require_once '../../app/Core/Auth.php';
 $csrf_token = Security::generateCsrfToken();
@@ -32,7 +32,7 @@ if (isset($_SESSION['usuario_id'])) {
             header('Location: ../portais/colaborador.php');
             break;
         case 'aluno':
-            header('Location: ../portais/aluno.php');
+            header('Location: ../portais/portal_aluno.php');
             break;
         default:
             header('Location: ../index.php');
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: ../portais/colaborador.php');
                     break;
                 case 'aluno':
-                    header('Location: ../portais/aluno.php');
+                    header('Location: ../portais/portal_aluno.php');
                     break;
                 default:
                     header('Location: ../index.php');

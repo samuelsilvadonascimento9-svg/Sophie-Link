@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // login.php — Página de Login | Centro Técnico Profissionalizante Sophie Link
 require_once '../../app/Core/Auth.php';
 $csrf_token = Security::generateCsrfToken();
@@ -26,7 +26,7 @@ if (isset($_SESSION['usuario_id'])) {
             header('Location: ../portais/empresa.php');
             break;
         case 'professor':
-            header('Location: ../portais/ava.php');
+            header('Location: ../portais/ava_professor.php');
             break;
         case 'colaborador':
             header('Location: ../portais/colaborador.php');
@@ -43,7 +43,7 @@ if (isset($_SESSION['usuario_id'])) {
 
 $niveis_esperados = ['aluno', 'professor'];
 $tituloLogin = 'Ambiente Virtual (AVA)';
-$prefillEmail = 'admin';
+$prefillEmail = '';
 
 $erro = '';
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: ../portais/empresa.php');
                     break;
                 case 'professor':
-                    header('Location: ../portais/ava.php');
+                    header('Location: ../portais/ava_professor.php');
                     break;
                 case 'colaborador':
                     header('Location: ../portais/colaborador.php');

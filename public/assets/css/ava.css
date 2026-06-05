@@ -465,19 +465,38 @@ img { display: block; max-width: 100%; }
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 .cat-card-thumb {
-    background: linear-gradient(135deg, #0076a8, #005a82);
-    height: 100px;
+    background: #254b96;
+    height: 110px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+/* Efeito de papel rasgado na base do banner */
+.cat-card-thumb::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: -5%;
+    width: 110%;
+    height: 25px;
+    background: #fff;
+    transform: rotate(-2deg);
+    border-top-right-radius: 40px;
+    border-top-left-radius: 40px;
 }
 .cat-card-label {
     color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 4px;
+    padding: 4px 10px;
+    z-index: 2;
 }
 .cat-card-body {
     padding: 16px;

@@ -9,14 +9,14 @@ $originalStream = stream_wrapper_unregister('php');
 stream_wrapper_register('php', 'MockPhpStream');
 
 class MockPhpStream {
-    public $context;
-    private $position = 0;
-    private $data = '{"id":1}';
+    public mixed $context;
+    private int $position = 0;
+    private string $data = '{"id":1}';
     
-    public function stream_open($path, $mode, $options, &$opened_path) { return true; }
-    public function stream_read($count) {
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool { return true; }
+    public function stream_read(int $count): string|false {
         $ret = substr($this->data, $this->position, $count);
-        $this->position += strlen($ret);
+        $this->position += strlen((string)$ret);
         return $ret;
     }
     public function stream_eof() { return $this->position >= strlen($this->data); }

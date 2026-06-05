@@ -3,7 +3,7 @@
 session_start();
 
 require_once '../../includes/auth.php';
-protect_page(['aluno', 'professor', 'admin']);
+protect_page(['aluno']);
 
 require_once '../../includes/db.php';
 /** @var \PDO $pdo */
@@ -23,6 +23,8 @@ if ($isProf) {
     $atividadesAluno= [];
     $frequenciaAluno= [];
     $disciplinasAluno = [];
+    $avisosTurma = [];
+    $proximosEventos = [];
     $percPresenca = 100;
 
     $stmtTurmasProf = $pdo->prepare("
@@ -87,6 +89,8 @@ if ($isProf) {
 
     // ─── Disciplinas da turma do aluno ────────────────────────────────────────
     $disciplinasAluno = [];
+    $avisosTurma = [];
+    $proximosEventos = [];
     if ($turma_id) {
         $stmtDiscs = $pdo->prepare("
             SELECT DISTINCT d.id, d.nome, d.carga_horaria,
@@ -104,6 +108,8 @@ if ($isProf) {
     // ─── Todos os materiais do AVA agrupados por disciplina e tipo ───────────
     $materiaisAluno   = [];
     $atividadesAluno  = [];
+    $avisosTurma = [];
+    $proximosEventos = [];
     $materiaisPorDisc = [];
     if ($turma_id) {
         $stmtAllMats = $pdo->prepare("
@@ -133,6 +139,8 @@ if ($isProf) {
             if (in_array($tipo_mat, ['pdf', 'aviso']))    $materiaisAluno[]  = $mat;
             if ($tipo_mat === 'atividade')                 $atividadesAluno[] = $mat;
         }
+
+        usort($proximosEventos, fn($a, $b) => strcmp($a['data_entrega'], $b['data_entrega']));
 
         // Busca os simulados da IA para a turma
         $stmtSims = $pdo->prepare("
@@ -243,7 +251,7 @@ if (!$isProf) {
         <button class="tn-icon-btn" title="Apps">
             <i data-lucide="layout-grid"></i>
         </button>
-        <button class="tn-icon-btn" title="Mensagens">
+        <button class="tn-icon-btn" title="Mensagens" onclick="showSec('mensagens')">
             <i data-lucide="mail"></i>
             <span class="tn-badge">2</span>
         </button>
@@ -274,13 +282,17 @@ if (!$isProf) {
 <div class="subnav">
     <span class="subnav-link active" id="snav-home" onclick="showSec('home')">Ferramentas</span>
     <div class="subnav-sep"></div>
-    <a href="portal_aluno.php" class="subnav-link">Portal do aluno</a>
+        <a href="portal_aluno.php" class="subnav-link">Portal do aluno</a>
     <div class="subnav-sep"></div>
-    <span class="subnav-link">Publicações</span>
+    <span class="subnav-link" id="snav-notas" onclick="showSec('notas')">Boletim</span>
     <div class="subnav-sep"></div>
-    <span class="subnav-link">Ajuda do ava</span>
+    <span class="subnav-link" id="snav-frequencia" onclick="showSec('frequencia')">Frequência</span>
     <div class="subnav-sep"></div>
-    <span class="subnav-link">Descobrir</span>
+    <span class="subnav-link" id="snav-publicacoes" onclick="showSec('publicacoes')">Publicações</span>
+    <div class="subnav-sep"></div>
+    <span class="subnav-link" id="snav-ajuda" onclick="showSec('ajuda')">Ajuda</span>
+    <div class="subnav-sep"></div>
+    <span class="subnav-link" id="snav-descobrir" onclick="showSec('descobrir')">Descobrir</span>
 </div>
 
 <!-- ================================================================
@@ -919,6 +931,86 @@ if (!$isProf) {
 </div>
 </div>
 
+
+<!-- ================================================================
+     SEÇÃO: PUBLICAÇÕES / FEED
+     ================================================================ -->
+<div id="sec-publicacoes" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel" style="background:#fff;border:1px solid #ccc;padding:20px;border-radius:8px;">
+        <div class="panel-head" style="font-size:1.2rem;font-weight:bold;margin-bottom:15px;"><i data-lucide="message-square" style="width:15px;height:15px;color:var(--c-brand);"></i> Publicações da Turma</div>
+        <div style="text-align:center;color:#333;">
+            <i data-lucide="globe" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.3;"></i>
+            As publicações e fóruns de discussão estarão disponíveis em breve.
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ================================================================
+     SEÇÃO: AJUDA
+     ================================================================ -->
+<div id="sec-ajuda" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel" style="background:#fff;border:1px solid #ccc;padding:20px;border-radius:8px;">
+        <div class="panel-head" style="font-size:1.2rem;font-weight:bold;margin-bottom:15px;"><i data-lucide="help-circle" style="width:15px;height:15px;color:var(--c-brand);"></i> Central de Ajuda</div>
+        <div style="color:#333;">
+            <p>Precisa de ajuda com o AVA? Entre em contato com o suporte técnico da Sophie Link ou fale com a coordenação.</p>
+            <p style="margin-top:10px;"><strong>E-mail:</strong> suporte@sophielink.com.br</p>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ================================================================
+     SEÇÃO: DESCOBRIR
+     ================================================================ -->
+<div id="sec-descobrir" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel" style="background:#fff;border:1px solid #ccc;padding:20px;border-radius:8px;">
+        <div class="panel-head" style="font-size:1.2rem;font-weight:bold;margin-bottom:15px;"><i data-lucide="compass" style="width:15px;height:15px;color:var(--c-brand);"></i> Descobrir Novos Cursos</div>
+        <div style="text-align:center;color:#333;">
+            <i data-lucide="search" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.3;"></i>
+            Explore nossa vitrine de cursos extracurriculares aqui.
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ================================================================
+     MODAL DE ENTREGA DE ATIVIDADE
+     ================================================================ -->
+<div id="delivery-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--c-bg);width:100%;max-width:400px;border-radius:var(--radius);box-shadow:0 10px 25px rgba(0,0,0,0.2);overflow:hidden;">
+        <div style="padding:15px 20px;border-bottom:1px solid var(--c-border);display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:700;color:var(--c-brand);">Entregar Trabalho</div>
+            <button onclick="closeDeliveryModal()" style="background:none;border:none;cursor:pointer;color:var(--c-text-muted);"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
+        </div>
+        <form action="entregar_atividade.php" method="POST" enctype="multipart/form-data" style="padding:20px;">
+            <input type="hidden" name="material_id" id="delivery-material-id" value="">
+            <div style="margin-bottom:15px;font-size:0.85rem;color:var(--c-text);">
+                Atividade: <strong id="delivery-title"></strong>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--c-text-muted);margin-bottom:8px;">Anexar Arquivo (PDF, DOCX, ZIP, JPG)</label>
+                <input type="file" name="arquivo" required style="width:100%;padding:10px;border:1px dashed var(--c-border);border-radius:var(--radius);background:var(--c-bg-alt);color:var(--c-text);font-size:0.8rem;">
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <button type="button" onclick="closeDeliveryModal()" style="padding:8px 15px;background:var(--c-bg-alt);border:1px solid var(--c-border);border-radius:var(--radius);color:var(--c-text);font-size:0.8rem;cursor:pointer;font-weight:600;">Cancelar</button>
+                <button type="submit" style="padding:8px 15px;background:var(--c-brand);border:none;border-radius:var(--radius);color:#fff;font-size:0.8rem;cursor:pointer;font-weight:600;">Enviar Atividade</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
 window.cursosAVA = <?= json_encode($cursosAVAData, JSON_UNESCAPED_UNICODE) ?>;
