@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    die("Acesso negado. Usuário não autenticado.");
+}
+
 require '../../../includes/db.php';
 $pdo = \Core\Connect::getInstance();
 
@@ -14,6 +19,39 @@ $fatura = $stmt->fetch();
 
 if (!$fatura) {
     die("Fatura não encontrada.");
+}
+
+// Validação de Permissão (IDOR)
+$nivel = $_SESSION['usuario_nivel'] ?? '';
+$usuario_id = $_SESSION['usuario_id'];
+
+if ($nivel === 'aluno') {
+    $stmtA = $pdo->prepare("SELECT id FROM aprendizes WHERE email = (SELECT email FROM usuarios WHERE id = ?) OR nome = (SELECT nome FROM usuarios WHERE id = ?) LIMIT 1");
+    $stmtA->execute([$usuario_id, $usuario_id]);
+    $aprendiz = $stmtA->fetch();
+    $real_aluno_id = $aprendiz ? $aprendiz['id'] : 0;
+
+    $stmtC = $pdo->prepare("SELECT id FROM contratos WHERE aprendiz_id = ? AND empresa_id = ? AND status = 'ativo'");
+    $stmtC->execute([$real_aluno_id, $fatura['empresa_id']]);
+    if (!$stmtC->fetch()) {
+        die("Acesso negado à fatura.");
+    }
+} elseif ($nivel === 'empresa') {
+    if ($fatura['empresa_id'] != ($_SESSION['empresa_id'] ?? 0)) {
+        die("Acesso negado à fatura.");
+    }
+} elseif ($nivel !== 'admin') {
+    die("Perfil sem acesso a pagamentos.");
+}
+
+// Lógica de processamento do Mock
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'pagar') {
+    if ($fatura['status'] !== 'pago') {
+        $stmtUpd = $pdo->prepare("UPDATE financeiro SET status = 'pago', data_pagamento = NOW() WHERE id = ?");
+        $stmtUpd->execute([$fatura_id]);
+    }
+    echo json_encode(['success' => true]);
+    exit;
 }
 if ($fatura['status'] === 'pago') {
     die("Esta fatura já foi paga.");
@@ -72,18 +110,32 @@ if ($fatura['status'] === 'pago') {
         function processar(metodo) {
             document.getElementById('overlay').style.display = 'flex';
             
-            setTimeout(() => {
-                document.getElementById('overlay-text').innerHTML = '<i data-lucide="check-circle" style="color:#10B981; width:48px; height:48px; margin-bottom:10px;"></i><br>Pagamento Aprovado!';
-                lucide.createIcons();
-                
-                // Simular webhook chamando o endpoint silenciosamente
-                fetch('webhook_mp.php?topic=payment&id=simulado&ext_ref=<?= $fatura_id ?>')
-                .then(() => {
+            // Simular comunicação do pagamento
+            fetch('mock_checkout.php?id=<?= $fatura_id ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=pagar'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
                     setTimeout(() => {
-                        window.location.href = '../../portais/aluno.php?pagamento=sucesso';
-                    }, 1500);
-                });
-            }, 2000);
+                        document.getElementById('overlay-text').innerHTML = '<i data-lucide="check-circle" style="color:#10B981; width:48px; height:48px; margin-bottom:10px;"></i><br>Pagamento Aprovado!';
+                        lucide.createIcons();
+                        
+                        setTimeout(() => {
+                            window.location.href = '../../portais/aluno.php?pagamento=sucesso';
+                        }, 1500);
+                    }, 1000);
+                } else {
+                    alert('Erro ao processar pagamento simulado.');
+                    document.getElementById('overlay').style.display = 'none';
+                }
+            })
+            .catch(err => {
+                alert('Erro de rede.');
+                document.getElementById('overlay').style.display = 'none';
+            });
         }
     </script>
 </body>

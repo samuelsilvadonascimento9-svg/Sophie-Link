@@ -833,11 +833,19 @@ function urlFin(string $status = '', string $mes = ''): string {
                         <?php endif; ?>
                         <button
                             onclick="iniciarPagamento(<?= (int)$f['id'] ?>, this)"
-                            style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: var(--c-brand); color: #fff; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--f-body); transition: background 0.18s;"
+                            style="display: inline-flex; align-items: center; justify-content: center; width: 100%; gap: 7px; padding: 9px 18px; background: var(--c-brand); color: #fff; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--f-body); transition: background 0.18s;"
                             onmouseover="this.style.background='#172554'"
                             onmouseout="this.style.background='var(--c-brand)'">
                             <i data-lucide="credit-card" style="width:15px;height:15px;"></i>
-                            Pagar agora
+                            Cartão/Boleto
+                        </button>
+                        <button
+                            onclick="gerarPix(<?= (int)$f['id'] ?>, this)"
+                            style="display: inline-flex; align-items: center; justify-content: center; width: 100%; gap: 7px; padding: 9px 18px; background: #0db1a1; color: #fff; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--f-body); transition: background 0.18s;"
+                            onmouseover="this.style.background='#0a8f82'"
+                            onmouseout="this.style.background='#0db1a1'">
+                            <i data-lucide="zap" style="width:15px;height:15px;"></i>
+                            Pagar com PIX
                         </button>
                     <?php endif; ?>
                 </div>
@@ -860,5 +868,32 @@ function urlFin(string $status = '', string $mes = ''): string {
 </div>
 
 <script src="../assets/js/portais/empresa.js?v=<?= time() ?>"></script>
+
+<!-- Modal PIX -->
+<div id="modalPix" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #fff; width: 100%; max-width: 400px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative;">
+        <div style="width: 100%; padding: 20px 24px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin:0; font-size: 1.1rem; color: #1E293B; display: flex; align-items: center; gap: 8px;"><i data-lucide="zap" style="color: #0db1a1;"></i> Pagamento PIX</h3>
+            <button onclick="fecharModalPix()" style="background:transparent; border:none; cursor:pointer; color:#94A3B8;"><i data-lucide="x"></i></button>
+        </div>
+        <div style="padding: 24px; width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <p style="font-size: 0.9rem; color: #64748B; margin-top: 0; margin-bottom: 20px;">Escaneie o QR Code abaixo com o aplicativo do seu banco para pagar.</p>
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px; border-radius: 12px; margin-bottom: 24px;">
+                <img id="pixQrCodeImage" src="" alt="QR Code PIX" style="width: 200px; height: 200px; display: block; object-fit: contain;">
+            </div>
+            <div style="width: 100%;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; display: block; text-align: left; margin-bottom: 8px;">Ou copie o código (Pix Copia e Cola):</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="pixCopiaColaCode" readonly style="flex: 1; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.85rem; color: #1E293B; background: #F1F5F9; outline: none;">
+                    <button id="btnCopiarPix" onclick="copiarCodigoPix()" style="background: #1E293B; color: #fff; border: none; border-radius: 6px; padding: 0 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s;"><i data-lucide="copy" style="width: 16px;"></i> Copiar</button>
+                </div>
+            </div>
+        </div>
+        <div style="width: 100%; padding: 16px 24px; background: #F8FAFC; border-top: 1px solid #E2E8F0; font-size: 0.8rem; color: #94A3B8;">
+            O pagamento será aprovado em instantes pelo sistema.
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

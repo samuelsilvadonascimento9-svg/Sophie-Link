@@ -5,7 +5,7 @@
  * Execute este script UMA VEZ acessando: localhost/devweb/Sophie-Link/scripts/setup_missing_tables.php
  */
 
-require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../../includes/db.php';
 /** @var PDO $pdo */
 
 $tabelas = [];

@@ -342,6 +342,76 @@ function iniciarPagamento(faturaId, btn) {
     });
 }
 
+function gerarPix(faturaId, btn) {
+    if (!faturaId) {
+        alert('ID da fatura inválido.');
+        return;
+    }
+
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '<i data-lucide="loader-2" style="width:15px;height:15px;animation:spin 1s linear infinite;"></i> Gerando PIX...';
+    btn.disabled = true;
+    if (window.lucide) lucide.createIcons();
+
+    if (!document.getElementById('spin-style')) {
+        const s = document.createElement('style');
+        s.id = 'spin-style';
+        s.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+        document.head.appendChild(s);
+    }
+
+    fetch('../api/pagamentos/pix_checkout.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: faturaId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success && data.qr_code_base64) {
+            const modal = document.getElementById('modalPix');
+            if (modal) {
+                document.getElementById('pixQrCodeImage').src = 'data:image/png;base64,' + data.qr_code_base64;
+                document.getElementById('pixCopiaColaCode').value = data.qr_code;
+                modal.style.display = 'flex';
+            }
+        } else {
+            alert('Erro ao gerar PIX: ' + (data.error || 'Falha desconhecida.'));
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Erro de comunicação. Tente novamente.');
+    })
+    .finally(() => {
+        btn.innerHTML = oldHtml;
+        btn.disabled = false;
+        if (window.lucide) lucide.createIcons();
+    });
+}
+
+function fecharModalPix() {
+    const modal = document.getElementById('modalPix');
+    if (modal) modal.style.display = 'none';
+}
+
+function copiarCodigoPix() {
+    const input = document.getElementById('pixCopiaColaCode');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => {
+        const btn = document.getElementById('btnCopiarPix');
+        const oldHtml = btn.innerHTML;
+        btn.innerHTML = '<i data-lucide="check" style="width: 16px;"></i> Copiado!';
+        if (window.lucide) lucide.createIcons();
+        setTimeout(() => {
+            btn.innerHTML = oldHtml;
+            if (window.lucide) lucide.createIcons();
+        }, 2000);
+    }).catch(err => {
+        alert('Erro ao copiar código PIX.');
+    });
+}
+
 
 document.addEventListener('DOMContentLoaded', function () {
     lucide.createIcons();

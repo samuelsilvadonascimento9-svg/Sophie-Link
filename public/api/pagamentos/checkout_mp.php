@@ -1,20 +1,33 @@
 <?php
 require '../../../includes/db.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Preference\PreferenceClient;
+
 $pdo = \Core\Connect::getInstance();
 header('Content-Type: application/json');
 
 // === CONFIGURAÇÃO DO MERCADO PAGO ===
 // Substitua pelo seu Access Token real do painel: https://www.mercadopago.com.br/developers/panel/app
 $mpAccessToken = 'APP_USR-6836003344835449-060310-e3161895eb8d95272de7ecf76cd26fa9-2244514896';
+MercadoPagoConfig::setAccessToken($mpAccessToken);
 
 // URL base do seu servidor local (sem espaços e sem %20)
 $baseUrl = 'http://localhost/DevWeb/Sophie%20Link/public';
 
-// =============================================
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Acesso negado. Usuário não autenticado.']);
+    exit;
+}
+
 $data = json_decode(file_get_contents('php://input'), true);
 $fatura_id = (int)($data['id'] ?? 0);
 
 if (!$fatura_id) {
+    http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'ID da fatura não fornecido.']);
     exit;
 }
@@ -41,6 +54,35 @@ try {
         throw new Exception('Fatura não encontrada.');
     }
 
+    // Validação de Permissão (IDOR)
+    $nivel = $_SESSION['usuario_nivel'] ?? '';
+    $usuario_id = $_SESSION['usuario_id'];
+
+    if ($nivel === 'aluno') {
+        $stmtA = $pdo->prepare("SELECT id FROM aprendizes WHERE email = (SELECT email FROM usuarios WHERE id = ?) OR nome = (SELECT nome FROM usuarios WHERE id = ?) LIMIT 1");
+        $stmtA->execute([$usuario_id, $usuario_id]);
+        $aprendiz = $stmtA->fetch();
+        $real_aluno_id = $aprendiz ? $aprendiz['id'] : 0;
+
+        $stmtC = $pdo->prepare("SELECT id FROM contratos WHERE aprendiz_id = ? AND empresa_id = ? AND status = 'ativo'");
+        $stmtC->execute([$real_aluno_id, $fatura['empresa_id']]);
+        if (!$stmtC->fetch()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Acesso negado à fatura.']);
+            exit;
+        }
+    } elseif ($nivel === 'empresa') {
+        if ($fatura['empresa_id'] != ($_SESSION['empresa_id'] ?? 0)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Acesso negado à fatura.']);
+            exit;
+        }
+    } elseif ($nivel !== 'admin') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Perfil sem acesso a pagamentos.']);
+        exit;
+    }
+
     if ($fatura['status'] === 'pago') {
         throw new Exception('Esta fatura já está paga.');
     }
@@ -63,14 +105,17 @@ try {
         throw new Exception('Valor da fatura inválido.');
     }
 
-    $preferenceData = [
-        'items' => [[
-            'title'       => $titulo,
-            'description' => 'Mensalidade Sophie Link - ' . ($fatura['empresa_nome'] ?: ''),
-            'quantity'    => 1,
-            'currency_id' => 'BRL',
-            'unit_price'  => $valor
-        ]],
+    $client = new PreferenceClient();
+    $preference = $client->create([
+        'items' => [
+            [
+                'title'       => $titulo,
+                'description' => 'Mensalidade Sophie Link - ' . ($fatura['empresa_nome'] ?: ''),
+                'quantity'    => 1,
+                'currency_id' => 'BRL',
+                'unit_price'  => $valor
+            ]
+        ],
         'payer' => [
             'name'  => $payerName,
             'email' => $payerEmail
@@ -87,38 +132,12 @@ try {
         // 'auto_return' removido para evitar erro de validação estrita do Mercado Pago em localhost
         'external_reference' => (string)$fatura['id'],
         'statement_descriptor' => 'Sophie Link'
-    ];
-
-    // Chamada à API do Mercado Pago
-    $ch = curl_init('https://api.mercadopago.com/checkout/preferences');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($preferenceData),
-        CURLOPT_HTTPHEADER     => [
-            'Authorization: Bearer ' . $mpAccessToken,
-            'Content-Type: application/json',
-            'X-Idempotency-Key: fatura-' . $fatura_id . '-' . time()
-        ],
-        CURLOPT_TIMEOUT        => 15,
-        CURLOPT_SSL_VERIFYPEER => true,
     ]);
 
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
-    curl_close($ch);
+    // Em teste/sandbox usa sandbox_init_point; em produção usa init_point
+    $link = $preference->sandbox_init_point ?? $preference->init_point;
 
-    if ($curlError) {
-        throw new Exception('Erro de conexão com Mercado Pago: ' . $curlError);
-    }
-
-    $mpResult = json_decode($response, true);
-
-    if ($httpCode >= 200 && $httpCode < 300 && (isset($mpResult['init_point']) || isset($mpResult['sandbox_init_point']))) {
-        // Em teste/sandbox usa sandbox_init_point; em produção usa init_point
-        $link = $mpResult['sandbox_init_point'] ?? $mpResult['init_point'];
-
+    if ($link) {
         // Salvar link real na tabela (limpar cache antigo)
         $upd = $pdo->prepare("UPDATE financeiro SET payment_link = ? WHERE id = ?");
         $upd->execute([$link, $fatura['id']]);
@@ -128,10 +147,9 @@ try {
             'init_point' => $link
         ]);
     } else {
-        // Mostrar o erro completo do MP para diagnóstico
-        $mpMessage = $mpResult['message'] ?? $mpResult['error'] ?? json_encode($mpResult);
-        throw new Exception('Mercado Pago retornou erro [' . $httpCode . ']: ' . $mpMessage);
+        throw new Exception('Falha ao gerar link de pagamento no Mercado Pago.');
     }
+
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
