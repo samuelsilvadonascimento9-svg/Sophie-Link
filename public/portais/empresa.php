@@ -326,29 +326,41 @@ function urlFin(string $status = '', string $mes = ''): string {
      SIDEBAR
 ═════════════════════════════════════════════════════════════════ -->
 <aside class="sidebar">
-    <div class="sb-logo"><span>SL</span></div>
+    <div class="sb-brand" style="justify-content: center; overflow: hidden; padding: 20px 0;">
+        <img src="../assets/images/logoNome.png" alt="Sophie Link Logo" style="width: 100px; height: auto; transform: scale(1.4);">
+    </div>
 
+    <div class="sb-user">
+        <div class="sb-avatar"><?= strtoupper(substr($nomeShort, 0, 1)) ?></div>
+        <div>
+            <div class="sb-uname"><?= htmlspecialchars($nomeEmpresa) ?></div>
+            <div class="sb-urole">Empresa Parceira</div>
+            <div class="sb-ra">ID: <?= str_pad($empresa_id, 6, '0', STR_PAD_LEFT) ?></div>
+        </div>
+    </div>
+
+    <div class="sb-sec">Menu</div>
     <nav class="sb-nav">
         <div class="nav-link" id="nav-inicio"     data-sec="inicio"     onclick="showSec('inicio',this)">
-            <i data-lucide="grid"></i><span>Dashboard</span>
+            <i data-lucide="layout-dashboard"></i> Início
         </div>
         <div class="nav-link" id="nav-aprendizes" data-sec="aprendizes" onclick="showSec('aprendizes',this)">
-            <i data-lucide="users"></i><span>Aprendizes</span>
+            <i data-lucide="users"></i> Aprendizes
         </div>
         <div class="nav-link" id="nav-frequencia" data-sec="frequencia" onclick="showSec('frequencia',this)">
-            <i data-lucide="calendar-check"></i><span>Frequência</span>
+            <i data-lucide="calendar-check"></i> Frequência
         </div>
         <div class="nav-link" id="nav-financeiro" data-sec="financeiro" onclick="showSec('financeiro',this)">
-            <i data-lucide="file-text"></i><span>Financeiro</span>
+            <i data-lucide="credit-card"></i> Financeiro
             <?php if ($totalAtrasado > 0): ?>
-            <span class="nav-badge">!</span>
+            <span class="nav-badge" style="position: static; margin-left: auto;">!</span>
             <?php endif; ?>
         </div>
     </nav>
 
-    <div class="sb-bottom">
-        <a href="../auth/logout.php" class="nav-link nav-link-logout">
-            <i data-lucide="log-out"></i><span>Sair</span>
+    <div class="sb-footer">
+        <a href="../auth/logout.php">
+            <i data-lucide="log-out"></i> Sair
         </a>
     </div>
 </aside>

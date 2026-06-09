@@ -124,7 +124,12 @@ function switchOportunidadesTab(tab, el) {
 
 // ==================== FILTRO DE OPORTUNIDADES ====================
 
-function filtrarOportunidades(tipo) {
+function filtrarOportunidades(tipo, btn = null) {
+    if (btn) {
+        document.querySelectorAll('.op-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
     const vagas = document.querySelectorAll('.vaga-card');
     vagas.forEach(vaga => {
         const inscrito = vaga.getAttribute('data-inscrito') === 'true';

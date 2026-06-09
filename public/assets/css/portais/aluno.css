@@ -604,3 +604,27 @@ body.dark-mode .nav-link.active { color: #0EA5E9 !important; background: rgba(14
     justify-content: flex-end;
     gap: 12px;
 }
+
+/* Botões de Filtro de Vagas */
+.op-filter-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #64748B;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.op-filter-btn:hover {
+    background: #F1F5F9;
+    color: #1E293B;
+}
+
+.op-filter-btn.active {
+    background: #1E293B; /* Cor bem escura conforme solicitado */
+    color: #ffffff;
+    border-color: #1E293B;
+}

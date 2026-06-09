@@ -163,9 +163,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $tipo = $_POST['tipo_solicitacao'] ?? '';
     $obs = $_POST['observacoes'] ?? '';
     if ($tipo) {
-        $protocolo = date('YmdHi') . rand(10,99);
+        $protocolo = date('YmdHi') . rand(10, 99);
         $arquivo_anexo = null;
-        
+
         if (isset($_FILES['arquivo_anexo']) && $_FILES['arquivo_anexo']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = '../uploads/requerimentos/';
             if (!is_dir($uploadDir)) {
@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         $stmtReq = $pdo->prepare("INSERT INTO requerimentos (aprendiz_id, tipo, observacoes, protocolo, arquivo_anexo) VALUES (?, ?, ?, ?, ?)");
         $stmtReq->execute([$aluno_id, $tipo, $obs, $protocolo, $arquivo_anexo]);
-        
+
         header("Location: portal_aluno.php?req=sucesso#sec-secretaria");
         exit;
     }
@@ -222,12 +222,12 @@ $vagasDb = $stmtVagas->fetchAll(PDO::FETCH_ASSOC);
 // ================= LÓGICA DE MATCHMAKING (IA) =================
 foreach ($vagasDb as &$vaga) {
     $match_score = 85; // Base score genérico
-    
+
     if (!empty($vaga['disciplinas_alvo'])) {
         $alvos = array_filter(array_map('trim', explode(',', $vaga['disciplinas_alvo'])));
         $alvos_encontrados = 0;
         $alvos_aprovados = 0;
-        
+
         foreach ($alvos as $disc_id) {
             if (isset($boletim[$disc_id])) {
                 $alvos_encontrados++;
@@ -237,7 +237,7 @@ foreach ($vagasDb as &$vaga) {
                 }
             }
         }
-        
+
         if ($alvos_encontrados > 0) {
             $match_score = 50 + (50 * ($alvos_aprovados / $alvos_encontrados));
         } else {
@@ -245,13 +245,13 @@ foreach ($vagasDb as &$vaga) {
             $match_score = 35;
         }
     }
-    
+
     $vaga['match_score'] = round($match_score);
 }
 unset($vaga);
 
 // Ordenar as vagas por Match Score (Maior compatibilidade primeiro)
-usort($vagasDb, function($a, $b) {
+usort($vagasDb, function ($a, $b) {
     return $b['match_score'] <=> $a['match_score'];
 });
 
@@ -280,7 +280,7 @@ foreach ($horariosDb as $h) {
 
 // Gerar eventos para o FullCalendar
 $events_fc = [];
-$diasMap = ['Domingo'=>0, 'Segunda'=>1, 'Terça'=>2, 'Quarta'=>3, 'Quinta'=>4, 'Sexta'=>5, 'Sábado'=>6];
+$diasMap = ['Domingo' => 0, 'Segunda' => 1, 'Terça' => 2, 'Quarta' => 3, 'Quinta' => 4, 'Sexta' => 5, 'Sábado' => 6];
 $startDate = new DateTime('2026-06-01');
 $endDate = new DateTime('2026-06-30');
 foreach ($horariosDb as $h) {
@@ -352,63 +352,79 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
         window.mediaTurmaAv = <?= $jsonMediaTurmaAv ?>;
     </script>
 
-        <style>
-            /* Modo Escuro Premium */
-            body.dark-mode {
-                --premium-bg: #0F172A;
-                --premium-surface: #1E293B;
-                --premium-border: #334155;
-                --premium-text: #F8FAFC;
-                --premium-text-muted: #94A3B8;
-                --c-bg: #0F172A;
-                --c-surface: #1E293B;
-                --c-text: #F8FAFC;
-                --c-text-muted: #94A3B8;
-                --c-border: #334155;
-            }
-            body.dark-mode .sidebar {
-                background: #1E293B;
-                border-right-color: #334155;
-            }
-            body.dark-mode .inst-card, body.dark-mode .metric-box {
-                background: #1E293B;
-                border-color: #334155;
-            }
-            body.dark-mode .inst-table th {
-                background: #0F172A;
-                color: #F8FAFC;
-                border-bottom-color: #334155;
-            }
-            body.dark-mode .inst-table td {
-                border-bottom-color: #334155;
-            }
-            body.dark-mode .vaga-card {
-                background: #1E293B !important;
-                border-color: #334155 !important;
-            }
-            body.dark-mode .page-hdr {
-                background: #1E293B;
-                border-bottom-color: #334155;
-            }
-            body.dark-mode input, body.dark-mode select {
-                background: #0F172A !important;
-                color: #F8FAFC !important;
-                border-color: #334155 !important;
-            }
-            body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
-                background: #334155;
-            }
-            .notas-tab {
-                background: none;
-                border: none;
-                padding: 10px 20px;
-                color: var(--premium-text-muted);
-                cursor: pointer;
-                font-weight: 500;
-                border-bottom: 2px solid transparent;
-            }
-            .notas-tab.active { color: #0EA5E9; border-bottom-color: #0EA5E9; }
-        </style>
+    <style>
+        /* Modo Escuro Premium */
+        body.dark-mode {
+            --premium-bg: #0F172A;
+            --premium-surface: #1E293B;
+            --premium-border: #334155;
+            --premium-text: #F8FAFC;
+            --premium-text-muted: #94A3B8;
+            --c-bg: #0F172A;
+            --c-surface: #1E293B;
+            --c-text: #F8FAFC;
+            --c-text-muted: #94A3B8;
+            --c-border: #334155;
+        }
+
+        body.dark-mode .sidebar {
+            background: #1E293B;
+            border-right-color: #334155;
+        }
+
+        body.dark-mode .inst-card,
+        body.dark-mode .metric-box {
+            background: #1E293B;
+            border-color: #334155;
+        }
+
+        body.dark-mode .inst-table th {
+            background: #0F172A;
+            color: #F8FAFC;
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .inst-table td {
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .vaga-card {
+            background: #1E293B !important;
+            border-color: #334155 !important;
+        }
+
+        body.dark-mode .page-hdr {
+            background: #1E293B;
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select {
+            background: #0F172A !important;
+            color: #F8FAFC !important;
+            border-color: #334155 !important;
+        }
+
+        body.dark-mode .nav-link:hover,
+        body.dark-mode .nav-link.active {
+            background: #334155;
+        }
+
+        .notas-tab {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            color: var(--premium-text-muted);
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+        }
+
+        .notas-tab.active {
+            color: var(--c-brand);
+            border-bottom-color: var(--c-brand);
+        }
+    </style>
 </head>
 
 <body>
@@ -658,7 +674,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     <canvas id="chartNotasAvaliacao"></canvas>
                                 </div>
                             </div>
-                            
+
                             <!-- Chart 2 -->
                             <div class="inst-card">
                                 <div class="inst-card-header borderless" style="justify-content: space-between; align-items: center; padding-bottom: 12px;">
@@ -698,7 +714,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     <p style="font-size: 0.9rem; color: #64748B; margin-bottom: 20px;">Anexe um atestado médico ou documento comprobatório para avaliação da coordenação. (PDF, JPG ou PNG - Máx 5MB)</p>
                                     <form id="formJustificativa">
                                         <input type="hidden" id="falta_id_just" name="frequencia_id" value="">
-                                        
+
                                         <div style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 30px 20px; text-align: center; margin-bottom: 20px; background: #F8FAFC; cursor: pointer; transition: all 0.2s; position: relative;" id="dropZoneJust">
                                             <div onclick="document.getElementById('arquivoJustificativa').click()" style="width: 100%; height: 100%;">
                                                 <i data-lucide="file-up" style="width: 32px; height: 32px; color: #94A3B8; margin-bottom: 10px;"></i>
@@ -710,7 +726,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                             </button>
                                         </div>
                                         <input type="file" id="arquivoJustificativa" name="arquivo" accept=".pdf,image/jpeg,image/png" style="display: none;" onchange="atualizarArquivoJust(this)">
-                                        
+
                                         <div id="msgJustificativa" style="display:none; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 16px;"></div>
 
                                         <div style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -733,7 +749,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                 document.getElementById('msgJustificativa').style.display = 'none';
                                 document.getElementById('modalJustificativa').style.display = 'flex';
                             }
-                            
+
                             function atualizarArquivoJust(input) {
                                 const fileNameDiv = document.getElementById('fileNameDisplay');
                                 const btnRemove = document.getElementById('btnRemoveFileJust');
@@ -763,7 +779,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                 const msgDiv = document.getElementById('msgJustificativa');
                                 const btn = document.getElementById('btnEnviarJust');
 
-                                if(!fileInput.files.length) {
+                                if (!fileInput.files.length) {
                                     msgDiv.style.display = 'block';
                                     msgDiv.style.background = '#FEE2E2';
                                     msgDiv.style.color = '#B91C1C';
@@ -781,13 +797,15 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                         body: formData
                                     });
                                     const result = await response.json();
-                                    
+
                                     msgDiv.style.display = 'block';
-                                    if(result.success) {
+                                    if (result.success) {
                                         msgDiv.style.background = '#D1FAE5';
                                         msgDiv.style.color = '#065F46';
                                         msgDiv.innerText = 'Justificativa enviada com sucesso! Aguarde a avaliação.';
-                                        setTimeout(() => { location.reload(); }, 1500);
+                                        setTimeout(() => {
+                                            location.reload();
+                                        }, 1500);
                                     } else {
                                         msgDiv.style.background = '#FEE2E2';
                                         msgDiv.style.color = '#B91C1C';
@@ -795,7 +813,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                         btn.disabled = false;
                                         btn.innerHTML = '<i data-lucide="upload-cloud" style="width:16px;"></i> Enviar Documento';
                                     }
-                                } catch(e) {
+                                } catch (e) {
                                     msgDiv.style.display = 'block';
                                     msgDiv.style.background = '#FEE2E2';
                                     msgDiv.style.color = '#B91C1C';
@@ -825,8 +843,15 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     <button class="notas-tab" onclick="switchNotasTab('avaliacoes', this)" style="padding: 8px 20px; border: none; background: transparent; border-radius: 6px; font-weight: 600; font-size: 0.85rem; color: #64748B; cursor: pointer; transition: all 0.2s;">Histórico de Avaliações</button>
                                     <button class="notas-tab" onclick="switchNotasTab('faltas', this)" style="padding: 8px 20px; border: none; background: transparent; border-radius: 6px; font-weight: 600; font-size: 0.85rem; color: #64748B; cursor: pointer; transition: all 0.2s;">Registro de Faltas</button>
                                     <style>
-                                        .notas-tab.active { background: #FFFFFF !important; color: #FF6B00 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-                                        .notas-tab:hover:not(.active) { color: #1E293B !important; }
+                                        .notas-tab.active {
+                                            background: #FFFFFF !important;
+                                            color: #FF6B00 !important;
+                                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                                        }
+
+                                        .notas-tab:hover:not(.active) {
+                                            color: #1E293B !important;
+                                        }
                                     </style>
                                 </div>
                             </div>
@@ -839,7 +864,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                         <option>TODAS AS DISCIPLINAS</option>
                                     </select>
                                 </div>
-                                
+
                                 <div style="overflow-x: auto; padding-bottom: 10px;">
                                     <table style="min-width: 800px; width: 100%; border-spacing: 0 10px; border-collapse: separate;">
                                         <thead>
@@ -855,49 +880,53 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                         </thead>
                                         <tbody>
                                             <?php if (empty($boletim)): ?>
-                                                <tr><td colspan="7" style="text-align:center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #E2E8F0;">Nenhuma disciplina vinculada à sua turma.</td></tr>
+                                                <tr>
+                                                    <td colspan="7" style="text-align:center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #E2E8F0;">Nenhuma disciplina vinculada à sua turma.</td>
+                                                </tr>
                                             <?php else: ?>
                                                 <?php foreach ($boletim as $discId => $d):
                                                     $media = $d['qtd_notas'] > 0 ? $d['soma_notas'] / $d['qtd_notas'] : null;
                                                     $mediaStr = $media !== null ? number_format($media, 2, '.', '') : '—';
                                                     $status = $media !== null ? ($media >= 7 ? 'Aprovado' : 'Cursando') : 'Cursando';
                                                     $turmaStr = htmlspecialchars($aluno['turma_nome'] ?? 'TGT03NA');
-                                                    
+
                                                     // Estilização dinâmica
                                                     $statusBg = $status === 'Aprovado' ? '#F0FDF4' : '#EFF6FF';
                                                     $statusColor = $status === 'Aprovado' ? '#16A34A' : '#2563EB';
                                                     $statusBorder = $status === 'Aprovado' ? '#BBF7D0' : '#BFDBFE';
-                                                    
+
                                                     $valColor = $media !== null ? '#334155' : '#94A3B8';
                                                     $finalColor = $media !== null ? '#1E293B' : '#94A3B8';
                                                 ?>
-                                                <tr style="background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #E2E8F0; border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 12px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)';">
-                                                    <td style="padding: 16px; font-weight: 600; color: #64748B; font-size: 0.85rem; border-radius: 12px 0 0 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0;"><?= $turmaStr ?></td>
-                                                    <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
-                                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                                            <div style="width: 32px; height: 32px; border-radius: 8px; background: #EFF6FF; color: #3B82F6; display: flex; align-items: center; justify-content: center;"><i data-lucide="book" style="width: 16px; height: 16px;"></i></div>
-                                                            <span style="font-weight: 700; color: #1E293B; font-size: 0.95rem;"><?= htmlspecialchars($d['nome']) ?></span>
-                                                        </div>
-                                                    </td>
-                                                    <td style="padding: 16px; text-align: center; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
-                                                        <span style="background: <?= $statusBg ?>; color: <?= $statusColor ?>; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; border: 1px solid <?= $statusBorder ?>;"><?= $status ?></span>
-                                                    </td>
-                                                    <td style="padding: 16px; text-align: center; font-weight: 700; color: <?= $valColor ?>; font-size: 0.95rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;"><?= $mediaStr ?></td>
-                                                    <td style="padding: 16px; text-align: center; font-weight: 700; color: #94A3B8; font-size: 0.95rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">—</td>
-                                                    <td style="padding: 16px; text-align: center; font-weight: 800; color: <?= $finalColor ?>; font-size: 1rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;"><?= $mediaStr ?></td>
-                                                    <td style="padding: 16px; text-align: right; border-radius: 0 12px 12px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0;">
-                                                        <button onclick="abrirModalNotas('<?= $discId ?>', '<?= addslashes($d['nome']) ?>', <?= $media !== null ? $media : 'null' ?>)" style="background: transparent; border: 1px solid #0EA5E9; color: #0EA5E9; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0EA5E9'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='#0EA5E9';">Ver Notas</button>
-                                                    </td>
-                                                </tr>
+                                                    <tr style="background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #E2E8F0; border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 12px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)';">
+                                                        <td style="padding: 16px; font-weight: 600; color: #64748B; font-size: 0.85rem; border-radius: 12px 0 0 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0;"><?= $turmaStr ?></td>
+                                                        <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                                <div style="width: 32px; height: 32px; border-radius: 8px; background: #EFF6FF; color: #3B82F6; display: flex; align-items: center; justify-content: center;"><i data-lucide="book" style="width: 16px; height: 16px;"></i></div>
+                                                                <span style="font-weight: 700; color: #1E293B; font-size: 0.95rem;"><?= htmlspecialchars($d['nome']) ?></span>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 16px; text-align: center; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                                                            <span style="background: <?= $statusBg ?>; color: <?= $statusColor ?>; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; border: 1px solid <?= $statusBorder ?>;"><?= $status ?></span>
+                                                        </td>
+                                                        <td style="padding: 16px; text-align: center; font-weight: 700; color: <?= $valColor ?>; font-size: 0.95rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;"><?= $mediaStr ?></td>
+                                                        <td style="padding: 16px; text-align: center; font-weight: 700; color: #94A3B8; font-size: 0.95rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">—</td>
+                                                        <td style="padding: 16px; text-align: center; font-weight: 800; color: <?= $finalColor ?>; font-size: 1rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;"><?= $mediaStr ?></td>
+                                                        <td style="padding: 16px; text-align: right; border-radius: 0 12px 12px 0; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0;">
+                                                            <button onclick="abrirModalNotas('<?= $discId ?>', '<?= addslashes($d['nome']) ?>', <?= $media !== null ? $media : 'null' ?>)" style="background: transparent; border: 1px solid #0EA5E9; color: #0EA5E9; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0EA5E9'; this.style.color='white';" onmouseout="this.style.background='transparent'; this.style.color='#0EA5E9';">Ver Notas</button>
+                                                        </td>
+                                                    </tr>
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            
+
                             <div id="tab-notas-avaliacoes" class="notas-tab-content" style="display: none; margin-top: 1.5rem;">
-                                <div class="inst-card"><div style="padding: 2rem; text-align: center; color: #64748B;">Nenhuma avaliação avulsa selecionada. Use a aba "Visão por Etapas".</div></div>
+                                <div class="inst-card">
+                                    <div style="padding: 2rem; text-align: center; color: #64748B;">Nenhuma avaliação avulsa selecionada. Use a aba "Visão por Etapas".</div>
+                                </div>
                             </div>
                             <!-- Tab 3: Registro de Faltas -->
                             <div id="tab-notas-faltas" class="notas-tab-content" style="display: none;">
@@ -912,39 +941,48 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php 
-                                            $faltasAluno = array_filter($freqDb, function($f) { return in_array($f['status'], ['falta', 'justificada']); });
+                                            <?php
+                                            $faltasAluno = array_filter($freqDb, function ($f) {
+                                                return in_array($f['status'], ['falta', 'justificada']);
+                                            });
                                             if (empty($faltasAluno)): ?>
-                                                <tr><td colspan="4" style="text-align:center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #E2E8F0; color: #64748B;">Você não possui faltas registradas neste período.</td></tr>
-                                            <?php else: ?>
-                                                <?php foreach ($faltasAluno as $f): 
-                                                    $discNome = 'Indefinida';
-                                                    foreach($disciplinasCurso as $dc) { if($dc['id'] == $f['disciplina_id']) { $discNome = $dc['nome']; break; } }
-                                                ?>
-                                                <tr style="background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
-                                                    <td style="padding: 16px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0;">
-                                                        <span style="font-weight: 600; color: #1E293B; font-size: 0.95rem;"><?= date('d/m/Y', strtotime($f['data_registro'])) ?></span>
-                                                    </td>
-                                                    <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
-                                                        <span style="color: #64748B; font-size: 0.9rem; font-weight: 500;"><?= htmlspecialchars($discNome) ?></span>
-                                                    </td>
-                                                    <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; text-align: center;">
-                                                        <?php if($f['status'] === 'justificada'): ?>
-                                                            <span style="background: #D1FAE5; color: #065F46; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">JUSTIFICADA</span>
-                                                        <?php elseif(($f['status_justificativa'] ?? 'nenhuma') === 'pendente'): ?>
-                                                            <span style="background: #FEF3C7; color: #B45309; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">EM ANÁLISE</span>
-                                                        <?php elseif(($f['status_justificativa'] ?? 'nenhuma') === 'rejeitada'): ?>
-                                                            <span style="background: #FEE2E2; color: #B91C1C; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">REJEITADA</span>
-                                                        <?php else: ?>
-                                                            <span style="background: #FEF2F2; color: #DC2626; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">FALTA</span>
-                                                        <?php endif; ?>
-                                                    </td>
-                                                    <td style="padding: 16px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; text-align: right;">
-                                                        <?php if($f['status'] === 'falta' && ($f['status_justificativa'] ?? 'nenhuma') !== 'pendente'): ?>
-                                                            <button class="inst-btn-primary" style="font-size: 0.75rem; padding: 6px 12px;" onclick="abrirModalJustificativa(<?= $f['id'] ?>)"><i data-lucide="upload-cloud" style="width:14px; margin-right:4px;"></i> Justificar</button>
-                                                        <?php endif; ?>
-                                                    </td>
+                                                <tr>
+                                                    <td colspan="4" style="text-align:center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #E2E8F0; color: #64748B;">Você não possui faltas registradas neste período.</td>
                                                 </tr>
+                                            <?php else: ?>
+                                                <?php foreach ($faltasAluno as $f):
+                                                    $discNome = 'Indefinida';
+                                                    foreach ($disciplinasCurso as $dc) {
+                                                        if ($dc['id'] == $f['disciplina_id']) {
+                                                            $discNome = $dc['nome'];
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                    <tr style="background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                                                        <td style="padding: 16px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0;">
+                                                            <span style="font-weight: 600; color: #1E293B; font-size: 0.95rem;"><?= date('d/m/Y', strtotime($f['data_registro'])) ?></span>
+                                                        </td>
+                                                        <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                                                            <span style="color: #64748B; font-size: 0.9rem; font-weight: 500;"><?= htmlspecialchars($discNome) ?></span>
+                                                        </td>
+                                                        <td style="padding: 16px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; text-align: center;">
+                                                            <?php if ($f['status'] === 'justificada'): ?>
+                                                                <span style="background: #D1FAE5; color: #065F46; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">JUSTIFICADA</span>
+                                                            <?php elseif (($f['status_justificativa'] ?? 'nenhuma') === 'pendente'): ?>
+                                                                <span style="background: #FEF3C7; color: #B45309; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">EM ANÁLISE</span>
+                                                            <?php elseif (($f['status_justificativa'] ?? 'nenhuma') === 'rejeitada'): ?>
+                                                                <span style="background: #FEE2E2; color: #B91C1C; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">REJEITADA</span>
+                                                            <?php else: ?>
+                                                                <span style="background: #FEF2F2; color: #DC2626; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">FALTA</span>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td style="padding: 16px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; text-align: right;">
+                                                            <?php if ($f['status'] === 'falta' && ($f['status_justificativa'] ?? 'nenhuma') !== 'pendente'): ?>
+                                                                <button class="inst-btn-primary" style="font-size: 0.75rem; padding: 6px 12px;" onclick="abrirModalJustificativa(<?= $f['id'] ?>)"><i data-lucide="upload-cloud" style="width:14px; margin-right:4px;"></i> Justificar</button>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                    </tr>
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
                                         </tbody>
@@ -1009,12 +1047,12 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                 }
 
                                 .finance-tab:hover {
-                                    color: #0ea5e9;
+                                    color: var(--c-brand);
                                 }
 
                                 .finance-tab.active {
-                                    color: #0ea5e9;
-                                    border-bottom-color: #0ea5e9;
+                                    color: var(--c-brand);
+                                    border-bottom-color: var(--c-brand);
                                     font-weight: 600;
                                 }
                             </style>
@@ -1064,43 +1102,209 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                         </div>
                     </div><!-- /sec-financeiro -->
 
-                    
+
                     <!-- ==================== MEU PERFIL ==================== -->
                     <div id="sec-perfil" class="sec">
                         <style>
                             /* New premium styles for profile UNIAENE inspiration */
-                            .perfil-page-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-                            .perfil-page-title { font-size: 1.6rem; font-weight: 300; color: #1E293B; letter-spacing: 0.5px; text-transform: uppercase; }
-                            .perfil-badge-status { background: #F1F5F9; color: #64748B; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-                            
-                            .perfil-banner { display: flex; align-items: stretch; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; margin-bottom: 25px; overflow: hidden; }
-                            .perfil-avatar-col { width: 180px; background: #FFFFFF; border-right: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; padding: 20px; }
-                            .perfil-avatar-box { width: 120px; height: 120px; background: #1E293B; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 3rem; font-weight: bold; }
-                            .perfil-info-col { flex: 1; padding: 25px 30px; display: flex; flex-direction: column; justify-content: center; gap: 15px; }
-                            .perfil-info-item { display: flex; flex-direction: column; gap: 2px; }
-                            .perfil-info-lbl { font-size: 0.75rem; color: #0EA5E9; font-weight: 600; }
-                            .perfil-info-val { font-size: 0.9rem; color: #64748B; font-weight: 500; }
-                            
-                            .perfil-tabs { display: flex; gap: 30px; border-bottom: 1px solid #E2E8F0; margin-bottom: 30px; }
-                            .perfil-tab { padding: 10px 0; font-size: 0.9rem; font-weight: 600; color: #94A3B8; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
-                            .perfil-tab:hover { color: #64748B; }
-                            .perfil-tab.active { color: #0EA5E9; border-bottom-color: #0EA5E9; }
-                            
-                            .perfil-section-block { margin-bottom: 40px; }
-                            .perfil-section-title { font-size: 1rem; font-weight: 700; color: #0EA5E9; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid #E2E8F0; }
-                            
-                            .perfil-readonly-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 15px; }
-                            .perfil-readonly-item { display: flex; flex-direction: column; gap: 6px; }
-                            .perfil-readonly-lbl { font-size: 0.75rem; color: #94A3B8; font-weight: 600; }
-                            .perfil-readonly-val-box { display: flex; align-items: center; border: 1px solid #E2E8F0; border-radius: 4px; padding: 10px 14px; background: #FFFFFF; }
-                            .perfil-readonly-val { flex: 1; font-size: 0.9rem; color: #475569; font-weight: 500; }
-                            .perfil-readonly-icon { width: 28px; height: 28px; background: #0EA5E9; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: background 0.2s; }
-                            .perfil-readonly-icon:hover { background: #0284C7; }
-                            
-                            .perfil-empty-msg { display: flex; align-items: center; gap: 10px; background: #F0F9FF; border: 1px solid #BAE6FD; padding: 12px 16px; border-radius: 6px; color: #0369A1; font-size: 0.85rem; font-weight: 500; }
-                            
-                            .perfil-tab-content { display: none; animation: fadeIn 0.3s ease; }
-                            .perfil-tab-content.active { display: block; }
+                            .perfil-page-hdr {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 20px;
+                            }
+
+                            .perfil-page-title {
+                                font-size: 1.6rem;
+                                font-weight: 300;
+                                color: #1E293B;
+                                letter-spacing: 0.5px;
+                                text-transform: uppercase;
+                            }
+
+                            .perfil-badge-status {
+                                background: #F1F5F9;
+                                color: #64748B;
+                                padding: 6px 16px;
+                                border-radius: 20px;
+                                font-weight: 600;
+                                font-size: 0.8rem;
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                            }
+
+                            .perfil-banner {
+                                display: flex;
+                                align-items: stretch;
+                                background: #F8FAFC;
+                                border: 1px solid #E2E8F0;
+                                border-radius: 8px;
+                                margin-bottom: 25px;
+                                overflow: hidden;
+                            }
+
+                            .perfil-avatar-col {
+                                width: 180px;
+                                background: #FFFFFF;
+                                border-right: 1px solid #E2E8F0;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                padding: 20px;
+                            }
+
+                            .perfil-avatar-box {
+                                width: 120px;
+                                height: 120px;
+                                background: #1E293B;
+                                border-radius: 12px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: #FFF;
+                                font-size: 3rem;
+                                font-weight: bold;
+                            }
+
+                            .perfil-info-col {
+                                flex: 1;
+                                padding: 25px 30px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                                gap: 15px;
+                            }
+
+                            .perfil-info-item {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 2px;
+                            }
+
+                            .perfil-info-lbl {
+                                font-size: 0.75rem;
+                                color: #0EA5E9;
+                                font-weight: 600;
+                            }
+
+                            .perfil-info-val {
+                                font-size: 0.9rem;
+                                color: #64748B;
+                                font-weight: 500;
+                            }
+
+                            .perfil-tabs {
+                                display: flex;
+                                gap: 30px;
+                                border-bottom: 1px solid #E2E8F0;
+                                margin-bottom: 30px;
+                            }
+
+                            .perfil-tab {
+                                padding: 10px 0;
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                                color: #94A3B8;
+                                cursor: pointer;
+                                border-bottom: 2px solid transparent;
+                                transition: all 0.2s;
+                            }
+
+                            .perfil-tab:hover {
+                                color: #64748B;
+                            }
+
+                            .perfil-tab.active {
+                                color: #0EA5E9;
+                                border-bottom-color: #0EA5E9;
+                            }
+
+                            .perfil-section-block {
+                                margin-bottom: 40px;
+                            }
+
+                            .perfil-section-title {
+                                font-size: 1rem;
+                                font-weight: 700;
+                                color: #0EA5E9;
+                                margin-bottom: 20px;
+                                padding-bottom: 8px;
+                                border-bottom: 1px solid #E2E8F0;
+                            }
+
+                            .perfil-readonly-row {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                                gap: 30px;
+                                margin-bottom: 15px;
+                            }
+
+                            .perfil-readonly-item {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 6px;
+                            }
+
+                            .perfil-readonly-lbl {
+                                font-size: 0.75rem;
+                                color: #94A3B8;
+                                font-weight: 600;
+                            }
+
+                            .perfil-readonly-val-box {
+                                display: flex;
+                                align-items: center;
+                                border: 1px solid #E2E8F0;
+                                border-radius: 4px;
+                                padding: 10px 14px;
+                                background: #FFFFFF;
+                            }
+
+                            .perfil-readonly-val {
+                                flex: 1;
+                                font-size: 0.9rem;
+                                color: #475569;
+                                font-weight: 500;
+                            }
+
+                            .perfil-readonly-icon {
+                                width: 28px;
+                                height: 28px;
+                                background: #0EA5E9;
+                                border-radius: 4px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                                cursor: pointer;
+                                transition: background 0.2s;
+                            }
+
+                            .perfil-readonly-icon:hover {
+                                background: #0284C7;
+                            }
+
+                            .perfil-empty-msg {
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                background: #F0F9FF;
+                                border: 1px solid #BAE6FD;
+                                padding: 12px 16px;
+                                border-radius: 6px;
+                                color: #0369A1;
+                                font-size: 0.85rem;
+                                font-weight: 500;
+                            }
+
+                            .perfil-tab-content {
+                                display: none;
+                                animation: fadeIn 0.3s ease;
+                            }
+
+                            .perfil-tab-content.active {
+                                display: block;
+                            }
                         </style>
 
                         <div class="perfil-page-hdr">
@@ -1262,47 +1466,65 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                 <div class="perfil-readonly-row">
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">CEP</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">00000-000</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">00000-000</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Logradouro</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Avenida Paulista</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Avenida Paulista</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="perfil-readonly-row">
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Número</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">1000</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">1000</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Complemento</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Andar 5, Sala 501</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Andar 5, Sala 501</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="perfil-readonly-row">
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Bairro</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Bela Vista</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">Bela Vista</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Cidade</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">São Paulo</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">São Paulo</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="perfil-readonly-row">
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Estado</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">SP</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">SP</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Telefone da empresa</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">(11) 4002-8922</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">(11) 4002-8922</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="perfil-readonly-row" style="grid-template-columns: 1fr; max-width: 50%;">
                                     <div class="perfil-readonly-item">
                                         <div class="perfil-readonly-lbl">Horário de Trabalho</div>
-                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">08:00 às 14:00</span><div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div></div>
+                                        <div class="perfil-readonly-val-box"><span class="perfil-readonly-val">08:00 às 14:00</span>
+                                            <div class="perfil-readonly-icon"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1310,7 +1532,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                 <button class="inst-btn-primary" style="display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="save" style="width: 16px; height: 16px;"></i> Atualizar informações</button>
                             </div>
                         </div>
-                        
+
                         <div id="tab-content-responsaveis" class="perfil-tab-content">
                             <div class="perfil-banner" style="margin-top: 15px; margin-bottom: 25px; background: #FFFFFF; align-items: center; padding: 0;">
                                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border-right: 1px solid #E2E8F0; width: 220px;">
@@ -1357,7 +1579,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div style="margin-bottom: 20px;">
                                 <button class="inst-btn-primary" style="display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="save" style="width: 16px; height: 16px;"></i> Atualizar informações</button>
                             </div>
@@ -1367,10 +1589,12 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
                                 <span style="font-size: 1.2rem; color: #1E293B; font-weight: 300;">Documentos:</span>
                                 <div class="perfil-input-wrapper" style="width: 150px; background: #FFFFFF; border-radius: 4px;">
-                                    <select style="font-weight: 600;"><option>2026-1S</option></select>
+                                    <select style="font-weight: 600;">
+                                        <option>2026-1S</option>
+                                    </select>
                                 </div>
                             </div>
-                            
+
                             <div style="display: flex; gap: 20px; margin-bottom: 20px; font-size: 0.8rem; font-weight: 600;">
                                 <div style="display: flex; align-items: center; gap: 6px; color: #F59E0B;"><i data-lucide="alert-circle" style="width: 14px;"></i> Não entregue</div>
                                 <div style="display: flex; align-items: center; gap: 6px; color: #3B82F6;"><i data-lucide="clock" style="width: 14px;"></i> Entregue em validação</div>
@@ -1451,14 +1675,14 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                         <script>
                             function switchPerfilMainTab(tabId, element) {
                                 document.querySelectorAll('.perfil-tab').forEach(el => el.classList.remove('active'));
-                                if(element) element.classList.add('active');
+                                if (element) element.classList.add('active');
                                 document.querySelectorAll('.perfil-tab-content').forEach(el => el.classList.remove('active'));
                                 const target = document.getElementById('tab-content-' + tabId);
-                                if(target) target.classList.add('active');
+                                if (target) target.classList.add('active');
                             }
                         </script>
                     </div><!-- /sec-perfil -->
-                    
+
                     <!-- ==================== HORARIOS ==================== -->
                     <div id="sec-horarios" class="sec">
                         <div class="page-hdr">
@@ -1494,24 +1718,24 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                         </tr>
                                     </thead>
                                     <tbody style="color: #475569;">
-                                        <?php 
+                                        <?php
                                         $dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-                                        foreach (['Manhã', 'Tarde', 'Noite'] as $t_nome): 
+                                        foreach (['Manhã', 'Tarde', 'Noite'] as $t_nome):
                                         ?>
-                                        <tr>
-                                            <td style="padding: 8px; border: 1px solid #E2E8F0; background: #cbd5e1; text-align: center; color: #fff; font-weight: bold;"><?= str_replace(' - ', '<br>', $turnos_labels[$t_nome]) ?></td>
-                                            <?php foreach ($dias as $d): ?>
-                                                <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;">
-                                                    <?php 
-                                                    if (isset($quadro[$t_nome][$d])) {
-                                                        foreach ($quadro[$t_nome][$d] as $aula) {
-                                                            echo '<i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>' . htmlspecialchars($aula['disciplina_nome']) . '<br><span style="font-size:0.65rem;color:#94A3B8;">' . date('H:i', strtotime($aula['hora_inicio'])) . ' às ' . date('H:i', strtotime($aula['hora_fim'])) . '</span><br>';
+                                            <tr>
+                                                <td style="padding: 8px; border: 1px solid #E2E8F0; background: #cbd5e1; text-align: center; color: #fff; font-weight: bold;"><?= str_replace(' - ', '<br>', $turnos_labels[$t_nome]) ?></td>
+                                                <?php foreach ($dias as $d): ?>
+                                                    <td style="border: 1px solid #E2E8F0; padding: 4px; vertical-align: top;">
+                                                        <?php
+                                                        if (isset($quadro[$t_nome][$d])) {
+                                                            foreach ($quadro[$t_nome][$d] as $aula) {
+                                                                echo '<i data-lucide="star" style="width:10px; height:10px; display:inline-block; margin-right:4px;"></i>' . htmlspecialchars($aula['disciplina_nome']) . '<br><span style="font-size:0.65rem;color:#94A3B8;">' . date('H:i', strtotime($aula['hora_inicio'])) . ' às ' . date('H:i', strtotime($aula['hora_fim'])) . '</span><br>';
+                                                            }
                                                         }
-                                                    }
-                                                    ?>
-                                                </td>
-                                            <?php endforeach; ?>
-                                        </tr>
+                                                        ?>
+                                                    </td>
+                                                <?php endforeach; ?>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -1529,20 +1753,21 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                             <div style="margin-bottom: 2rem;">
                                 <div style="font-weight: bold; color: #0ea5e9; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Disciplinas em Curso</div>
                                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
-                                    <?php 
+                                    <?php
                                     $colors = ['#0ea5e9', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899'];
                                     $ci = 0;
-                                    foreach ($horariosDb as $h): 
-                                        $color = $colors[$ci % count($colors)]; $ci++;
+                                    foreach ($horariosDb as $h):
+                                        $color = $colors[$ci % count($colors)];
+                                        $ci++;
                                     ?>
-                                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid <?= $color ?>;">
-                                        <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;"><?= htmlspecialchars($h['disciplina_nome']) ?></div>
-                                        <div style="font-size: 0.8rem; color: #64748B; display: flex; align-items: center; gap: 4px;">
-                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> <?= $h['dia_semana'] ?>: <?= date('H:i', strtotime($h['hora_inicio'])) ?> às <?= date('H:i', strtotime($h['hora_fim'])) ?>
+                                        <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-left: 4px solid <?= $color ?>;">
+                                            <div style="font-weight: 600; color: #1E293B; margin-bottom: 8px; font-size: 0.9rem;"><?= htmlspecialchars($h['disciplina_nome']) ?></div>
+                                            <div style="font-size: 0.8rem; color: #64748B; display: flex; align-items: center; gap: 4px;">
+                                                <i data-lucide="clock" style="width: 14px; height: 14px;"></i> <?= $h['dia_semana'] ?>: <?= date('H:i', strtotime($h['hora_inicio'])) ?> às <?= date('H:i', strtotime($h['hora_fim'])) ?>
+                                            </div>
                                         </div>
-                                    </div>
                                     <?php endforeach; ?>
-                                    <?php if(empty($horariosDb)) echo "<div style='color:#94A3B8; font-size: 0.9rem;'>Nenhum horário cadastrado para a sua turma.</div>"; ?>
+                                    <?php if (empty($horariosDb)) echo "<div style='color:#94A3B8; font-size: 0.9rem;'>Nenhum horário cadastrado para a sua turma.</div>"; ?>
                                 </div>
                             </div>
 
@@ -1611,7 +1836,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                         </div>
                     </div><!-- /sec-historico -->
 
-                                        <!-- ==================== SECRETARIA ==================== -->
+                    <!-- ==================== SECRETARIA ==================== -->
                     <div id="sec-secretaria" class="sec">
                         <div class="page-hdr">
                             <div>
@@ -1627,60 +1852,67 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
 
                         <!-- ABA DISPONÍVEIS -->
                         <div id="tab-sec-disponiveis">
-                            <?php if(isset($_GET['req']) && $_GET['req'] == 'sucesso'): ?>
+                            <?php if (isset($_GET['req']) && $_GET['req'] == 'sucesso'): ?>
                                 <div style="background: #D1FAE5; border: 1px solid #34D399; color: #065F46; padding: 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
                                     <i data-lucide="check-circle" style="width: 20px;"></i> Sua solicitação foi enviada com sucesso! Acompanhe em "Meus Pedidos".
                                 </div>
                                 <script>
-                                    setTimeout(() => { switchSecretariaTab('solicitados', document.querySelectorAll('.sec-tab')[1]); }, 2500);
+                                    setTimeout(() => {
+                                        switchSecretariaTab('solicitados', document.querySelectorAll('.sec-tab')[1]);
+                                    }, 2500);
                                 </script>
                             <?php endif; ?>
 
                             <style>
-                            .service-grid {
-                                display: grid;
-                                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                                gap: 20px;
-                                margin-bottom: 30px;
-                            }
-                            .service-card {
-                                background: #FFFFFF;
-                                border: 1px solid #E2E8F0;
-                                border-radius: 12px;
-                                padding: 24px;
-                                display: flex;
-                                flex-direction: column;
-                                align-items: flex-start;
-                                cursor: pointer;
-                                transition: all 0.3s ease;
-                                position: relative;
-                                overflow: hidden;
-                            }
-                            .service-card:hover {
-                                transform: translateY(-5px);
-                                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-                                border-color: #0EA5E9;
-                            }
-                            .service-icon {
-                                width: 48px;
-                                height: 48px;
-                                border-radius: 12px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                margin-bottom: 16px;
-                            }
-                            .service-title {
-                                font-size: 1.1rem;
-                                font-weight: 600;
-                                color: #1E293B;
-                                margin-bottom: 8px;
-                            }
-                            .service-desc {
-                                font-size: 0.85rem;
-                                color: #64748B;
-                                line-height: 1.5;
-                            }
+                                .service-grid {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                                    gap: 20px;
+                                    margin-bottom: 30px;
+                                }
+
+                                .service-card {
+                                    background: #FFFFFF;
+                                    border: 1px solid #E2E8F0;
+                                    border-radius: 12px;
+                                    padding: 24px;
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: flex-start;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    position: relative;
+                                    overflow: hidden;
+                                }
+
+                                .service-card:hover {
+                                    transform: translateY(-5px);
+                                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+                                    border-color: #0EA5E9;
+                                }
+
+                                .service-icon {
+                                    width: 48px;
+                                    height: 48px;
+                                    border-radius: 12px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    margin-bottom: 16px;
+                                }
+
+                                .service-title {
+                                    font-size: 1.1rem;
+                                    font-weight: 600;
+                                    color: #1E293B;
+                                    margin-bottom: 8px;
+                                }
+
+                                .service-desc {
+                                    font-size: 0.85rem;
+                                    color: #64748B;
+                                    line-height: 1.5;
+                                }
                             </style>
 
                             <div class="service-grid">
@@ -1699,6 +1931,11 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     <div class="service-title">Justificativa de Falta</div>
                                     <div class="service-desc">Envie seu atestado médico ou comprovante para justificar ausência.</div>
                                 </div>
+                                <a href="https://link-da-plataforma-aqui.com.br" target="_blank" class="service-card" style="text-decoration: none; color: inherit; display: block;">
+                                    <div class="service-icon" style="background: #FFFBEB; color: #D97706;"><i data-lucide="award"></i></div>
+                                    <div class="service-title">Gerar Certificado</div>
+                                    <div class="service-desc">Acesse a plataforma externa para emitir os certificados de conclusão.</div>
+                                </a>
                             </div>
                         </div>
 
@@ -1713,7 +1950,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     <form method="POST" action="portal_aluno.php" enctype="multipart/form-data">
                                         <input type="hidden" name="action" value="novo_requerimento">
                                         <input type="hidden" name="tipo_solicitacao" id="req_tipo_hidden">
-                                        
+
                                         <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
                                             <div style="font-size: 0.8rem; color: #64748B; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Documento Solicitado</div>
                                             <div id="req_tipo_display" style="font-size: 1.05rem; font-weight: 700; color: #0EA5E9;"></div>
@@ -1739,7 +1976,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                                 <textarea name="observacoes" style="width:100%; height:100px; border: none; outline: none; background: transparent; color: #1E293B; font-family: inherit; font-size: 0.95rem; padding: 10px;" placeholder="Detalhes para a secretaria, período específico, etc..."></textarea>
                                             </div>
                                         </div>
-                                        
+
                                         <div style="display: flex; justify-content: flex-end; gap: 10px;">
                                             <button type="button" onclick="document.getElementById('modalRequerimento').style.display='none'" style="padding: 10px 16px; border-radius: 6px; border: 1px solid #E2E8F0; background: #fff; color: #64748B; cursor: pointer; font-weight: 600;">Cancelar</button>
                                             <button type="submit" style="padding: 10px 20px; border-radius: 6px; border: none; background: #0EA5E9; color: #fff; cursor: pointer; font-weight: 600; display:flex; align-items:center; gap:8px;">
@@ -1751,41 +1988,41 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                             </div>
                         </div>
                         <script>
-                        function abrirModalRequerimento(tipo) {
-                            document.getElementById('req_tipo_hidden').value = tipo;
-                            document.getElementById('req_tipo_display').innerText = tipo;
-                            
-                            // Reset file input
-                            const input = document.getElementById('arquivoReq');
-                            input.value = '';
-                            atualizarArquivoReq(input);
-                            
-                            document.getElementById('modalRequerimento').style.display = 'flex';
-                            lucide.createIcons();
-                        }
-                        
-                        function atualizarArquivoReq(input) {
-                            const fileNameDiv = document.getElementById('reqFileName');
-                            const btnRemove = document.getElementById('btnRemoveFileReq');
-                            if (input.files && input.files[0]) {
-                                fileNameDiv.innerText = input.files[0].name;
-                                fileNameDiv.style.color = '#0EA5E9';
-                                fileNameDiv.style.fontWeight = '600';
-                                btnRemove.style.display = 'flex';
-                            } else {
-                                fileNameDiv.innerText = 'Clique para escolher um arquivo (PDF, JPG, PNG)';
-                                fileNameDiv.style.color = '#64748B';
-                                fileNameDiv.style.fontWeight = 'normal';
-                                btnRemove.style.display = 'none';
-                            }
-                        }
+                            function abrirModalRequerimento(tipo) {
+                                document.getElementById('req_tipo_hidden').value = tipo;
+                                document.getElementById('req_tipo_display').innerText = tipo;
 
-                        function removerArquivoReq(event) {
-                            event.stopPropagation();
-                            const input = document.getElementById('arquivoReq');
-                            input.value = '';
-                            atualizarArquivoReq(input);
-                        }
+                                // Reset file input
+                                const input = document.getElementById('arquivoReq');
+                                input.value = '';
+                                atualizarArquivoReq(input);
+
+                                document.getElementById('modalRequerimento').style.display = 'flex';
+                                lucide.createIcons();
+                            }
+
+                            function atualizarArquivoReq(input) {
+                                const fileNameDiv = document.getElementById('reqFileName');
+                                const btnRemove = document.getElementById('btnRemoveFileReq');
+                                if (input.files && input.files[0]) {
+                                    fileNameDiv.innerText = input.files[0].name;
+                                    fileNameDiv.style.color = '#0EA5E9';
+                                    fileNameDiv.style.fontWeight = '600';
+                                    btnRemove.style.display = 'flex';
+                                } else {
+                                    fileNameDiv.innerText = 'Clique para escolher um arquivo (PDF, JPG, PNG)';
+                                    fileNameDiv.style.color = '#64748B';
+                                    fileNameDiv.style.fontWeight = 'normal';
+                                    btnRemove.style.display = 'none';
+                                }
+                            }
+
+                            function removerArquivoReq(event) {
+                                event.stopPropagation();
+                                const input = document.getElementById('arquivoReq');
+                                input.value = '';
+                                atualizarArquivoReq(input);
+                            }
                         </script>
 
                         <!-- ABA SOLICITADOS -->
@@ -1815,19 +2052,28 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                             <?php foreach ($requerimentosDb as $req):
                                                 $statusClass = 'status-warn';
                                                 $statusText = 'Pendente';
-                                                if ($req['status'] === 'em_andamento') { $statusClass = 'status-warn'; $statusText = 'Em Andamento'; }
-                                                if ($req['status'] === 'concluido') { $statusClass = 'status-ok'; $statusText = 'Concluído'; }
-                                                if ($req['status'] === 'recusado') { $statusClass = 'status-warn'; $statusText = 'Recusado'; }
-                                                
+                                                if ($req['status'] === 'em_andamento') {
+                                                    $statusClass = 'status-warn';
+                                                    $statusText = 'Em Andamento';
+                                                }
+                                                if ($req['status'] === 'concluido') {
+                                                    $statusClass = 'status-ok';
+                                                    $statusText = 'Concluído';
+                                                }
+                                                if ($req['status'] === 'recusado') {
+                                                    $statusClass = 'status-warn';
+                                                    $statusText = 'Recusado';
+                                                }
+
                                                 // Icon selection
                                                 $tipoIcon = 'file-text';
-                                                if(stripos($req['tipo'], 'matrícula') !== false) $tipoIcon = 'file-badge';
-                                                elseif(stripos($req['tipo'], 'frequência') !== false) $tipoIcon = 'bar-chart';
-                                                elseif(stripos($req['tipo'], 'passe') !== false) $tipoIcon = 'bus';
-                                                elseif(stripos($req['tipo'], 'histórico') !== false) $tipoIcon = 'graduation-cap';
-                                                elseif(stripos($req['tipo'], 'ponto') !== false) $tipoIcon = 'clipboard-list';
-                                                elseif(stripos($req['tipo'], 'carteirinha') !== false) $tipoIcon = 'id-card';
-                                                elseif(stripos($req['tipo'], 'justificativa') !== false) $tipoIcon = 'file-warning';
+                                                if (stripos($req['tipo'], 'matrícula') !== false) $tipoIcon = 'file-badge';
+                                                elseif (stripos($req['tipo'], 'frequência') !== false) $tipoIcon = 'bar-chart';
+                                                elseif (stripos($req['tipo'], 'passe') !== false) $tipoIcon = 'bus';
+                                                elseif (stripos($req['tipo'], 'histórico') !== false) $tipoIcon = 'graduation-cap';
+                                                elseif (stripos($req['tipo'], 'ponto') !== false) $tipoIcon = 'clipboard-list';
+                                                elseif (stripos($req['tipo'], 'carteirinha') !== false) $tipoIcon = 'id-card';
+                                                elseif (stripos($req['tipo'], 'justificativa') !== false) $tipoIcon = 'file-warning';
                                             ?>
                                                 <tr>
                                                     <td class="td-primary" style="font-weight: 600;">#<?= htmlspecialchars($req['protocolo']) ?></td>
@@ -1857,7 +2103,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     Nenhum aviso no mural no momento.
                                 </div>
                             <?php else: ?>
-                                <?php foreach ($avisosDb as $aviso): 
+                                <?php foreach ($avisosDb as $aviso):
                                     $bColor = '#0ea5e9'; // info default
                                     if ($aviso['tipo'] === 'evento') $bColor = '#10b981';
                                     if ($aviso['tipo'] === 'urgente') $bColor = '#ef4444';
@@ -1888,18 +2134,12 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                             <button class="finance-tab op-tab active" onclick="switchOportunidadesTab('vagas', this)" style="padding-bottom: 12px; font-weight: 500; font-size: 0.9rem;">Vagas disponíveis/inscritas</button>
                             <button class="finance-tab op-tab" onclick="switchOportunidadesTab('acompanhamento', this)" style="padding-bottom: 12px; font-weight: 500; font-size: 0.9rem;">Acompanhamento de estágios</button>
                         </div>
-                        
+
                         <div id="tab-vagas">
-                            <div style="display: flex; gap: 24px; align-items: center; margin-bottom: 24px; font-size: 0.85rem; color: #475569;">
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="radio" name="filtro_vagas" value="todas" onchange="filtrarOportunidades('todas')" checked style="accent-color: #0ea5e9; width: 16px; height: 16px;"> <span style="font-weight: 500;">Exibir todas as vagas</span>
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="radio" name="filtro_vagas" value="disponiveis" onchange="filtrarOportunidades('disponiveis')" style="accent-color: #0ea5e9; width: 16px; height: 16px;"> Vagas disponíveis
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="radio" name="filtro_vagas" value="inscritas" onchange="filtrarOportunidades('inscritas')" style="accent-color: #0ea5e9; width: 16px; height: 16px;"> Vagas inscritas
-                                </label>
+                            <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+                                <button class="op-filter-btn active" onclick="filtrarOportunidades('todas', this)">Exibir todas as vagas</button>
+                                <button class="op-filter-btn" onclick="filtrarOportunidades('disponiveis', this)">Vagas disponíveis</button>
+                                <button class="op-filter-btn" onclick="filtrarOportunidades('inscritas', this)">Vagas inscritas</button>
                             </div>
 
                             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
@@ -1908,65 +2148,75 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                         Nenhuma vaga disponível no momento.
                                     </div>
                                 <?php else: ?>
-                                    <?php if(isset($_GET['cand']) && $_GET['cand'] == 'sucesso'): ?>
+                                    <?php if (isset($_GET['cand']) && $_GET['cand'] == 'sucesso'): ?>
                                         <div style="grid-column: 1 / -1; background: #D1FAE5; color: #065F46; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
                                             Candidatura realizada com sucesso! Boa sorte!
                                         </div>
-                                    <?php elseif(isset($_GET['cand']) && $_GET['cand'] == 'erro'): ?>
+                                    <?php elseif (isset($_GET['cand']) && $_GET['cand'] == 'erro'): ?>
                                         <div style="grid-column: 1 / -1; background: #FEE2E2; color: #991B1B; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
                                             Você já está inscrito nesta vaga.
                                         </div>
                                     <?php endif; ?>
-                                    
-                                    <?php foreach ($vagasDb as $vaga): 
+
+                                    <?php foreach ($vagasDb as $vaga):
                                         $empresa = $vaga['empresa_nome_rel'] ?: $vaga['empresa_nome'];
                                         $inscrito = in_array($vaga['id'], $minhasCandidaturas);
-                                        
-                                        $badgeBg = '#e0f2fe'; $badgeColor = '#0284c7'; $badgeText = 'ESTÁGIO';
-                                        if ($vaga['tipo'] === 'aprendiz') { $badgeBg = '#dcfce7'; $badgeColor = '#166534'; $badgeText = 'APRENDIZ'; }
-                                        if ($vaga['tipo'] === 'emprego') { $badgeBg = '#f3e8ff'; $badgeColor = '#7e22ce'; $badgeText = 'EMPREGO'; }
+
+                                        $badgeBg = '#e0f2fe';
+                                        $badgeColor = '#0284c7';
+                                        $badgeText = 'ESTÁGIO';
+                                        if ($vaga['tipo'] === 'aprendiz') {
+                                            $badgeBg = '#dcfce7';
+                                            $badgeColor = '#166534';
+                                            $badgeText = 'APRENDIZ';
+                                        }
+                                        if ($vaga['tipo'] === 'emprego') {
+                                            $badgeBg = '#f3e8ff';
+                                            $badgeColor = '#7e22ce';
+                                            $badgeText = 'EMPREGO';
+                                        }
                                     ?>
-                                    <div class="vaga-card" data-inscrito="<?= $inscrito ? 'true' : 'false' ?>" style="border: 1px solid <?= $inscrito ? '#A7F3D0' : '#E2E8F0' ?>; border-radius: 8px; background: #fff; overflow: hidden; display: flex; flex-direction: column;">
-                                        <div style="padding: 20px; border-bottom: 1px solid #E2E8F0; flex-grow: 1;">
-                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                                <div>
-                                                    <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem; margin-bottom: 4px;"><?= htmlspecialchars($vaga['titulo']) ?></div>
-                                                    <div style="font-size: 0.85rem; color: #64748B;"><i data-lucide="building" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> <?= htmlspecialchars($empresa) ?></div>
+                                        <div class="vaga-card" data-inscrito="<?= $inscrito ? 'true' : 'false' ?>" style="border: 1px solid <?= $inscrito ? '#A7F3D0' : '#E2E8F0' ?>; border-radius: 8px; background: #fff; overflow: hidden; display: flex; flex-direction: column;">
+                                            <div style="padding: 20px; border-bottom: 1px solid #E2E8F0; flex-grow: 1;">
+                                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                                    <div>
+                                                        <div style="font-weight: 600; color: #1E293B; font-size: 1.1rem; margin-bottom: 4px;"><?= htmlspecialchars($vaga['titulo']) ?></div>
+                                                        <div style="font-size: 0.85rem; color: #64748B;"><i data-lucide="building" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> <?= htmlspecialchars($empresa) ?></div>
+                                                    </div>
+                                                    <div style="display: flex; gap: 8px;">
+                                                        <?php if (isset($vaga['match_score'])): ?>
+                                                            <span style="background: <?= $vaga['match_score'] >= 80 ? '#dcfce7' : ($vaga['match_score'] >= 50 ? '#fef9c3' : '#fee2e2') ?>; color: <?= $vaga['match_score'] >= 80 ? '#166534' : ($vaga['match_score'] >= 50 ? '#854d0e' : '#991b1b') ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px;" title="Score de afinidade com suas disciplinas e notas">
+                                                                <i data-lucide="zap" style="width: 12px; height: 12px;"></i> Match: <?= $vaga['match_score'] ?>%
+                                                            </span>
+                                                        <?php endif; ?>
+                                                        <span style="background: <?= $badgeBg ?>; color: <?= $badgeColor ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;"><?= $badgeText ?></span>
+                                                    </div>
                                                 </div>
-                                                <div style="display: flex; gap: 8px;">
-                                                    <?php if (isset($vaga['match_score'])): ?>
-                                                    <span style="background: <?= $vaga['match_score'] >= 80 ? '#dcfce7' : ($vaga['match_score'] >= 50 ? '#fef9c3' : '#fee2e2') ?>; color: <?= $vaga['match_score'] >= 80 ? '#166534' : ($vaga['match_score'] >= 50 ? '#854d0e' : '#991b1b') ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px;" title="Score de afinidade com suas disciplinas e notas">
-                                                        <i data-lucide="zap" style="width: 12px; height: 12px;"></i> Match: <?= $vaga['match_score'] ?>%
-                                                    </span>
+                                                <div style="font-size: 0.85rem; color: #475569; margin-bottom: 16px; line-height: 1.4;"><?= nl2br(htmlspecialchars($vaga['descricao'])) ?></div>
+                                                <div style="display: flex; gap: 12px; font-size: 0.8rem; color: #64748B;">
+                                                    <div style="display: flex; align-items: center; gap: 4px; text-transform: capitalize;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> <?= htmlspecialchars($vaga['modalidade']) ?></div>
+                                                    <?php if ($vaga['bolsa']): ?>
+                                                        <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="dollar-sign" style="width: 14px; height: 14px;"></i> R$ <?= number_format($vaga['bolsa'], 2, ',', '.') ?></div>
                                                     <?php endif; ?>
-                                                    <span style="background: <?= $badgeBg ?>; color: <?= $badgeColor ?>; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 4px;"><?= $badgeText ?></span>
                                                 </div>
                                             </div>
-                                            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 16px; line-height: 1.4;"><?= nl2br(htmlspecialchars($vaga['descricao'])) ?></div>
-                                            <div style="display: flex; gap: 12px; font-size: 0.8rem; color: #64748B;">
-                                                <div style="display: flex; align-items: center; gap: 4px; text-transform: capitalize;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> <?= htmlspecialchars($vaga['modalidade']) ?></div>
-                                                <?php if ($vaga['bolsa']): ?>
-                                                <div style="display: flex; align-items: center; gap: 4px;"><i data-lucide="dollar-sign" style="width: 14px; height: 14px;"></i> R$ <?= number_format($vaga['bolsa'], 2, ',', '.') ?></div>
+                                            <div style="padding: 12px 20px; background: <?= $inscrito ? '#ECFDF5' : '#F8FAFC' ?>; display: flex; justify-content: flex-end;">
+                                                <?php if ($inscrito): ?>
+                                                    <span style="color: #10B981; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;"><i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Inscrito</span>
+                                                <?php else: ?>
+                                                    <form method="POST" action="portal_aluno.php">
+                                                        <input type="hidden" name="action" value="candidatar">
+                                                        <input type="hidden" name="vaga_id" value="<?= $vaga['id'] ?>">
+                                                        <button type="submit" style="background: #0ea5e9; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='#0ea5e9'">Candidatar-se</button>
+                                                    </form>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
-                                        <div style="padding: 12px 20px; background: <?= $inscrito ? '#ECFDF5' : '#F8FAFC' ?>; display: flex; justify-content: flex-end;">
-                                            <?php if ($inscrito): ?>
-                                                <span style="color: #10B981; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;"><i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Inscrito</span>
-                                            <?php else: ?>
-                                                <form method="POST" action="portal_aluno.php">
-                                                    <input type="hidden" name="action" value="candidatar">
-                                                    <input type="hidden" name="vaga_id" value="<?= $vaga['id'] ?>">
-                                                    <button type="submit" style="background: #0ea5e9; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='#0ea5e9'">Candidatar-se</button>
-                                                </form>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
                         </div> <!-- /tab-vagas -->
-                        
+
                         <div id="tab-acompanhamento" style="display: none;">
                             <div class="inst-card" style="padding: 2rem;">
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid var(--premium-border); padding-bottom: 1.5rem;">
@@ -1976,7 +2226,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                     </div>
                                     <span class="pill pill-ok" style="font-size: 0.8rem; padding: 6px 16px;">Contrato Ativo</span>
                                 </div>
-                                
+
                                 <div class="grid-2" style="gap: 2rem;">
                                     <div>
                                         <div style="margin-bottom: 1.5rem;">
@@ -1988,7 +2238,7 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                             <div style="font-size: 0.9rem; color: var(--premium-text); margin-top: 4px;">01/02/2026 a 31/01/2027</div>
                                         </div>
                                     </div>
-                                    
+
                                     <div style="background: var(--premium-surface); border: 1px solid var(--premium-border); border-radius: 8px; padding: 1.5rem;">
                                         <h4 style="font-size: 0.95rem; font-weight: 600; color: var(--premium-text); margin: 0 0 1rem 0;">Próximas Entregas</h4>
                                         <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -2198,20 +2448,87 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
         </script>
         <style>
             /* FullCalendar Uniaene Theme */
-            .fc-theme-standard .fc-scrollgrid { border: 1px solid #E2E8F0; }
-            .fc .fc-col-header-cell { background-color: #64748B; padding: 6px 0; border: 1px solid #E2E8F0; }
-            .fc .fc-col-header-cell-cushion { color: #ffffff !important; font-weight: normal; text-transform: lowercase; font-size: 0.85rem; text-decoration: none; }
-            .fc .fc-daygrid-day-number { color: #475569; font-size: 0.75rem; padding: 4px 8px; text-decoration: none; }
-            .fc-theme-standard td, .fc-theme-standard th { border: 1px solid #E2E8F0; }
-            .fc-day-today { background-color: #F8FAFC !important; }
-            .fc-event { background: transparent !important; border: none !important; }
-            .fc-daygrid-event-harness { margin-bottom: 2px !important; }
-            .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 600; color: #1E293B; text-transform: lowercase; }
-            .fc .fc-button-primary { background-color: #1E293B !important; border-color: #1E293B !important; text-transform: lowercase; font-size: 0.8rem !important; padding: 4px 12px !important; }
-            .fc .fc-button-primary:hover { background-color: #0f172a !important; border-color: #0f172a !important; }
-            .fc .fc-button-primary:not(:disabled):active, .fc .fc-button-primary:not(:disabled).fc-button-active { background-color: #0f172a !important; border-color: #0f172a !important; }
-            .custom-fc-event { font-size: 0.65rem; padding: 2px 4px; color: #475569; white-space: normal; line-height: 1.2; }
-            .custom-fc-event strong { color: #0ea5e9; font-weight: 600; }
+            .fc-theme-standard .fc-scrollgrid {
+                border: 1px solid #E2E8F0;
+            }
+
+            .fc .fc-col-header-cell {
+                background-color: #64748B;
+                padding: 6px 0;
+                border: 1px solid #E2E8F0;
+            }
+
+            .fc .fc-col-header-cell-cushion {
+                color: #ffffff !important;
+                font-weight: normal;
+                text-transform: lowercase;
+                font-size: 0.85rem;
+                text-decoration: none;
+            }
+
+            .fc .fc-daygrid-day-number {
+                color: #475569;
+                font-size: 0.75rem;
+                padding: 4px 8px;
+                text-decoration: none;
+            }
+
+            .fc-theme-standard td,
+            .fc-theme-standard th {
+                border: 1px solid #E2E8F0;
+            }
+
+            .fc-day-today {
+                background-color: #F8FAFC !important;
+            }
+
+            .fc-event {
+                background: transparent !important;
+                border: none !important;
+            }
+
+            .fc-daygrid-event-harness {
+                margin-bottom: 2px !important;
+            }
+
+            .fc-toolbar-title {
+                font-size: 1.1rem !important;
+                font-weight: 600;
+                color: #1E293B;
+                text-transform: lowercase;
+            }
+
+            .fc .fc-button-primary {
+                background-color: #1E293B !important;
+                border-color: #1E293B !important;
+                text-transform: lowercase;
+                font-size: 0.8rem !important;
+                padding: 4px 12px !important;
+            }
+
+            .fc .fc-button-primary:hover {
+                background-color: #0f172a !important;
+                border-color: #0f172a !important;
+            }
+
+            .fc .fc-button-primary:not(:disabled):active,
+            .fc .fc-button-primary:not(:disabled).fc-button-active {
+                background-color: #0f172a !important;
+                border-color: #0f172a !important;
+            }
+
+            .custom-fc-event {
+                font-size: 0.65rem;
+                padding: 2px 4px;
+                color: #475569;
+                white-space: normal;
+                line-height: 1.2;
+            }
+
+            .custom-fc-event strong {
+                color: #0ea5e9;
+                font-weight: 600;
+            }
         </style>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
         <script>
@@ -2327,4 +2644,5 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
     </div>
 
 </body>
+
 </html>

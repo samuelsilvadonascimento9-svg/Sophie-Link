@@ -43,7 +43,7 @@ if (isset($_SESSION['usuario_id'])) {
 
 $niveis_esperados = ['colaborador'];
 $tituloLogin = 'Portal do Colaborador';
-$prefillEmail = 'admin';
+$prefillEmail = 'colaborador';
 
 $erro = '';
 
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <?php
 $emailValue = htmlspecialchars($_POST['email'] ?? $prefillEmail);
-$senhaValue = $prefillEmail ? 'admin' : '';
+$senhaValue = $prefillEmail ? 'colaborador' : '';
 ?>
 <body>
     <div class="colab-left">
@@ -142,7 +142,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <div class="c-field">
                     <label class="c-label" for="email">E-mail Profissional</label>
-                    <input type="text" id="email" name="email" class="c-input <?= $erro ? 'err' : '' ?>" placeholder="admin" value="<?= $emailValue ?>" required>
+                    <input type="text" id="email" name="email" class="c-input <?= $erro ? 'err' : '' ?>" placeholder="colaborador" value="<?= $emailValue ?>" required>
                 </div>
 
                 <div class="c-field">
