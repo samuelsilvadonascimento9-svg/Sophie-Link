@@ -162,7 +162,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
                 <div class="pf-row">
                     <label class="pf-check"><input type="checkbox" name="lembrar"> Lembrar-me</label>
-                    <a href="#" class="pf-forgot">Recuperar Senha</a>
+                    <a href="esqueci_senha.php" class="pf-forgot">Recuperar Senha</a>
                 </div>
 
                 <button type="submit" class="pf-submit"><i data-lucide="log-in"></i> Acessar Diário</button>

@@ -204,18 +204,18 @@ $nivelLabel = ['admin' => 'Administrador', 'coordenadora' => 'Coordenadora', 'pr
             <a href="aprendizes.php" class="nav-link <?= $activeNav === 'aprendizes' ? 'active' : '' ?>">
                 <i data-lucide="users"></i> Aprendizes
             </a>
-            <a href="#" class="nav-link <?= $activeNav === 'frequencia' ? 'active' : '' ?>">
+            <a href="em_construcao.php" class="nav-link <?= $activeNav === 'frequencia' ? 'active' : '' ?>">
                 <i data-lucide="calendar-check"></i> Frequência
             </a>
-            <a href="#" class="nav-link <?= $activeNav === 'notas' ? 'active' : '' ?>">
+            <a href="em_construcao.php" class="nav-link <?= $activeNav === 'notas' ? 'active' : '' ?>">
                 <i data-lucide="graduation-cap"></i> Notas & AVA
             </a>
             
             <div class="nav-label">Administrativo</div>
-            <a href="#" class="nav-link <?= $activeNav === 'financeiro' ? 'active' : '' ?>">
+            <a href="em_construcao.php" class="nav-link <?= $activeNav === 'financeiro' ? 'active' : '' ?>">
                 <i data-lucide="receipt"></i> Financeiro
             </a>
-            <a href="#" class="nav-link <?= $activeNav === 'relatorios' ? 'active' : '' ?>">
+            <a href="em_construcao.php" class="nav-link <?= $activeNav === 'relatorios' ? 'active' : '' ?>">
                 <i data-lucide="bar-chart-3"></i> Relatórios
             </a>
         </nav>

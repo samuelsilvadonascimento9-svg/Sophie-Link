@@ -31,6 +31,11 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     
     $stmtUsers = $pdo->query("SELECT id, nome, email, nivel, criado_em FROM usuarios WHERE deleted_at IS NULL ORDER BY id DESC");
     while ($row = $stmtUsers->fetch(PDO::FETCH_ASSOC)) {
+        foreach ($row as &$col) {
+            if (isset($col[0]) && in_array($col[0], ['=', '+', '-', '@'])) {
+                $col = "'" . $col;
+            }
+        }
         fputcsv($output, $row, ';');
     }
     fclose($output);
@@ -67,7 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
                 if ($e->getCode() == 23000) {
                     $erro = "Já existe um usuário cadastrado com este e-mail.";
                 } else {
-                    $erro = "Erro ao cadastrar usuário: " . $e->getMessage();
+                    error_log("Erro crítico ao criar usuário: " . $e->getMessage());
+                    $erro = "Erro interno ao cadastrar usuário. Verifique os dados ou contate o suporte.";
                 }
             }
         }

@@ -152,7 +152,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
             <div class="cf-row">
                 <label class="cf-check"><input type="checkbox" name="lembrar"> Lembrar credenciais</label>
-                <a href="#" class="cf-forgot">Esqueceu a senha?</a>
+                <a href="esqueci_senha.php" class="cf-forgot">Esqueceu a senha?</a>
             </div>
 
             <button type="submit" class="cf-submit">Entrar no Sistema</button>

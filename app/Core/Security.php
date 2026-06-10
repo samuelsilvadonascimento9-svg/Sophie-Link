@@ -42,7 +42,7 @@ class Security {
         
         if (isset($_SESSION['login_lockout_until']) && $now < $_SESSION['login_lockout_until']) {
             // Rate limit disabled as per user request
-            // return false; 
+            return false;
         }
         
         // Limpar bloqueio se já passou o tempo
@@ -63,7 +63,7 @@ class Security {
         
         if ($_SESSION['login_attempts'] >= $maxAttempts) {
             // Rate limit disabled as per user request
-            // $_SESSION['login_lockout_until'] = time() + ($lockoutTimeMinutes * 60);
+            $_SESSION['login_lockout_until'] = time() + ($lockoutTimeMinutes * 60);
         }
     }
     

@@ -1,7 +1,10 @@
 <?php
 // resetar_senha.php — Definição de Nova Senha | Sophie Link
 require_once '../../app/Core/Connect.php';
+require_once '../../app/Core/Security.php';
+
 $pdo = \Core\Connect::getInstance();
+$csrfToken = Security::generateCsrfToken();
 
 $erro = '';
 $sucesso = '';
@@ -11,28 +14,44 @@ if (empty($token)) {
     $erro = "Token inválido ou não fornecido. Por favor, solicite a recuperação novamente.";
 } else {
     // Verifica se o token existe no banco
-    $stmt = $pdo->prepare("SELECT id, email FROM usuarios WHERE reset_token = ?");
-    $stmt->execute([$token]);
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+    $hashedToken = hash('sha256', $token);
+    $stmt = $pdo->prepare("SELECT email, nivel, expira_em, usado FROM password_resets WHERE token = ?");
+    $stmt->execute([$hashedToken]);
+    $resetData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$usuario) {
-        $erro = "Token expirado ou inválido. Solicite um novo link de recuperação.";
+    if (!$resetData || $resetData['usado'] == 1 || strtotime($resetData['expira_em']) < time()) {
+        $erro = "Token expirado, já utilizado ou inválido. Solicite um novo link de recuperação.";
     } else {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $senha = $_POST['senha'];
-            $confirma = $_POST['confirma'];
-            
-            if (strlen($senha) < 6) {
-                $erro = "A senha deve ter pelo menos 6 caracteres.";
-            } elseif ($senha !== $confirma) {
-                $erro = "As senhas não coincidem.";
-            } else {
-                // Atualiza a senha e limpa o token
-                $hash = password_hash($senha, PASSWORD_DEFAULT);
-                $update = $pdo->prepare("UPDATE usuarios SET senha = ?, reset_token = NULL WHERE id = ?");
-                $update->execute([$hash, $usuario['id']]);
-                
-                $sucesso = "Sua senha foi redefinida com sucesso! Você já pode fazer login.";
+        $stmtUser = $pdo->prepare("SELECT id, email FROM usuarios WHERE email = ? AND nivel = ? AND deleted_at IS NULL");
+        $stmtUser->execute([$resetData['email'], $resetData['nivel']]);
+        $usuario = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+        if (!$usuario) {
+            $erro = "Usuário não encontrado.";
+        } else {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+                    $erro = "Sessão expirada. Recarregue a página e tente novamente.";
+                } else {
+                    $senha = $_POST['senha'];
+                    $confirma = $_POST['confirma'];
+                    
+                    if (strlen($senha) < 6) {
+                        $erro = "A senha deve ter pelo menos 6 caracteres.";
+                    } elseif ($senha !== $confirma) {
+                        $erro = "As senhas não coincidem.";
+                    } else {
+                        // Atualiza a senha e marca o token como usado
+                        $hash = password_hash($senha, PASSWORD_DEFAULT);
+                        $update = $pdo->prepare("UPDATE usuarios SET senha = ? WHERE id = ?");
+                        $update->execute([$hash, $usuario['id']]);
+                        
+                        $updateToken = $pdo->prepare("UPDATE password_resets SET usado = 1 WHERE token = ?");
+                        $updateToken->execute([$hashedToken]);
+                        
+                        $sucesso = "Sua senha foi redefinida com sucesso! Você já pode fazer login.";
+                    }
+                }
             }
         }
     }
@@ -89,6 +108,7 @@ if (empty($token)) {
     <?php else: ?>
         <p style="font-size:14px; color:#6B7280; text-align:center; margin-bottom:24px;">Conta: <strong><?= htmlspecialchars($usuario['email']) ?></strong></p>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
             <div class="form-group">
                 <label class="form-label">Nova Senha</label>
                 <input type="password" name="senha" id="new-password" class="form-control" required placeholder="Mínimo 6 caracteres" autofocus>

@@ -181,7 +181,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
                     <div class="av-row">
                         <label class="av-check"><input type="checkbox" name="lembrar"> Manter conectado</label>
-                        <a href="#" class="av-forgot">Recuperar senha</a>
+                        <a href="esqueci_senha.php" class="av-forgot">Recuperar senha</a>
                     </div>
 
                     <button type="submit" class="av-submit">Acessar Minhas Disciplinas</button>

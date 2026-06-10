@@ -152,7 +152,7 @@ $senhaValue = $prefillEmail ? 'colaborador' : '';
 
                 <div class="c-row">
                     <label class="c-check"><input type="checkbox" name="lembrar"> Continuar conectado</label>
-                    <a href="#" class="c-forgot">Esqueci a senha</a>
+                    <a href="esqueci_senha.php" class="c-forgot">Esqueci a senha</a>
                 </div>
 
                 <button type="submit" class="c-submit">Acessar Painel</button>

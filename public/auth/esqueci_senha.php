@@ -32,10 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Gera novo token seguro com expiração de 1 hora
                 $token   = bin2hex(random_bytes(32));
+                $hashedToken = hash('sha256', $token);
                 $expiry  = date('Y-m-d H:i:s', time() + 3600);
 
                 $ins = $pdo->prepare("INSERT INTO password_resets (email, nivel, token, expira_em) VALUES (?, ?, ?, ?)");
-                $ins->execute([$email, $nivel, $token, $expiry]);
+                $ins->execute([$email, $nivel, $hashedToken, $expiry]);
 
                 $resetLink = "http://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "/devweb/Sophie-Link/public/auth/resetar_senha.php?token=" . $token;
                 $htmlBody  = "
@@ -56,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 @mail($email, "Recuperação de Senha - Sophie Link", $htmlBody, $headers);
 
                 $mensagem = "Instruções enviadas para " . htmlspecialchars($email) . ". Verifique sua caixa de entrada.";
-                $linkMock = "resetar_senha.php?token=" . $token;
             } else {
                 // Mensagem genérica por segurança (não revela se email existe)
                 $mensagem = "Se houver uma conta com esse e-mail, você receberá as instruções em breve.";
@@ -111,12 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-success">
             <i data-lucide="mail-check" style="width:16px;vertical-align:middle;margin-right:6px;"></i>
             <?= htmlspecialchars($mensagem) ?>
-            <?php if ($linkMock): ?>
-                <div class="mock-link">
-                    <strong>🔧 Simulação (localhost):</strong><br>
-                    <a href="<?= htmlspecialchars($linkMock) ?>">Clique aqui para criar nova senha →</a>
-                </div>
-            <?php endif; ?>
         </div>
         <a href="login_aluno.php" class="back-link">← Voltar para o Login</a>
     <?php else: ?>
