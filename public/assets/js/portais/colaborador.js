@@ -1,5 +1,9 @@
-﻿// portal_colaborador.js — Sophie Link v2.0
-lucide.createIcons();
+// portal_colaborador.js — Sophie Link v2.0
+try {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+} catch (e) {
+    console.warn("Lucide icons error:", e);
+}
 
 // ===================== NAVEGAÇÃO =====================
 function showSec(id, el) {
@@ -32,7 +36,7 @@ function showToast(msg, type = 'success') {
     t.className = `toast ${type}`;
     t.innerHTML = `<i data-lucide="${icons[type] || 'info'}" style="width:16px;height:16px;"></i> ${msg}`;
     container.appendChild(t);
-    lucide.createIcons();
+    try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
     setTimeout(() => {
         t.style.animation = 'toastOut 0.3s ease forwards';
         setTimeout(() => t.remove(), 300);
@@ -126,7 +130,7 @@ function abrirEdicao(id) {
 
             document.getElementById('editModalLoading').style.display = 'none';
             document.getElementById('editModalContent').style.display = 'block';
-            lucide.createIcons();
+            try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
         })
         .catch(() => {
             showToast('Falha de comunicação.', 'error');
@@ -174,14 +178,14 @@ function salvarEdicao() {
             showToast(data.error || 'Erro ao salvar.', 'error');
             btn.innerHTML = '<i data-lucide="save"></i> Salvar Alterações';
             btn.disabled = false;
-            lucide.createIcons();
+            try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
         }
     })
     .catch(() => {
         showToast('Erro de comunicação.', 'error');
         btn.innerHTML = '<i data-lucide="save"></i> Salvar Alterações';
         btn.disabled = false;
-        lucide.createIcons();
+        try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
     });
 }
 
@@ -218,14 +222,14 @@ function justificarFalta(id, btn) {
             showToast(data.error || 'Erro ao justificar.', 'error');
             btn.innerHTML = oldHtml;
             btn.disabled = false;
-            lucide.createIcons();
+            try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
         }
     })
     .catch(() => {
         showToast('Erro de comunicação.', 'error');
         btn.innerHTML = oldHtml;
         btn.disabled = false;
-        lucide.createIcons();
+        try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
     });
 }
 
