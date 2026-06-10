@@ -94,106 +94,65 @@ function renderCatCard(cat, discId) {
    ABRIR CATEGORIA — lista os materiais da categoria
    ---------------------------------------------------------------- */
 function openCategory(catKey, discId) {
-    const cursos = window.cursosAVA || [];
-    const c = cursos.find(d => d.id === discId);
-    if (!c) return;
-
-    const items = c[catKey] || [];
-    const labels = {
-        apresentacao: 'Apresentação',
-        pdfs:         'Arquivos',
-        avaliacoes:   'Avaliações',
-        atividades:   'Atividades',
-        simulados:    'Simulados de IA',
-    };
-
-    const content = document.getElementById('curso-content');
-    content.innerHTML = `
-        <div style="padding:1.25rem 1.5rem 0.75rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--c-border-lt);">
-            <button onclick="openCourse({preventDefault:()=>{}}, ${discId})"
-                style="display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--c-border);
-                       border-radius:var(--radius);padding:5px 12px;cursor:pointer;font-family:var(--f-body);
-                       font-size:0.75rem;font-weight:600;color:var(--c-text-muted);transition:all 0.15s;"
-                onmouseover="this.style.borderColor='var(--c-brand)';this.style.color='var(--c-brand)'"
-                onmouseout="this.style.borderColor='var(--c-border)';this.style.color='var(--c-text-muted)'">
-                <i data-lucide="arrow-left" style="width:13px;height:13px;"></i> Voltar
-            </button>
-            <div>
-                <div style="font-size:0.88rem;font-weight:700;color:var(--c-text);">${labels[catKey]}</div>
-                <div style="font-size:0.7rem;color:var(--c-text-muted);">${escHtml(c.nome)}</div>
-            </div>
-        </div>
-        <div style="padding:1rem 1.5rem 1.5rem;">
-            ${items.length === 0
-                ? `<div style="text-align:center;padding:2.5rem;color:var(--c-text-muted);font-size:0.85rem;">
-                       <i data-lucide="inbox" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.25;"></i>
-                       Nenhum conteúdo postado ainda nesta categoria.
-                   </div>`
-                : items.map(item => renderMatItem(item, catKey)).join('')
-            }
-        </div>
-    `;
-    lucide.createIcons();
-}
-
-function renderMatItem(item, catKey) {
     if (catKey === 'simulados') {
-        return `
-            <div class="mat-card">
-                <div class="mat-card-icon" style="background:var(--c-brand-light); color:var(--c-brand);">
-                    <i data-lucide="sparkles"></i>
-                </div>
-                <div class="mat-card-info">
-                    <div class="mat-title">${escHtml(item.titulo || 'Simulado')}</div>
-                    <div class="mat-desc">Criado em: ${item.criado_em.slice(0, 10).split('-').reverse().join('/')}</div>
-                </div>
-                <div class="mat-card-action">
-                    <a href="responder_simulado.php?id=${item.id}" class="btn-dl" style="text-decoration:none; display:flex; align-items:center; gap:6px;">
-                        <i data-lucide="play" style="width:14px;height:14px;"></i> Responder
-                    </a>
-                </div>
-            </div>
-        `;
+        const items = window.materiais.filter(m => m.disciplina_id == discId && m.tipo === 'simulado');
+        if (items.length > 0) {
+            window.location.href = `responder_simulado.php?id=${items[0].id}`;
+        } else {
+            alert('Não há simulados disponíveis no momento.');
+        }
+        return;
     }
 
+    // Para todas as outras categorias, vai direto para o visualizador (comportamento Brightspace)
+    window.location.href = `visualizador.php?disc=${discId}&cat=${catKey}`;
+}
+
+function renderMatItem(item, catKey, isLast = false) {
     const hoje     = new Date().toISOString().slice(0, 10);
     const entregue = item.entrega_status === 'entregue' || item.entrega_status === 'corrigida';
     const atrasado = catKey === 'atividades' && item.data_entrega && item.data_entrega < hoje && !entregue;
 
     let badgeHtml = '';
     if (catKey === 'atividades') {
-        if (entregue)      badgeHtml = `<span style="background:var(--c-green-lt);color:var(--c-green);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;">✓ Entregue</span>`;
-        else if (atrasado) badgeHtml = `<span style="background:var(--c-red-lt);color:var(--c-red);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;">⚠ Atrasada</span>`;
-        else               badgeHtml = `<span style="background:var(--c-brand-lt);color:var(--c-brand);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;">Pendente</span>`;
+        if (entregue)      badgeHtml = `<span style="background:#def7ec;color:#03543f;font-size:0.7rem;font-weight:600;padding:2px 10px;border-radius:12px;">✓ Entregue</span>`;
+        else if (atrasado) badgeHtml = `<span style="background:#fde8e8;color:#9b1c1c;font-size:0.7rem;font-weight:600;padding:2px 10px;border-radius:12px;">Atrasada</span>`;
+        else               badgeHtml = `<span style="background:#e8f0fe;color:#1967d2;font-size:0.7rem;font-weight:600;padding:2px 10px;border-radius:12px;">Pendente</span>`;
     }
 
-    const icons = { apresentacao: 'presentation', pdf: 'file-text', atividade: 'edit-3', avaliacao: 'clipboard-check', aviso: 'megaphone' };
-    const icon  = icons[item.tipo] || 'file-text';
+    const icons = { apresentacao: 'presentation', pdf: 'file-text', atividade: 'edit-3', avaliacao: 'clipboard-check', aviso: 'megaphone', simulados: 'sparkles' };
+    const icon  = icons[item.tipo] || icons[catKey] || 'file-text';
+    
+    const borderBottom = isLast ? 'none' : '1px solid #eaeaea';
 
     return `
-    <div class="mat-item">
-        <div class="mat-item-icon">
-            <i data-lucide="${icon}" style="width:16px;height:16px;"></i>
-        </div>
-        <div class="mat-item-body">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
-                <span style="font-size:0.85rem;font-weight:700;color:var(--c-text);">${escHtml(item.titulo)}</span>
-                ${badgeHtml}
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 10px; border-bottom: ${borderBottom}; transition: background 0.2s; border-radius: 6px;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">
+        <div style="display: flex; align-items: center; gap: 18px;">
+            <div style="width: 44px; height: 44px; background: #e8f0fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1967d2; flex-shrink: 0;">
+                <i data-lucide="${icon}" style="width:20px;height:20px;"></i>
             </div>
-            ${item.descricao ? `<div style="font-size:0.72rem;color:var(--c-text-muted);line-height:1.5;margin-bottom:4px;">${escHtml(item.descricao)}</div>` : ''}
-            <div style="font-size:0.68rem;color:var(--c-text-muted);">
-                Prof. ${escHtml(item.professor_nome || '')}
-                ${item.data_entrega ? ` &bull; <strong>Prazo: ${formatDate(item.data_entrega)}</strong>` : ''}
+            <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+                    <span style="font-size:1.05rem;font-weight:600;color:#222;">${escHtml(item.titulo)}</span>
+                    ${badgeHtml}
+                </div>
+                <div style="font-size:0.85rem;color:#666;">
+                    Prof. ${escHtml(item.professor_nome || '')}
+                    ${item.data_entrega ? ` &bull; <strong style="color:#444;">Prazo: ${formatDate(item.data_entrega)}</strong>` : ''}
+                </div>
             </div>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:12px;">
+            <a href="${catKey === 'simulados' ? 'responder_simulado.php?id=' + item.id : 'visualizador.php?id=' + item.id}" style="display:flex;align-items:center;gap:6px;padding:8px 18px;background:#e8f0fe;color:#1967d2;border-radius:24px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#d2e3fc'" onmouseout="this.style.background='#e8f0fe'">
+                <i data-lucide="${catKey === 'simulados' ? 'play' : 'eye'}" style="width:16px;height:16px;"></i> ${catKey === 'simulados' ? 'Responder' : 'Visualizar'}
+            </a>
             ${item.arquivo_path ? `
-            <a href="download_material.php?id=${item.id}" target="_blank" class="mat-item-btn">
-                <i data-lucide="download" style="width:13px;height:13px;"></i> Baixar
+            <a href="download_material.php?id=${item.id}" target="_blank" style="display:flex;align-items:center;gap:6px;padding:8px 18px;background:#f1f3f4;color:#444;border-radius:24px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#e8eaed'" onmouseout="this.style.background='#f1f3f4'">
+                <i data-lucide="download" style="width:16px;height:16px;"></i> Baixar
             </a>` : ''}
             ${(catKey === 'atividades' && !entregue) ? `
-            <button onclick="openDeliveryModal(${item.id}, '${escHtml(item.titulo)}')" class="mat-item-btn" style="background:var(--c-brand);color:#fff;border-color:var(--c-brand);">
-                <i data-lucide="upload" style="width:13px;height:13px;"></i> Entregar
+            <button onclick="openDeliveryModal(${item.id}, '${escHtml(item.titulo)}')" style="display:flex;align-items:center;gap:6px;padding:8px 18px;background:#1967d2;color:#fff;border:none;border-radius:24px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 4px rgba(25,103,210,0.3);" onmouseover="this.style.background='#1557b0';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#1967d2';this.style.transform='translateY(0)'">
+                <i data-lucide="upload" style="width:16px;height:16px;"></i> Entregar
             </button>` : ''}
         </div>
     </div>`;
