@@ -1,147 +1,182 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Titillium+Web:wght@400;600;700&display=swap');
+/* Eletrônica - Sophie Link */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600&display=swap');
 
 :root {
-    --el-board: #0B3D0B;
-    --el-trace: #2E8B57;
-    --el-copper: #B87333;
-    --el-gold: #FFD700;
-    --el-dark: #051A05;
+    --el-bg: #05140b;
+    --el-text: #e2e8f0;
+    --el-pcb: #0f381c;
+    --el-neon: #00ff66;
+    --el-copper: #c87533;
     --font-heading: 'Share Tech Mono', monospace;
-    --font-body: 'Titillium Web', sans-serif;
+    --font-body: 'Inter', sans-serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background-color: var(--el-board);
-    color: #FFF;
     font-family: var(--font-body);
+    background: var(--el-bg);
+    color: var(--el-text);
+    line-height: 1.6;
     background-image: 
-        radial-gradient(circle at 50% 50%, rgba(46, 139, 87, 0.2) 2px, transparent 2px),
-        linear-gradient(rgba(46, 139, 87, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(46, 139, 87, 0.1) 1px, transparent 1px);
-    background-size: 40px 40px, 40px 40px, 40px 40px;
-    background-position: 20px 20px, 0 0, 0 0;
-    overflow-x: hidden;
+        radial-gradient(circle at 50% 50%, rgba(15, 56, 28, 0.4) 0%, transparent 80%),
+        linear-gradient(rgba(0, 255, 102, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 102, 0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
 }
 
-/* PCB Nav */
+/* Nav */
 .el-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 4rem;
-    background: var(--el-dark);
-    border-bottom: 3px solid var(--el-copper);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    position: relative;
+    padding: 1.5rem 5%;
+    background: rgba(5, 20, 11, 0.9);
+    border-bottom: 2px solid var(--el-pcb);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
-.el-nav::after {
-    content: ''; position: absolute; bottom: -8px; left: 10%; width: 50px; height: 10px;
-    background: var(--el-copper); border-radius: 5px;
-}
-.el-nav-logo img { width: 160px; filter: brightness(0) invert(1) sepia(1) hue-rotate(60deg) saturate(3); }
-.el-nav-links { display: flex; gap: 2rem; }
-.el-nav-links a {
-    color: var(--el-trace);
+.el-logo img { height: 40px; filter: brightness(0) invert(1); }
+.el-links { display: flex; gap: 2rem; align-items: center; }
+.el-links a {
+    color: var(--el-text);
     text-decoration: none;
     font-family: var(--font-heading);
     font-size: 1.2rem;
+    text-transform: uppercase;
     transition: color 0.3s;
 }
-.el-nav-links a:hover { color: var(--el-gold); }
+.el-links a:hover { color: var(--el-neon); }
+
 .el-btn {
-    background: var(--el-dark);
-    color: var(--el-gold) !important;
-    padding: 0.6rem 2rem;
+    background: transparent;
+    color: var(--el-neon);
+    border: 1px solid var(--el-neon);
+    padding: 10px 24px;
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     text-decoration: none;
-    border: 2px solid var(--el-gold);
-    border-radius: 2px;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-    transition: all 0.2s;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0,255,102,0.1) inset;
 }
-.el-btn:hover { background: var(--el-gold); color: var(--el-dark) !important; box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+.el-btn:hover {
+    background: var(--el-neon);
+    color: var(--el-bg);
+    box-shadow: 0 0 20px rgba(0,255,102,0.4);
+}
 
-/* PCB Hero */
+/* Hero */
 .el-hero {
-    padding: 8rem 4rem;
+    padding: 6rem 5%;
     text-align: center;
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
 }
-.el-hero-content {
-    background: rgba(5, 26, 5, 0.8);
-    backdrop-filter: blur(5px);
-    border: 2px solid var(--el-trace);
-    padding: 4rem;
-    max-width: 900px;
-    margin: 0 auto;
-    position: relative;
+.el-hero-icon {
+    color: var(--el-neon);
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 10px var(--el-neon));
 }
-/* Microchip Pins */
-.el-hero-content::before, .el-hero-content::after {
-    content: ''; position: absolute; width: 100%; height: 10px; left: 0;
-    background: repeating-linear-gradient(90deg, transparent, transparent 15px, var(--el-copper) 15px, var(--el-copper) 25px);
-}
-.el-hero-content::before { top: -10px; }
-.el-hero-content::after { bottom: -10px; }
-
 .el-hero h1 {
     font-family: var(--font-heading);
-    font-size: 5rem;
-    color: var(--el-gold);
-    margin-bottom: 1.5rem;
+    font-size: 4.5rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: #fff;
 }
+.el-hero h1 span { color: var(--el-copper); }
 .el-hero p {
-    font-size: 1.2rem;
-    color: #CCC;
-    margin-bottom: 2.5rem;
+    font-size: 1.25rem;
+    color: #a3a3a3;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
 }
 
-/* Modules Board */
-.el-section { padding: 4rem; }
+/* PCB Traces Decorative */
+.pcb-lines {
+    position: absolute;
+    top: 20px; left: 20px;
+    width: 200px; height: 200px;
+    border-left: 2px solid var(--el-copper);
+    border-top: 2px solid var(--el-copper);
+    opacity: 0.3;
+}
+.pcb-lines::after {
+    content: ''; position: absolute;
+    top: -6px; right: 0; width: 10px; height: 10px;
+    background: var(--el-copper); border-radius: 50%;
+}
+
+/* Sections */
+.el-section {
+    padding: 6rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 .el-title {
     font-family: var(--font-heading);
     font-size: 2.5rem;
-    color: var(--el-gold);
+    color: var(--el-neon);
     margin-bottom: 3rem;
-    text-align: center;
-    border-bottom: 1px dashed var(--el-trace);
-    padding-bottom: 1rem;
+    display: flex; align-items: center; gap: 1rem;
 }
 
+/* Grid */
 .el-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 3rem;
+    gap: 2rem;
 }
-.el-component {
-    background: var(--el-dark);
-    border: 1px solid var(--el-copper);
+.el-card {
+    background: var(--el-pcb);
     padding: 2.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0,255,102,0.2);
     position: relative;
-    text-align: center;
     transition: transform 0.3s;
 }
-.el-component:hover { transform: scale(1.05); border-color: var(--el-gold); }
-.el-component i { color: var(--el-gold); width: 50px; height: 50px; margin-bottom: 1.5rem; }
-.el-component h3 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
-.el-component p { color: #AAA; font-size: 0.95rem; }
-.el-component::before {
-    content: ''; position: absolute; left: -10px; top: 20%; height: 60%; width: 10px;
-    background: repeating-linear-gradient(180deg, transparent, transparent 10px, var(--el-copper) 10px, var(--el-copper) 15px);
+.el-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--el-neon);
+    box-shadow: 0 10px 30px rgba(0,255,102,0.1);
 }
-.el-component::after {
-    content: ''; position: absolute; right: -10px; top: 20%; height: 60%; width: 10px;
-    background: repeating-linear-gradient(180deg, transparent, transparent 10px, var(--el-copper) 10px, var(--el-copper) 15px);
+.el-card-icon {
+    width: 50px; height: 50px;
+    background: rgba(0,0,0,0.5);
+    color: var(--el-copper);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+.el-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+.el-card p {
+    color: #cbd5e1;
+    font-size: 0.95rem;
 }
 
+/* Footer */
 .el-footer {
-    background: var(--el-dark);
-    border-top: 3px solid var(--el-copper);
-    padding: 3rem;
     text-align: center;
-    font-family: var(--font-heading);
-    color: var(--el-trace);
+    padding: 4rem 5%;
+    background: #000;
+    border-top: 2px solid var(--el-pcb);
+}
+.el-footer a { color: var(--el-neon); text-decoration: none; font-family: var(--font-heading); font-size: 1.2rem;}
+
+@media (max-width: 768px) {
+    .el-links { display: none; }
+    .el-hero h1 { font-size: 3rem; }
+    .pcb-lines { display: none; }
 }

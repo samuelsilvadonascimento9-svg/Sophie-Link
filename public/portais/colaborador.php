@@ -61,17 +61,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'matricu
     if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
         $erro = "Requisição inválida (CSRF). Tente novamente.";
     } else {
-        $novo_nome    = trim($_POST['nome']);
-        $novo_cpf     = trim($_POST['cpf']);
-        $novo_rg      = trim($_POST['rg']);
+        $novo_nome    = trim($_POST['nome'] ?? '');
+        $novo_cpf     = trim($_POST['cpf'] ?? '');
+        $novo_rg      = trim($_POST['rg'] ?? '');
         $novo_email   = trim($_POST['email'] ?? '');
         $novo_tel     = trim($_POST['telefone'] ?? '');
-        $novo_turma   = (int)$_POST['turma_id'];
+        $novo_turma   = (int)($_POST['turma_id'] ?? 0);
+        $nova_senha   = $_POST['senha_acesso'] ?? '';
 
-        if (empty($novo_nome) || empty($novo_cpf) || !$novo_turma) {
-            $erro = "Nome, CPF e Turma são obrigatórios.";
+        if (empty($novo_nome) || empty($novo_cpf) || empty($novo_email) || empty($nova_senha) || !$novo_turma) {
+            $erro = "Nome, CPF, E-mail, Senha e Turma são obrigatórios.";
         } else {
             try {
+                $pdo->beginTransaction();
+
                 $stmt = $pdo->prepare("
                     INSERT INTO aprendizes 
                         (nome, cpf, rg, email, telefone, turma_id, data_nascimento, endereco, nome_mae, nome_pai, tipo, observacoes, situacao_aluno)
@@ -80,9 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'matricu
                 $stmt->execute([
                     $novo_nome,
                     $novo_cpf,
-                    trim($_POST['rg'] ?? ''),
-                    trim($_POST['email'] ?? ''),
-                    trim($_POST['telefone'] ?? ''),
+                    $novo_rg,
+                    $novo_email,
+                    $novo_tel,
                     $novo_turma,
                     trim($_POST['data_nascimento'] ?? '') ?: null,
                     trim($_POST['endereco'] ?? ''),
@@ -91,9 +94,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'matricu
                     in_array($_POST['tipo'] ?? '', ['normal', 'aprendiz']) ? $_POST['tipo'] : 'aprendiz',
                     trim($_POST['observacoes'] ?? ''),
                 ]);
-                $sucesso = "Aluno <strong>" . htmlspecialchars($novo_nome) . "</strong> matriculado com sucesso!";
+
+                // Criar conta no portal
+                $hash = password_hash($nova_senha, PASSWORD_DEFAULT);
+                $stmtUser = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, nivel) VALUES (?, ?, ?, 'aluno')");
+                $stmtUser->execute([$novo_nome, $novo_email, $hash]);
+
+                $pdo->commit();
+                $sucesso = "Aluno <strong>" . htmlspecialchars($novo_nome) . "</strong> matriculado com sucesso! Conta de acesso gerada.";
             } catch (PDOException $e) {
-                $erro = "Erro ao cadastrar: " . $e->getMessage();
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                if ($e->getCode() == 23000) {
+                    $erro = "Já existe um usuário ou aluno cadastrado com este e-mail ou CPF.";
+                } else {
+                    $erro = "Erro ao cadastrar: " . $e->getMessage();
+                }
             }
         }
     }
@@ -145,11 +162,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'add_emp
     if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
         $erro = "Requisição inválida (CSRF). Tente novamente.";
     } else {
-        try {
-            $empresaModel->criar($_POST);
-            $sucesso = "Empresa adicionada com sucesso!";
-        } catch (Exception $e) {
-            $erro = "Erro ao cadastrar empresa: " . $e->getMessage();
+        $novo_email = trim($_POST['email'] ?? '');
+        $nova_senha = $_POST['senha_acesso'] ?? '';
+        
+        if (empty($novo_email) || empty($nova_senha) || empty(trim($_POST['nome'] ?? ''))) {
+            $erro = "Nome da Empresa, E-mail e Senha de Acesso são obrigatórios para gerar o login.";
+        } else {
+            try {
+                $pdo->beginTransaction();
+                
+                $empresaId = $empresaModel->criar($_POST);
+                
+                $hash = password_hash($nova_senha, PASSWORD_DEFAULT);
+                $stmtUser = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, nivel, empresa_id) VALUES (?, ?, ?, 'empresa', ?)");
+                $stmtUser->execute([trim($_POST['nome']), $novo_email, $hash, $empresaId]);
+                
+                $pdo->commit();
+                $sucesso = "Empresa adicionada e acesso ao portal gerado com sucesso!";
+            } catch (Exception $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                if ($e->getCode() == 23000) {
+                    $erro = "Já existe um usuário ou empresa cadastrada com este e-mail.";
+                } else {
+                    $erro = "Erro ao cadastrar empresa: " . $e->getMessage();
+                }
+            }
         }
     }
 }
@@ -197,7 +236,7 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
     <meta name="robots" content="noindex">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.438.0/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="../assets/css/portais/colaborador.css?v=<?= time() ?>">
 </head>
 
@@ -1330,8 +1369,12 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
 
                                 <!-- Linha 3 -->
                                 <div class="form-group">
-                                    <label class="form-label">E-mail</label>
-                                    <input type="email" name="email" class="form-control" placeholder="aluno@email.com">
+                                    <label class="form-label">E-mail de Acesso *</label>
+                                    <input type="email" name="email" class="form-control" required placeholder="aluno@email.com">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Senha de Acesso *</label>
+                                    <input type="password" name="senha_acesso" class="form-control" required placeholder="••••••••">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Telefone</label>
@@ -1541,8 +1584,12 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Email de Contato</label>
-                        <input type="email" name="email" class="form-control">
+                        <label class="form-label">Email de Acesso *</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha de Acesso *</label>
+                        <input type="password" name="senha_acesso" class="form-control" required placeholder="••••••••">
                     </div>
                 </div>
                 <div class="modal-footer">
