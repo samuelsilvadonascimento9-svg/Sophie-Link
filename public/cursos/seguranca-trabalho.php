@@ -1,106 +1,105 @@
 <?php
-// Segurança do Trabalho — Sophie Link
+// Segurança do Trabalho — Sophie Link (Arq 5: Minimalist Timeline)
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Técnico em Segurança do Trabalho | Sophie Link</title>
-    <meta name="description" content="Curso de Segurança do Trabalho. Previna acidentes e salve vidas na indústria.">
+    <title>Segurança do Trabalho | Sophie Link</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦺</text></svg>">
-    <!-- Custom CSS ONLY for this page -->
-    <link rel="stylesheet" href="../assets/css/cursos/seg-page.css?v=3">
-    <!-- Icons -->
+    <link rel="stylesheet" href="../assets/css/cursos/seg-page.css?v=5">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-<div class="st-stripes"></div>
-
-<nav class="st-nav">
-    <a href="../index.php" class="st-logo">
+<header class="a5-header">
+    <a href="../index.php" class="a5-logo">
         <img src="../assets/images/logoNome.png" alt="Sophie Link">
     </a>
-    <div class="st-links">
-        <a href="../index.php">HOME</a>
-        <a href="#conteudo">DISCIPLINAS</a>
-        <a href="#normas">NORMAS REGULAMENTADORAS</a>
-    </div>
-    <a href="../index.php#fale-conosco" class="st-btn">INSCRIÇÃO</a>
-</nav>
+    <nav class="a5-nav">
+        <a href="#diferenciais">Formação</a>
+        <a href="#grade">Disciplinas</a>
+        <a href="../index.php#fale-conosco">Matricule-se</a>
+    </nav>
+</header>
 
-<section class="st-hero">
-    <div class="st-hero-shield">
-        <i data-lucide="shield-check"></i>
-    </div>
-    <h1>Técnico em <br><span>Segurança do Trabalho</span></h1>
-    <p>Em áreas de mineração e indústria pesada, a vida humana é o ativo mais valioso. O Técnico em Segurança do Trabalho é a autoridade máxima na prevenção de acidentes, inspecionando áreas de risco e garantindo que todos voltem para casa em segurança.</p>
-    <a href="#conteudo" class="st-btn" style="margin-top: 1rem;">VER GRADE CURRICULAR</a>
-</section>
-
-<section class="st-section" id="conteudo">
-    <h2 class="st-title">Prevenção e Controle</h2>
-    <div class="st-grid">
-        <div class="st-card">
-            <div class="st-card-icon"><i data-lucide="hard-hat"></i></div>
-            <h3>Inspeção de Área</h3>
-            <p>Identificar condições inseguras, avaliar riscos ocupacionais e determinar o uso correto de EPIs no ambiente de mineração e canteiros de obras.</p>
-        </div>
-        <div class="st-card">
-            <div class="st-card-icon"><i data-lucide="users"></i></div>
-            <h3>Gestão de CIPA e SIPAT</h3>
-            <p>Organizar comissões internas de prevenção e semanas de conscientização, liderando equipes na cultura de segurança.</p>
-        </div>
-        <div class="st-card">
-            <div class="st-card-icon"><i data-lucide="cross"></i></div>
-            <h3>Primeiros Socorros</h3>
-            <p>Atendimento pré-hospitalar de urgência, imobilização de fraturas, RCP e suporte básico de vida no local do acidente.</p>
-        </div>
-        <div class="st-card">
-            <div class="st-card-icon"><i data-lucide="flame"></i></div>
-            <h3>Combate a Incêndio</h3>
-            <p>Classes de fogo, uso prático de extintores, sistemas de hidrantes e planos de abandono rápido de área de risco.</p>
-        </div>
+<section class="a5-hero">
+    <div class="a5-hero-title">
+        <h1>Protegendo Vidas <br>Na Indústria.</h1>
+        <p>A autoridade máxima na prevenção de acidentes e na proteção do maior ativo das empresas: as pessoas.</p>
+        <a href="../index.php#fale-conosco" class="a5-btn">Ver Inscrições</a>
     </div>
 </section>
 
-<section class="st-rules" id="normas">
-    <h2 class="st-title" style="color:var(--st-white);">Competências Legais (NRs)</h2>
-    <ul class="st-rule-list">
-        <li>
-            <div class="st-rule-icon"><i data-lucide="arrow-up-circle" style="width:36px;height:36px;"></i></div>
-            <div class="st-rule-text">
-                <h4>NR-35: Trabalho em Altura</h4>
-                <p>Emissão de permissões, inspeção rigorosa de cintos de segurança tipo paraquedista, talabartes, trava-quedas e ancoragem em linhas de vida.</p>
+<div class="a5-stats">
+    <div class="a5-stat-block">
+        <h3>PGR</h3>
+        <p>Gestão de Riscos</p>
+    </div>
+    <div class="a5-stat-block">
+        <h3>+20</h3>
+        <p>Normas Práticas</p>
+    </div>
+    <div class="a5-stat-block">
+        <h3>MTE</h3>
+        <p>Registro Legal</p>
+    </div>
+</div>
+
+<section class="a5-section" id="diferenciais">
+    <h2 class="a5-title">Eixos de Intervenção</h2>
+    <div class="a5-check-list">
+        <div class="a5-check-item">
+            <div class="a5-check-icon"><i data-lucide="shield-check"></i></div>
+            <div class="a5-check-text">
+                <h4>Inspeção Rigorosa de Áreas</h4>
+                <p>Aprenda na prática a auditar canteiros de obras, pátios industriais e ambientes insalubres em busca de potenciais riscos de acidentes e não-conformidades.</p>
             </div>
-        </li>
-        <li>
-            <div class="st-rule-icon"><i data-lucide="box" style="width:36px;height:36px;"></i></div>
-            <div class="st-rule-text">
-                <h4>NR-33: Espaço Confinado</h4>
-                <p>Avaliação e monitoramento de gases, técnicas de ventilação exaustora e protocolos de resgate em silos, tanques e galerias subterrâneas.</p>
+        </div>
+        <div class="a5-check-item">
+            <div class="a5-check-icon"><i data-lucide="cross"></i></div>
+            <div class="a5-check-text">
+                <h4>Primeiros Socorros Avançados</h4>
+                <p>Treinamento tático e intenso em RCP, uso de DEA, imobilização e protocolo de emergência para resposta rápida no local de trabalho.</p>
             </div>
-        </li>
-        <li>
-            <div class="st-rule-icon"><i data-lucide="activity" style="width:36px;height:36px;"></i></div>
-            <div class="st-rule-text">
-                <h4>NR-15 e NR-16: Insalubridade e Periculosidade</h4>
-                <p>Medição de ruído, calor (IBUTG), poeiras e agentes químicos para elaboração de laudos de adicional de risco.</p>
+        </div>
+        <div class="a5-check-item">
+            <div class="a5-check-icon"><i data-lucide="file-text"></i></div>
+            <div class="a5-check-text">
+                <h4>Documentação Legal e Laudos</h4>
+                <p>Nenhum TST trabalha sem papelada. Ensino completo para a elaboração técnica de PGR, PCMSO, LTCAT e emissão de permissões de trabalho (PT).</p>
             </div>
-        </li>
-    </ul>
+        </div>
+    </div>
 </section>
 
-<footer class="st-footer">
-    <a href="../index.php" class="st-btn" style="background:transparent; color:var(--st-yellow);">Voltar para o Início</a>
-    <p style="margin-top:2rem; color:var(--st-gray);">&copy; <?= date('Y') ?> Centro Técnico Profissionalizante Sophie Link.</p>
+<section class="a5-section" id="grade" style="background:#fff;">
+    <h2 class="a5-title">Evolução do Curso</h2>
+    <div class="a5-timeline">
+        <div class="a5-tl-item">
+            <h4>Fase 1: Higiene Ocupacional</h4>
+            <p>Medição de ruído (dosímetros), calor (IBUTG) e químicos para elaboração de laudos de insalubridade e periculosidade.</p>
+        </div>
+        <div class="a5-tl-item">
+            <h4>Fase 2: Trabalho em Altura e Espaço Confinado</h4>
+            <p>Legislação profunda das normas NR-35 e NR-33. Uso de linhas de vida, trava-quedas e medidores atmosféricos.</p>
+        </div>
+        <div class="a5-tl-item">
+            <h4>Fase 3: Prevenção e Combate a Incêndios</h4>
+            <p>Classes de extintores, sistemas de hidrantes industriais, formação de brigadas e elaboração de planos de abandono rápido.</p>
+        </div>
+        <div class="a5-tl-item">
+            <h4>Fase 4: Gestão e Legislação</h4>
+            <p>Auditoria final, e-Social para SST, gestão da CIPA, comunicação de acidente de trabalho (CAT) e defesas técnicas.</p>
+        </div>
+    </div>
+</section>
+
+<footer class="a5-footer">
+    <p>&copy; <?= date('Y') ?> Centro Universitário Sophie Link.<br><br><a href="../index.php">RETORNAR À PÁGINA INICIAL</a></p>
 </footer>
 
-<div class="st-stripes"></div>
-
-<script>
-    lucide.createIcons();
-</script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

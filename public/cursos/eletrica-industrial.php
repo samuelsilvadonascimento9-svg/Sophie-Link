@@ -1,5 +1,5 @@
 <?php
-// Elétrica Industrial — Sophie Link
+// Elétrica Industrial — Sophie Link (Arq 4: Dynamic Overlap)
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -7,125 +7,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elétrica Industrial | Sophie Link</title>
-    <meta name="description" content="Curso Técnico em Elétrica Industrial. Domine alta tensão, motores e comandos elétricos.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
-    <!-- Custom CSS ONLY for this page -->
-    <link rel="stylesheet" href="../assets/css/cursos/elec-page.css?v=3">
-    <!-- Icons -->
+    <link rel="stylesheet" href="../assets/css/cursos/elec-page.css?v=5">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-<nav class="ei-nav">
-    <a href="../index.php" class="ei-nav-logo">
+<header class="a4-header">
+    <a href="../index.php" class="a4-logo">
         <img src="../assets/images/logoNome.png" alt="Sophie Link">
     </a>
-    <div class="ei-nav-links">
-        <a href="../index.php">HOME</a>
-        <a href="#modulos">CIRCUITOS</a>
-        <a href="#skills">POTÊNCIA</a>
+    <div style="display:flex; align-items:center;">
+        <nav class="a4-nav">
+            <a href="#diferenciais">Diferenciais</a>
+            <a href="#grade">Módulos</a>
+        </nav>
+        <a href="../index.php#fale-conosco" class="a4-btn">Inscreva-se Agora</a>
     </div>
-    <a href="../index.php#fale-conosco" class="ei-btn">CONECTAR_AGORA()</a>
-</nav>
+</header>
 
-<section class="ei-hero">
-    <div class="ei-hero-left">
-        <h1>Elétrica <span>Industrial</span></h1>
-        <p>A energia que move motores de milhares de cavalos e plantas de mineração inteiras passa pelas mãos do eletricista industrial. Torne-se o especialista que a indústria não pode ficar sem.</p>
-        <a href="#modulos" class="ei-btn" style="margin-top: 1rem; display:inline-block;">VERIFICAR CARGA</a>
+<div class="a4-hero-bg">
+    <i data-lucide="zap"></i>
+</div>
+
+<div class="a4-hero-title-box">
+    <h1>Potência e Controle na <br><span>Indústria</span></h1>
+    <p>Especialize-se na área que move o mundo. Formamos eletricistas industriais de alta performance, prontos para atuar em painéis de comando, motores de grande porte e distribuição de alta potência.</p>
+</div>
+
+<section class="a4-stats-section">
+    <div class="a4-circle">
+        <h3>96%</h3>
+        <p>Empregabilidade</p>
     </div>
+    <div class="a4-circle">
+        <h3>NR-10</h3>
+        <p>Incluso na Grade</p>
+    </div>
+    <div class="a4-circle">
+        <h3>100%</h3>
+        <p>Foco Prático</p>
+    </div>
+    <div class="a4-circle">
+        <h3>CREA</h3>
+        <p>Registro CFT</p>
+    </div>
+</section>
+
+<section class="a4-section" id="diferenciais">
+    <h2 class="a4-title">Por que fazer este curso?</h2>
     
-    <div class="ei-hero-right">
-        <div class="ei-panel-box">
-            <div style="color:var(--ei-yellow); font-family:var(--font-heading); font-size:1.8rem; margin-bottom:1.5rem; text-align:center; letter-spacing: 2px;">DANGER: HIGH VOLTAGE</div>
-            
-            <div class="ei-meter">
-                <div class="ei-meter-label"><span>Tensão Máxima</span><span class="ei-meter-val">13.8 kV</span></div>
-                <div class="ei-meter-bar"><div class="ei-meter-fill" style="width: 85%;"></div></div>
-            </div>
-            <div class="ei-meter">
-                <div class="ei-meter-label"><span>Potência Instalada</span><span class="ei-meter-val">MVA</span></div>
-                <div class="ei-meter-bar"><div class="ei-meter-fill" style="width: 60%; background:var(--ei-yellow); box-shadow:0 0 10px var(--ei-yellow);"></div></div>
-            </div>
-            <div class="ei-meter">
-                <div class="ei-meter-label"><span>Empregabilidade</span><span class="ei-meter-val">96%</span></div>
-                <div class="ei-meter-bar"><div class="ei-meter-fill" style="width: 96%; background:#0f0; box-shadow:0 0 10px #0f0;"></div></div>
-            </div>
+    <div class="a4-wide-card">
+        <div class="a4-wc-icon"><i data-lucide="cpu"></i></div>
+        <div class="a4-wc-text">
+            <h3>Painéis de Comando</h3>
+            <p>Aprenda na prática a projetar e montar painéis, utilizando contatores, relés térmicos, temporizadores e soft starters.</p>
         </div>
     </div>
-</section>
-
-<section class="ei-section" id="modulos">
-    <h2 class="ei-title"><i data-lucide="zap"></i> Diagrama Unifilar (Módulos)</h2>
-    <div class="ei-grid">
-        <div class="ei-card">
-            <i data-lucide="cpu"></i>
-            <h3>Comandos Elétricos</h3>
-            <p>Montagem e manutenção de painéis de comando, contatores, relés térmicos e chaves de partida (Estrela-Triângulo, Compensadora).</p>
-        </div>
-        <div class="ei-card">
-            <i data-lucide="activity"></i>
+    <div class="a4-wide-card">
+        <div class="a4-wc-icon"><i data-lucide="activity"></i></div>
+        <div class="a4-wc-text">
             <h3>Máquinas Elétricas</h3>
-            <p>Funcionamento, fechamento de bobinas e manutenção de motores de indução trifásicos, geradores e transformadores.</p>
+            <p>Domine o funcionamento e a parametrização de motores de indução trifásicos, além de correção de fator de potência.</p>
         </div>
-        <div class="ei-card">
-            <i data-lucide="power"></i>
-            <h3>Instalações Industriais</h3>
-            <p>Dimensionamento de cabos, disjuntores, eletrocalhas e cálculo de demanda de grandes plantas industriais.</p>
-        </div>
-        <div class="ei-card">
-            <i data-lucide="shield-alert"></i>
-            <h3>NR-10 e SEP</h3>
-            <p>Segurança em Instalações e Serviços em Eletricidade. Formação completa para intervenção em Sistemas Elétricos de Potência.</p>
+    </div>
+    <div class="a4-wide-card">
+        <div class="a4-wc-icon"><i data-lucide="shield-alert"></i></div>
+        <div class="a4-wc-text">
+            <h3>Segurança Máxima</h3>
+            <p>A segurança é inegociável. Treinamento completo seguindo as normas da NR-10 e SEP para a sua total proteção no mercado.</p>
         </div>
     </div>
 </section>
 
-<section class="ei-section" id="skills">
-    <h2 class="ei-title"><i data-lucide="settings"></i> Especificações de Operação</h2>
-    <div class="ei-table-container">
-        <table class="ei-table">
-            <thead>
-                <tr>
-                    <th>Componente de Habilidade</th>
-                    <th>Descrição Técnica</th>
-                    <th>Demanda de Mercado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Leitura de Diagramas</strong></td>
-                    <td>Interpretação de projetos elétricos multifilares e unifilares industriais.</td>
-                    <td style="color:var(--ei-cyan); font-weight:bold;">CRÍTICA</td>
-                </tr>
-                <tr>
-                    <td><strong>Soft Starters & Inversores</strong></td>
-                    <td>Parametrização de inversores de frequência e chaves de partida suave.</td>
-                    <td style="color:var(--ei-cyan); font-weight:bold;">ALTA</td>
-                </tr>
-                <tr>
-                    <td><strong>Correção de Fator de Potência</strong></td>
-                    <td>Dimensionamento e instalação de bancos de capacitores industriais.</td>
-                    <td style="color:var(--ei-yellow); font-weight:bold;">MÉDIA/ALTA</td>
-                </tr>
-                <tr>
-                    <td><strong>Manutenção Preditiva</strong></td>
-                    <td>Análise termográfica de painéis e medição de isolação (Megômetro).</td>
-                    <td style="color:var(--ei-cyan); font-weight:bold;">CRÍTICA</td>
-                </tr>
-            </tbody>
-        </table>
+<section class="a4-section" id="grade" style="background:#fff; padding-top:40px; padding-bottom:80px; max-width:100%;">
+    <div style="max-width:1000px; margin:0 auto;">
+        <h2 class="a4-title">Matriz Curricular</h2>
+        <div class="a4-wide-card" style="border: 1px solid #e0f2fe; box-shadow:none;">
+            <div class="a4-wc-icon" style="background:var(--a4-cyan);color:#fff;">1</div>
+            <div class="a4-wc-text">
+                <h3>Eletricidade Básica e Medidas</h3>
+                <p>Tensão, corrente, resistência e uso correto de multímetros, alicates amperímetros e megômetros em campo.</p>
+            </div>
+        </div>
+        <div class="a4-wide-card" style="border: 1px solid #e0f2fe; box-shadow:none;">
+            <div class="a4-wc-icon" style="background:var(--a4-cyan);color:#fff;">2</div>
+            <div class="a4-wc-text">
+                <h3>Comandos Elétricos Industriais</h3>
+                <p>Partidas direta, estrela-triângulo e compensadora. Leitura e interpretação de diagramas unifilares completos.</p>
+            </div>
+        </div>
+        <div class="a4-wide-card" style="border: 1px solid #e0f2fe; box-shadow:none;">
+            <div class="a4-wc-icon" style="background:var(--a4-cyan);color:#fff;">3</div>
+            <div class="a4-wc-text">
+                <h3>Instalações Industriais</h3>
+                <p>Dimensionamento rigoroso de cabos, disjuntores e infraestrutura elétrica (eletrocalhas) de acordo com a NBR 5410.</p>
+            </div>
+        </div>
     </div>
 </section>
 
-<footer class="ei-footer">
-    <h2>SYSTEM OFFLINE.</h2>
-    <p style="color: #64748b; margin-bottom: 2rem;">Sophie Link <span>//</span> Centro Técnico Profissionalizante</p>
-    <a href="../index.php" class="ei-btn">REINICIAR SISTEMA (HOME)</a>
+<footer class="a4-footer">
+    <p>Sophie Link &copy; <?= date('Y') ?> | <a href="../index.php">Voltar ao Início</a></p>
 </footer>
 
-<script>
-    lucide.createIcons();
-</script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

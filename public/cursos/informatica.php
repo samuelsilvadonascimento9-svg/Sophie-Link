@@ -1,5 +1,5 @@
 <?php
-// Informática Básica e Avançada — Sophie Link
+// Informática Básica e Avançada — Sophie Link (Arq 1: Tradicional Clean)
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -7,114 +7,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informática Básica e Avançada | Sophie Link</title>
-    <meta name="description" content="Curso de Informática Básica e Avançada na Sophie Link. Domine o pacote Office, Windows e Ferramentas Digitais.">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
-    <!-- Custom CSS ONLY for this page -->
-    <link rel="stylesheet" href="../assets/css/cursos/info-page.css?v=3">
-    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="stylesheet" href="../assets/css/cursos/info-page.css?v=5">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-<div class="bg-blobs">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-</div>
-
-<nav class="info-nav">
-    <a href="../index.php" class="info-nav-logo">
+<header class="a1-header">
+    <a href="../index.php" class="a1-logo">
         <img src="../assets/images/logoNome.png" alt="Sophie Link">
     </a>
-    <div class="info-nav-links">
-        <a href="../index.php"><i data-lucide="chevron-left" style="width:16px;height:16px;vertical-align:middle;"></i> Voltar para Início</a>
-        <a href="#modulos">Módulos</a>
-        <a href="#skills">Habilidades</a>
-        <a href="../index.php#fale-conosco" class="btn-primary">Matricule-se</a>
-    </div>
-</nav>
+    <nav class="a1-nav">
+        <a href="#diferenciais">Diferenciais</a>
+        <a href="#grade">Matriz Curricular</a>
+        <a href="../index.php#fale-conosco" class="a1-btn">Inscreva-se</a>
+    </nav>
+</header>
 
-<section class="info-hero">
-    <div class="info-hero-content">
-        <div class="info-badge"><i data-lucide="monitor" style="width:14px;height:14px;"></i> Curso Profissionalizante</div>
-        <h1>Informática <span>Básica e Avançada</span></h1>
-        <p>A porta de entrada para o mercado de trabalho. Domine o uso do computador, criação de documentos, planilhas avançadas, envio de e-mails corporativos e torne-se um profissional indispensável para qualquer escritório.</p>
-        <a href="../index.php#fale-conosco" class="btn-primary" style="display:inline-block; margin-top:1rem; padding: 16px 32px; font-size: 1.1rem;">Garantir Minha Vaga</a>
+<section class="a1-hero">
+    <div class="a1-hero-left">
+        <h1>Seu futuro na tecnologia <span style="color:var(--a1-blue);">começa aqui.</span></h1>
+        <p>Aprenda do básico ao avançado as ferramentas mais usadas no mercado de trabalho atual. Aulas 100% práticas em laboratórios de ponta.</p>
+        <a href="../index.php#fale-conosco" class="a1-btn" style="padding: 15px 30px; font-size: 1.1rem;">Garantir Minha Vaga</a>
     </div>
-</section>
-
-<section class="info-section" id="skills">
-    <h2 class="info-section-title">O que você vai aprender</h2>
-    <div class="glass-grid">
-        <div class="glass-card">
-            <div class="glass-card-icon"><i data-lucide="layout"></i></div>
-            <h3>Pacote Office</h3>
-            <p>Criação e formatação de textos profissionais no Word, apresentações de impacto no PowerPoint e conceitos essenciais do Pacote Office.</p>
-        </div>
-        <div class="glass-card">
-            <div class="glass-card-icon"><i data-lucide="sheet"></i></div>
-            <h3>Planilhas Avançadas</h3>
-            <p>Aprenda a utilizar o Excel de forma inteligente, montando tabelas de controle, fórmulas essenciais e gráficos para relatórios.</p>
-        </div>
-        <div class="glass-card">
-            <div class="glass-card-icon"><i data-lucide="globe"></i></div>
-            <h3>Internet e E-mails</h3>
-            <p>Navegação segura, pesquisas eficientes, organização na nuvem (Google Drive/OneDrive) e envio de e-mails profissionais com Outlook.</p>
-        </div>
-        <div class="glass-card">
-            <div class="glass-card-icon"><i data-lucide="laptop"></i></div>
-            <h3>Sistema Operacional</h3>
-            <p>Entenda o Windows a fundo: organização de arquivos, atalhos de teclado de produtividade, painel de controle e configurações úteis.</p>
+    <div class="a1-hero-right">
+        <div class="a1-hero-img">
+            <i data-lucide="laptop" style="width:120px;height:120px;"></i>
         </div>
     </div>
 </section>
 
-<section class="info-section" id="modulos">
-    <h2 class="info-section-title">Estrutura do Curso</h2>
-    <div class="modules-container">
-        <div class="module-row">
-            <div class="module-icon"><i data-lucide="mouse-pointer-click"></i></div>
-            <div class="module-content">
-                <h4>Módulo 1: Introdução à Informática</h4>
-                <p>Conhecendo o hardware e software. Uso do mouse, teclado, e as primeiras interações com o sistema operacional Windows.</p>
+<div class="a1-stats-wrapper">
+    <div class="a1-stats-box">
+        <div class="a1-stat">
+            <h3>98%</h3>
+            <p>Empregabilidade</p>
+        </div>
+        <div class="a1-stat">
+            <h3>240h</h3>
+            <p>Aulas Práticas</p>
+        </div>
+        <div class="a1-stat">
+            <h3>15+</h3>
+            <p>Laboratórios</p>
+        </div>
+        <div class="a1-stat">
+            <h3>MEC</h3>
+            <p>Aprovado</p>
+        </div>
+    </div>
+</div>
+
+<section class="a1-section" id="diferenciais">
+    <h2 class="a1-section-title">O que nos torna diferentes?</h2>
+    <div class="a1-grid">
+        <div class="a1-card">
+            <i data-lucide="monitor" style="width:40px;height:40px;"></i>
+            <h4>Estrutura Premium</h4>
+            <p>Laboratórios com computadores atualizados e softwares oficiais. Nada de máquinas lentas.</p>
+        </div>
+        <div class="a1-card">
+            <i data-lucide="users" style="width:40px;height:40px;"></i>
+            <h4>Professores do Mercado</h4>
+            <p>Profissionais com vivência corporativa real para te ensinar o que as empresas de fato exigem.</p>
+        </div>
+        <div class="a1-card">
+            <i data-lucide="award" style="width:40px;height:40px;"></i>
+            <h4>Certificado Reconhecido</h4>
+            <p>Válido em todo território nacional para enriquecer o seu currículo imediatamente.</p>
+        </div>
+    </div>
+</section>
+
+<section class="a1-section" id="grade" style="background:#fff;">
+    <h2 class="a1-section-title">O que você vai aprender</h2>
+    <div class="a1-list-wrap">
+        <div class="a1-list-item">
+            <div class="a1-list-icon"><i data-lucide="check-circle" style="width:30px;height:30px;"></i></div>
+            <div class="a1-list-text">
+                <h4>Windows e Ambiente de Trabalho</h4>
+                <p>Gestão de pastas, segurança da informação, nuvem (Drive/OneDrive) e atalhos de produtividade.</p>
             </div>
         </div>
-        <div class="module-row">
-            <div class="module-icon"><i data-lucide="type"></i></div>
-            <div class="module-content">
-                <h4>Módulo 2: Editoração de Textos</h4>
-                <p>Microsoft Word: formatação de currículos, ofícios, regras ABNT básicas, estilos, margens e impressão correta de documentos.</p>
+        <div class="a1-list-item">
+            <div class="a1-list-icon"><i data-lucide="check-circle" style="width:30px;height:30px;"></i></div>
+            <div class="a1-list-text">
+                <h4>Editoração Profissional (Word)</h4>
+                <p>Criação de ofícios, currículos, TCCs e contratos seguindo as normas da ABNT.</p>
             </div>
         </div>
-        <div class="module-row">
-            <div class="module-icon"><i data-lucide="bar-chart-3"></i></div>
-            <div class="module-content">
-                <h4>Módulo 3: Planilhas e Gráficos</h4>
-                <p>Microsoft Excel: formatando células, inserindo fórmulas matemáticas (SOMA, MÉDIA), procv básico, tabelas e criação de gráficos.</p>
+        <div class="a1-list-item">
+            <div class="a1-list-icon"><i data-lucide="check-circle" style="width:30px;height:30px;"></i></div>
+            <div class="a1-list-text">
+                <h4>Gestão em Planilhas (Excel)</h4>
+                <p>Fórmulas básicas e intermediárias, relatórios financeiros, gráficos e organização de dados.</p>
             </div>
         </div>
-        <div class="module-row">
-            <div class="module-icon"><i data-lucide="presentation"></i></div>
-            <div class="module-content">
-                <h4>Módulo 4: Apresentações Profissionais</h4>
-                <p>Microsoft PowerPoint: design de slides, transições, animações, e dicas para apresentações atraentes em reuniões de negócios.</p>
-            </div>
-        </div>
-        <div class="module-row">
-            <div class="module-icon"><i data-lucide="wifi"></i></div>
-            <div class="module-content">
-                <h4>Módulo 5: Internet Corporativa</h4>
-                <p>Navegadores, antivírus básicos, ferramentas de busca avançada, agendamento de reuniões online e mercado digital.</p>
+        <div class="a1-list-item">
+            <div class="a1-list-icon"><i data-lucide="check-circle" style="width:30px;height:30px;"></i></div>
+            <div class="a1-list-text">
+                <h4>Apresentações de Impacto (PowerPoint)</h4>
+                <p>Animações, transições e criação de slides executivos para reuniões e palestras.</p>
             </div>
         </div>
     </div>
 </section>
 
-<footer class="info-footer">
-    <p>&copy; <?= date('Y') ?> Centro Técnico Profissionalizante Sophie Link. <a href="../index.php">Voltar para a página inicial</a></p>
+<footer class="a1-footer">
+    <p>&copy; <?= date('Y') ?> Sophie Link. <a href="../index.php" style="color:var(--a1-blue);">Voltar ao Início</a></p>
 </footer>
 
-<script>
-    lucide.createIcons();
-</script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

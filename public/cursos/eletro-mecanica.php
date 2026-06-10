@@ -1,109 +1,115 @@
 <?php
-// Eletromecânica — Sophie Link
+// Eletromecânica — Sophie Link (Arq 3: Split Screen)
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Técnico em Eletromecânica | Sophie Link</title>
-    <meta name="description" content="Curso de Técnico em Eletromecânica. Domine mecânica e elétrica na indústria pesada.">
+    <title>Eletromecânica | Sophie Link</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
-    <!-- Custom CSS ONLY for this page -->
-    <link rel="stylesheet" href="../assets/css/cursos/em-page.css?v=3">
-    <!-- Icons -->
+    <link rel="stylesheet" href="../assets/css/cursos/em-page.css?v=5">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-<nav class="em-nav">
-    <a href="../index.php" class="em-nav-logo">
-        <img src="../assets/images/logoNome.png" alt="Sophie Link">
-    </a>
-    <div class="em-nav-links">
-        <a href="../index.php">INÍCIO</a>
-        <a href="#modulos">MÓDULOS</a>
-        <a href="#specs">COMPETÊNCIAS</a>
+<header class="a3-header">
+    <div class="a3-hd-left">
+        <a href="../index.php" class="a3-logo">
+            <img src="../assets/images/logoNome.png" alt="Sophie Link">
+        </a>
     </div>
-    <a href="../index.php#fale-conosco" class="em-btn">MATRICULE-SE</a>
-</nav>
+    <div class="a3-hd-right">
+        <nav class="a3-nav">
+            <a href="#diferenciais">Vantagens</a>
+            <a href="#grade">Programa</a>
+        </nav>
+        <a href="../index.php#fale-conosco" class="a3-btn">MATRICULE-SE</a>
+    </div>
+</header>
 
-<section class="em-hero">
-    <div class="em-hero-left">
-        <h1>Técnico em <span>Eletromecânica</span></h1>
-        <p>A força mecânica não atua sem o controle elétrico. O mercado industrial pesado exige profissionais híbridos e completos, capazes de solucionar falhas conjuntas de forma rápida e eficiente.</p>
-        <div style="margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="#modulos" class="em-btn">Grade Curricular</a>
-            <a href="../index.php#fale-conosco" class="em-btn em-btn-outline">Inscrever-se</a>
+<section class="a3-hero">
+    <div class="a3-hero-left">
+        <h1>O Profissional que a <br><span>Indústria</span> Precisa.</h1>
+        <p>O Técnico em Eletromecânica une mecânica, elétrica e automação em uma formação prática de alto nível, tornando-se indispensável no mercado de trabalho atual.</p>
+        
+        <div class="a3-stats-inline">
+            <div class="a3-stat-item">
+                <h3>Altíssima</h3>
+                <p>Demanda de Mercado</p>
+            </div>
+            <div class="a3-stat-item">
+                <h3>400h</h3>
+                <p>Aulas de Laboratório</p>
+            </div>
+            <div class="a3-stat-item">
+                <h3>CREA</h3>
+                <p>Registro Profissional</p>
+            </div>
         </div>
     </div>
-    <div class="em-hero-right">
-        <div class="gear-animation">
-            <i data-lucide="settings" class="gear-1" style="width:200px; height:200px;"></i>
-            <i data-lucide="settings" class="gear-2" style="width:120px; height:120px;"></i>
+    <div class="a3-hero-right">
+        <i data-lucide="settings"></i>
+    </div>
+</section>
+
+<section class="a3-section" id="diferenciais">
+    <h2 class="a3-title">Habilidades Integradas</h2>
+    <div class="a3-table-grid">
+        <div class="a3-table-cell">
+            <i data-lucide="wrench" style="width:40px;height:40px;"></i>
+            <h3>Manutenção Mecânica</h3>
+            <p>Domine ajustagem, lubrificação, alinhamento de eixos e manutenção preditiva de componentes pesados da indústria moderna.</p>
+        </div>
+        <div class="a3-table-cell">
+            <i data-lucide="zap" style="width:40px;height:40px;"></i>
+            <h3>Sistemas Elétricos</h3>
+            <p>Interpretação de diagramas unifilares, montagem de quadros de comando e parametrização de motores e inversores de frequência.</p>
+        </div>
+        <div class="a3-table-cell">
+            <i data-lucide="cpu" style="width:40px;height:40px;"></i>
+            <h3>Automação Básica</h3>
+            <p>A ponte perfeita: entenda na prática como sensores digitais e Controladores Lógicos Programáveis (CLP) acionam atuadores mecânicos.</p>
+        </div>
+        <div class="a3-table-cell">
+            <i data-lucide="shield-alert" style="width:40px;height:40px;"></i>
+            <h3>Segurança e Soldagem</h3>
+            <p>Normas rigorosas de segurança industrial e fundamentos sólidos em processos de soldagem com Eletrodo Revestido.</p>
         </div>
     </div>
 </section>
 
-<section class="em-section" id="modulos">
-    <h2 class="em-title">Arquitetura de Formação</h2>
-    <div class="em-grid">
-        <div class="em-card">
-            <div class="em-card-icon"><i data-lucide="wrench" style="width:40px;height:40px;"></i></div>
-            <h3>Mecânica de Manutenção</h3>
-            <p>Ajustagem, metrologia, lubrificação industrial, alinhamento de eixos, troca de rolamentos e manutenção de redutores pesados.</p>
+<section class="a3-section" id="grade" style="background:#e2e8f0;">
+    <h2 class="a3-title">Estrutura Curricular</h2>
+    <div class="a3-accordion">
+        <div class="a3-acc-item">
+            <div class="a3-acc-header">I. Fundamentos Mecânicos <i data-lucide="chevron-down"></i></div>
+            <div class="a3-acc-body">Desenho Técnico Computadorizado, Metrologia (Paquímetro, Micrômetro) e Tecnologia dos Materiais focado na usinagem.</div>
         </div>
-        <div class="em-card">
-            <div class="em-card-icon"><i data-lucide="zap" style="width:40px;height:40px;"></i></div>
-            <h3>Eletricidade Industrial</h3>
-            <p>Circuitos elétricos, diagramas unifilares, motores de indução trifásicos, contatores e montagem de quadros de comando.</p>
+        <div class="a3-acc-item">
+            <div class="a3-acc-header">II. Instalações e Comandos <i data-lucide="chevron-down"></i></div>
+            <div class="a3-acc-body">Eletricidade predial e industrial, contatores, relés térmicos e sistemas de proteção e segurança (NR-10).</div>
         </div>
-        <div class="em-card">
-            <div class="em-card-icon"><i data-lucide="droplets" style="width:40px;height:40px;"></i></div>
-            <h3>Sistemas Fluídicos</h3>
-            <p>Acionamentos hidráulicos e pneumáticos. Leitura de esquemas de válvulas, bombas, cilindros e compressores industriais.</p>
+        <div class="a3-acc-item">
+            <div class="a3-acc-header">III. Sistemas Fluídicos <i data-lucide="chevron-down"></i></div>
+            <div class="a3-acc-body">Circuitos de Pneumática e Hidráulica industrial básica. Leitura de esquemas de válvulas, cilindros e compressores.</div>
         </div>
-        <div class="em-card">
-            <div class="em-card-icon"><i data-lucide="cpu" style="width:40px;height:40px;"></i></div>
-            <h3>Automação & CLP</h3>
-            <p>Introdução a Controladores Lógicos Programáveis. Entenda como sensores elétricos e código controlam atuadores mecânicos.</p>
+        <div class="a3-acc-item">
+            <div class="a3-acc-header">IV. Integração de Sistemas <i data-lucide="chevron-down"></i></div>
+            <div class="a3-acc-body">Trabalho de conclusão focado na integração de todos os sistemas, troubleshooting, manutenção corretiva e preventiva de equipamentos combinados.</div>
         </div>
     </div>
 </section>
 
-<section class="em-specs-section" id="specs">
-    <h2 class="em-title">O Perfil Híbrido</h2>
-    <div class="em-spec-grid">
-        <div class="em-spec-col">
-            <h4><i data-lucide="settings"></i> Eixo Mecânico</h4>
-            <ul class="em-spec-list">
-                <li>Leitura de Desenho Técnico Mecânico Avançado</li>
-                <li>Uso de Paquímetro, Micrômetro e Relógio Comparador</li>
-                <li>Soldagem Básica (Eletrodo Revestido / MIG)</li>
-                <li>Técnicas de Desmontagem de Conjuntos Industriais</li>
-            </ul>
-        </div>
-        <div class="em-spec-col">
-            <h4><i data-lucide="power"></i> Eixo Elétrico</h4>
-            <ul class="em-spec-list">
-                <li>Multímetro, Alicate Amperímetro e Megômetro</li>
-                <li>Partidas Direta, Estrela-Triângulo e Inversores</li>
-                <li>Fechamento de Motores de 6, 9 e 12 Terminais</li>
-                <li>NR-10 (Segurança em Instalações Elétricas)</li>
-            </ul>
-        </div>
+<footer class="a3-footer">
+    <div class="a3-ft-left">
+        <p>Centro Universitário de Profissões - Sophie Link.</p>
     </div>
-</section>
-
-<footer class="em-footer">
-    <h3 style="font-family:var(--font-heading);font-size:2.5rem;color:#FFF;margin-bottom:1rem;text-transform:uppercase;">O Profissional do futuro é Híbrido</h3>
-    <p style="color:var(--em-metal);">Sophie Link &copy; <?= date('Y') ?></p>
-    <br>
-    <a href="../index.php" style="color:var(--em-orange);text-decoration:none;font-weight:bold;font-size:1.2rem;">VOLTAR AO INÍCIO</a>
+    <div class="a3-ft-right">
+        <a href="../index.php">RETORNAR À PÁGINA INICIAL</a>
+    </div>
 </footer>
 
-<script>
-    lucide.createIcons();
-</script>
+<script>lucide.createIcons();</script>
 </body>
 </html>
