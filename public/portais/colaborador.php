@@ -164,19 +164,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'add_emp
     } else {
         $novo_email = trim($_POST['email'] ?? '');
         $nova_senha = $_POST['senha_acesso'] ?? '';
-        
+
         if (empty($novo_email) || empty($nova_senha) || empty(trim($_POST['nome'] ?? ''))) {
             $erro = "Nome da Empresa, E-mail e Senha de Acesso são obrigatórios para gerar o login.";
         } else {
             try {
                 $pdo->beginTransaction();
-                
+
                 $empresaId = $empresaModel->criar($_POST);
-                
+
                 $hash = password_hash($nova_senha, PASSWORD_DEFAULT);
                 $stmtUser = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, nivel, empresa_id) VALUES (?, ?, ?, 'empresa', ?)");
                 $stmtUser->execute([trim($_POST['nome']), $novo_email, $hash, $empresaId]);
-                
+
                 $pdo->commit();
                 $sucesso = "Empresa adicionada e acesso ao portal gerado com sucesso!";
             } catch (Exception $e) {
@@ -855,7 +855,8 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                 </thead>
                                 <tbody id="faltas_tbody">
                                     <?php
-                                    $stmtFaltas = $pdo->query("
+                                    $stmtFaltas = $pdo->query(
+                                        "
                                     SELECT f.id, f.data_registro, f.status, f.status_justificativa, f.arquivo_justificativa, f.aprendiz_id, a.nome AS aluno_nome, d.nome AS disc_nome, c.nome AS curso_nome
                                     FROM frequencia f
                                     JOIN aprendizes a ON f.aprendiz_id = a.id
@@ -863,8 +864,8 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                     LEFT JOIN turmas t ON a.turma_id = t.id
                                     LEFT JOIN cursos c ON t.curso_id = c.id
                                     WHERE f.status IN ('falta', 'justificada')
-                                    ORDER BY a.nome ASC, f.data_registro DESC
-");
+                                    ORDER BY a.nome ASC, f.data_registro DESC"
+                                    );
                                     $todasFaltas = $stmtFaltas->fetchAll(PDO::FETCH_ASSOC);
 
                                     $alunosComFaltas = [];

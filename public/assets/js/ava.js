@@ -82,9 +82,9 @@ function renderCatCard(cat, discId) {
             <span class="cat-card-label">${cat.label}</span>
         </div>
         <div class="cat-card-body">
-            <div class="cat-card-title" style="text-transform: capitalize;">${labelTitle}</div>
+            <div class="cat-card-title">${labelTitle}</div>
             <div class="cat-progress-bar"><div class="cat-progress-fill" style="width:${pct}%;"></div></div>
-            <div class="cat-card-meta">${n}/${n} Tópico(s) disponível(is)</div>
+            <div class="cat-card-meta">${n}/${n} Tópicos concluídos</div>
             <div class="cat-check">${n > 0 ? '✓' : ''}</div>
         </div>
     </div>`;
