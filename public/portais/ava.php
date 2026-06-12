@@ -3,7 +3,7 @@
 session_start();
 
 require_once '../../includes/auth.php';
-protect_page(['aluno']);
+protect_page(['aluno', 'professor', 'admin']);
 
 require_once '../../includes/db.php';
 /** @var \PDO $pdo */
@@ -260,7 +260,7 @@ if (!$isProf) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-<link rel="stylesheet" href="../assets/css/ava.css">
+<link rel="stylesheet" href="../assets/css/ava.css?v=<?= time() ?>">
     <script src="../assets/js/a11y.js" defer></script>
 </head>
 <body>
@@ -270,10 +270,9 @@ if (!$isProf) {
      ================================================================ -->
 <nav class="topnav">
     <a href="../index.php" class="tn-logo" style="gap: 8px;">
-        <img src="../assets/images/logo_hd.png" alt="Sophie Link Logo" style="height: 38px; object-fit: contain;">
         <div class="tn-logo-text">
-            <div class="tn-logo-name">SOPHIE LINK</div>
-            <div class="tn-logo-sub">Centro Técnico Profissionalizante</div>
+            <div class="tn-logo-name" style="font-size: 1.1rem;">SOPHIE LINK</div>
+            <div class="tn-logo-sub" style="font-size: 0.65rem; color:rgba(255,255,255,0.8);">CENTRO TÉCNICO PROFISSIONALIZANTE</div>
         </div>
     </a>
 
@@ -454,9 +453,9 @@ if (!$isProf) {
      HERO BANNER
      ================================================================ -->
 <div class="hero">
-    <img src="../assets/images/ava_hero.png" alt="Campus Sophie Link" loading="eager">
+    <img src="../assets/images/hero_bg.png" alt="Campus Sophie Link" loading="eager">
     <div class="hero-overlay">
-        <div class="hero-greeting"><?= $isProf ? 'Bem-vindo ao AVA, Prof.' : 'Olá,' ?> <?= strtoupper(htmlspecialchars($primeiroNome)) ?></div>
+        <div class="hero-greeting">Olá, <strong><?= strtoupper(htmlspecialchars($primeiroNome)) ?></strong></div>
         <?php if ($isProf): ?>
         <div style="font-size:0.85rem;color:rgba(255,255,255,0.8);margin-top:6px;">Navegue pelas suas turmas e acesse o Portal do Professor para lançar notas e frequência.</div>
         <?php endif; ?>
@@ -523,16 +522,13 @@ if (!$isProf) {
                             $mats     = $materiaisPorDisc[$did] ?? ['apresentacao'=>[],'pdf'=>[],'atividade'=>[],'avaliacao'=>[],'aviso'=>[]];
                             $nItens   = count($mats['pdf']) + count($mats['atividade']) + count($mats['avaliacao']) + count($mats['apresentacao']);
                             $nPend    = count(array_filter($mats['atividade'], fn($a) => !$a['entrega_status']));
+                            $bgImage  = !empty($disc['imagem_capa']) ? '../' . $disc['imagem_capa'] : '../assets/images/course_placeholder.png';
                         ?>
                         <a href="#" class="course-card" onclick="openCourse(event, <?= $did ?>)">
-                            <?php if (!empty($disc['imagem_capa'])): ?>
-                                <div class="cc-thumb" style="background-image: url('../<?= htmlspecialchars($disc['imagem_capa']) ?>'); background-size: cover; background-position: center;">
-                                </div>
-                            <?php else: ?>
-                                <div class="cc-thumb cc-thumb-solid">
-                                    <i data-lucide="book-open" style="width:32px;height:32px;color:rgba(255,255,255,0.85);"></i>
-                                </div>
-                            <?php endif; ?>
+                            <div class="cc-thumb" style="background-image: url('<?= $bgImage ?>'); background-size: cover; background-position: center; position: relative;">
+                                <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);"></div>
+                            </div>
+
                             <div class="cc-body">
                                 <div class="cc-title"><?= htmlspecialchars($disc['nome']) ?></div>
                                 <div class="cc-code">

@@ -110,8 +110,9 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
         :root {
             --bg-body: #f8f9fa;
             --sidebar-w: 320px;
-            --c-brand: #1a2a5c; /* Dark blue from screenshot */
-            --c-sel: #e8f0fe;
+            --c-brand: #0A0F1A; /* Super dark navy/black from the request */
+            --c-orange: #FF6B00; /* Institutional Orange */
+            --c-sel: #FFF0E6; /* Light orange for selection */
             --c-border: #dadce0;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -172,8 +173,8 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
         .sb-item:hover { background: #f1f3f4; }
         .sb-item.active {
             background: var(--c-sel);
-            border-color: #1967d2;
-            color: #1967d2;
+            border-color: var(--c-orange);
+            color: var(--c-orange);
         }
         .sb-item-left { display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .sb-item-title { display: flex; align-items: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem; }
@@ -184,7 +185,7 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
             border-top: 1px solid var(--c-border);
         }
         .sb-end-link {
-            color: #1967d2; text-decoration: none; font-weight: 600; font-size: 0.85rem; display: block; text-align: center;
+            color: var(--c-orange); text-decoration: none; font-weight: 600; font-size: 0.85rem; display: block; text-align: center;
         }
 
         /* MAIN VIEWER */
@@ -213,7 +214,7 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
         .nav-btn.disabled { opacity: 0.4; pointer-events: none; }
         
         .tb-actions { display: flex; gap: 15px; }
-        .action-btn { display: flex; align-items: center; gap: 6px; color: #1967d2; font-weight: 600; font-size: 0.85rem; text-decoration: none; }
+        .action-btn { display: flex; align-items: center; gap: 6px; color: var(--c-orange); font-weight: 600; font-size: 0.85rem; text-decoration: none; }
         
         .viewer-container {
             flex: 1;
@@ -260,7 +261,7 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
                 <a href="?id=<?= $mat['id'] ?>" class="sb-item <?= $mat['id'] == $id ? 'active' : '' ?>">
                     <div class="sb-item-left">
                         <div class="sb-item-title">
-                            <i data-lucide="file-text" style="width:16px; color: <?= $mat['id'] == $id ? '#1967d2' : '#555' ?>;"></i>
+                            <i data-lucide="file-text" style="width:16px; color: <?= $mat['id'] == $id ? 'var(--c-orange)' : '#555' ?>;"></i>
                             <?= htmlspecialchars($mat['titulo']) ?>
                         </div>
                         <?php if (in_array($tipo, ['atividade', 'avaliacao'])): ?>
@@ -346,7 +347,7 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
                         </div>
                     <?php else: ?>
                         <!-- Mockup visual igual ao da screenshot -->
-                        <div style="background: #3f54ab; height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <div style="background: var(--c-orange); height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                             
                             <!-- Efeito de papel rasgado nas laterais (simulado com divs brancas giradas) -->
                             <div style="position: absolute; right: -20px; top: -10%; width: 50px; height: 120%; background: #fff; transform: rotate(3deg);"></div>
@@ -383,7 +384,7 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
                     <!-- MOCK UPLOADED FILE -->
                     <div style="border: 1px solid #ddd; padding: 20px; margin-bottom: 30px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="display: flex; align-items: center; gap: 8px; color: #1967d2; font-size: 0.9rem;">
+                            <div style="display: flex; align-items: center; gap: 8px; color: var(--c-orange); font-size: 0.9rem;">
                                 <i data-lucide="file-text" style="width:16px; color:#555;"></i>
                                 Certificado.pdf <span style="color:#888; font-size:0.75rem;">(1,56 MB)</span>
                             </div>

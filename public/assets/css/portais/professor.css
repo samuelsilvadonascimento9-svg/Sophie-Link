@@ -3,11 +3,11 @@
    ================================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-    --brand:        #7C3AED;          /* violeta principal */
-    --brand-d:      #6D28D9;
-    --brand-lt:     #F5F3FF;
-    --brand-mid:    #EDE9FE;
-    --accent:       #FF6B00;          /* laranja logo */
+    --brand:        #FF6B00;          /* laranja principal Sophie Link */
+    --brand-d:      #D95A00;          /* laranja escuro hover */
+    --brand-lt:     #FFF0E6;          /* laranja bem claro para fundos */
+    --brand-mid:    #FFD5B8;          /* bordas laranja */
+    --accent:       #0A0F1A;          /* azul/preto super escuro */
     --bg:           #F8F9FB;          /* fundo geral */
     --surface:      #FFFFFF;
     --border:       #E5E7EB;
@@ -42,45 +42,37 @@ a    { text-decoration: none; color: inherit; }
 img  { display: block; max-width: 100%; }
 
 /* ================================================================
-   TOP NAVBAR — Full Light
+   TOPNAV CORPORATIVA (Inspirada no Brightspace)
    ================================================================ */
 .topnav {
-    height: var(--nav-h);
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; padding: 0 1.5rem;
-    position: sticky; top: 0; z-index: 500;
-    box-shadow: var(--shadow-sm); gap: 0;
+    height: 60px; background: #0A0F1A; border-bottom: none;
+    display: flex; align-items: center; padding: 0 24px; gap: 20px;
+    position: sticky; top: 0; z-index: 100; color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
-.tn-logo {
-    display: flex; align-items: center; gap: 10px;
-    padding-right: 1.25rem; border-right: 1px solid var(--border);
-    flex-shrink: 0; text-decoration: none;
-}
+.tn-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
 .tn-logo-mark {
-    width: 34px; height: 34px; background: var(--accent);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem; font-weight: 700; color: #fff; letter-spacing: -.5px;
+    width: 34px; height: 34px; background: var(--brand); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem; color: #fff;
 }
-.tn-logo-text  { line-height: 1.15; }
-.tn-logo-name  { font-size: 0.8rem; font-weight: 700; color: var(--accent); letter-spacing: .3px; }
-.tn-logo-sub   { font-size: 0.58rem; color: var(--muted); }
-.tn-divider    { width: 1px; background: var(--border); align-self: stretch; margin: 0 1rem; }
-.tn-site-name  { font-size: 0.88rem; font-weight: 600; color: var(--text); }
-.tn-spacer     { flex: 1; }
-.tn-icons      { display: flex; align-items: center; gap: 2px; }
-.tn-icon-btn {
-    width: 36px; height: 36px; border-radius: 50%; background: none;
-    border: none; cursor: pointer; display: flex; align-items: center;
-    justify-content: center; color: var(--muted); position: relative; transition: var(--transition);
+.tn-logo-name { font-weight: 700; font-size: 0.95rem; line-height: 1.1; letter-spacing: -0.02em; }
+.tn-logo-sub  { font-size: 0.65rem; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.tn-site-name { font-size: 0.95rem; font-weight: 600; color: rgba(255,255,255,0.9); border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; }
+.tn-spacer    { flex-grow: 1; }
+.tn-icons     { display: flex; gap: 12px; align-items: center; }
+.tn-icon-btn  {
+    width: 36px; height: 36px; border-radius: 50%; border: none; background: transparent; color: #fff;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;
+    transition: background 0.2s;
 }
-.tn-icon-btn:hover { background: var(--brand-lt); color: var(--brand); }
+.tn-icon-btn:hover { background: rgba(255,255,255,0.1); }
 .tn-icon-btn i { width: 18px; height: 18px; }
 .tn-badge {
     position: absolute; top: 4px; right: 4px; width: 15px; height: 15px;
     background: var(--red); color: #fff; border-radius: 50%;
     font-size: 0.52rem; font-weight: 700; display: flex; align-items: center;
-    justify-content: center; border: 2px solid var(--surface);
+    justify-content: center; border: 2px solid #0A0F1A;
 }
 .tn-user {
     display: flex; align-items: center; gap: 8px; padding: 5px 10px;
@@ -125,23 +117,17 @@ img  { display: block; max-width: 100%; }
 .subnav-sep         { width: 1px; background: var(--border); height: 18px; margin: 0 2px; flex-shrink: 0; }
 
 /* ================================================================
-   HERO BANNER — Gradiente refinado, fundo claro
+   HERO BANNER
    ================================================================ */
 .hero {
     position: relative; overflow: hidden;
-    background: linear-gradient(130deg, var(--brand) 0%, #4C1D95 60%, #1E1B4B 100%);
-    padding: 2rem 3rem 2.2rem;
-    color: #fff;
+    height: 220px;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 3rem; color: #fff;
+    /* O background fotográfico é injetado via inline style no HTML */
 }
-.hero::after {
-    content: ''; position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-.hero-icon { position: absolute; right: 3rem; top: 50%; transform: translateY(-50%); width: 140px; height: 140px; opacity: 0.08; }
-.hero-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; opacity: .7; margin-bottom: 6px; }
-.hero-title  { font-size: 1.7rem; font-weight: 300; letter-spacing: -.3px; line-height: 1.2; }
+.hero-title  { font-size: 1.9rem; font-weight: 300; letter-spacing: -.3px; line-height: 1.2; position: relative; z-index: 2; }
 .hero-title strong { font-weight: 700; }
-.hero-sub    { font-size: 0.82rem; opacity: .75; margin-top: 6px; }
 
 /* ================================================================
    LAYOUT PRINCIPAL
@@ -199,12 +185,8 @@ img  { display: block; max-width: 100%; }
 }
 .disc-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); border-color: var(--brand-mid); }
 .disc-cover {
-    height: 96px; position: relative;
-    background: linear-gradient(135deg, var(--brand) 0%, #4C1D95 100%);
-}
-.disc-cover-icon {
-    position: absolute; right: 12px; bottom: 8px;
-    width: 44px; height: 44px; opacity: .15; color: #fff;
+    height: 140px; position: relative;
+    background-color: var(--border-lt); /* Fallback */
 }
 .disc-badge {
     position: absolute; top: 10px; left: 10px;

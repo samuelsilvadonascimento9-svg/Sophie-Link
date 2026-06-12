@@ -225,7 +225,7 @@ if (isset($_GET['msg']) && $_GET['msg'] === 'ok') {
 
 // ─── TURMAS DO PROFESSOR ──────────────────────────────────────────────────────
 $stmtTurmas = $pdo->prepare("
-    SELECT pd.*, t.nome AS turma_nome, d.nome AS disciplina_nome, d.id AS disc_id, t.id AS turma_id
+    SELECT pd.*, t.nome AS turma_nome, d.nome AS disciplina_nome, d.id AS disc_id, d.imagem_capa, t.id AS turma_id
     FROM professor_disciplina pd
     JOIN turmas t ON t.id = pd.turma_id
     JOIN disciplinas d ON d.id = pd.disciplina_id
@@ -340,13 +340,12 @@ $gargalosProf = $stmtGargalos->fetchAll();
     <div class="subnav-sep"></div>
     <div class="subnav-link" id="btn-ia" onclick="showSec('ia', this)"><i data-lucide="sparkles"></i> Simulado com IA</div>
     <div class="subnav-sep"></div>
-    <a href="ava.php" class="subnav-link" style="color:#a78bfa;font-weight:700;"><i data-lucide="monitor-play"></i> Ver AVA</a>
+    <a href="ava.php" target="_blank" class="subnav-link" style="color:var(--brand);font-weight:700;"><i data-lucide="monitor-play"></i> Ver AVA</a>
 </div>
 
 <!-- HERO -->
-<div class="hero">
-    <i data-lucide="graduation-cap" class="hero-icon"></i>
-    <div class="hero-title">Bem-vindo de volta, <strong><?= htmlspecialchars($primeiroNome) ?></strong></div>
+<div class="hero" style="background-image: linear-gradient(rgba(10, 15, 26, 0.75), rgba(10, 15, 26, 0.95)), url('../assets/images/hero_bg.png'); background-size: cover; background-position: center;">
+    <div class="hero-title">Olá, <strong><?= htmlspecialchars(mb_strtoupper($primeiroNome, 'UTF-8')) ?></strong></div>
 </div>
 
 <div class="container">
@@ -435,18 +434,20 @@ $gargalosProf = $stmtGargalos->fetchAll();
                         ?>
                         <?php foreach ($turmasProf as $i => $tp): ?>
                         <?php
-                        $grad     = $gradients[$i % count($gradients)];
                         $nAlunos  = $alunosPorTurma[$tp['turma_id']] ?? 0;
                         $nMats    = $matsPorDisc[$tp['disc_id']] ?? 0;
+                        
+                        // Determina a imagem de fundo: usa a do banco se existir, senão a padrão fotográfica
+                        $bgImage = !empty($tp['imagem_capa']) ? '../' . $tp['imagem_capa'] : '../assets/images/course_placeholder.png';
                         ?>
                         <div class="disc-card">
-                            <div class="disc-cover" style="background:<?= $grad ?>">
+                            <div class="disc-cover" style="background-image: url('<?= $bgImage ?>'); background-size: cover; background-position: center;">
+                                <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);"></div>
                                 <span class="disc-badge"><?= htmlspecialchars($tp['turma_nome']) ?></span>
-                                <i data-lucide="book-open" class="disc-cover-icon"></i>
                             </div>
                             <div class="disc-body">
                                 <div class="disc-name"><?= htmlspecialchars($tp['disciplina_nome']) ?></div>
-                                <div class="disc-turma"><?= htmlspecialchars($tp['turma_nome']) ?></div>
+                                <div class="disc-turma">Turma: <?= htmlspecialchars($tp['turma_nome']) ?></div>
                             </div>
                             <div class="disc-stats">
                                 <div class="disc-stat"><i data-lucide="users"></i> <?= $nAlunos ?> alunos</div>
