@@ -193,6 +193,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'add_emp
     }
 }
 
+// Lógica CRUD: Emitir Certificado
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'emitir_certificado') {
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = "Requisição inválida (CSRF). Tente novamente.";
+    } else {
+        $aprendiz_id = (int)$_POST['aprendiz_id'];
+        $curso = trim($_POST['curso'] ?? '');
+        $carga = (int)$_POST['carga_horaria'];
+        $data = $_POST['data_conclusao'];
+        
+        if (!$aprendiz_id || empty($curso) || !$carga || empty($data)) {
+            $erro = "Preencha todos os campos do certificado.";
+        } else {
+            $ano = date('Y');
+            $random = strtoupper(substr(md5(uniqid()), 0, 4));
+            $codigo = "SL-{$ano}-{$random}";
+            
+            try {
+                $stmt = $pdo->prepare("INSERT INTO certificados (codigo, aprendiz_id, curso, carga_horaria, data_conclusao, emitido_por) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$codigo, $aprendiz_id, $curso, $carga, $data, $_SESSION['usuario_id'] ?? null]);
+                $sucesso = "Certificado registrado com sucesso! Código: " . $codigo;
+            } catch (Exception $e) {
+                $erro = "Erro ao registrar certificado: " . $e->getMessage();
+            }
+        }
+    }
+}
+
+// Revogar Certificado
+if (isset($_GET['del_cert'])) {
+    $id = (int)$_GET['del_cert'];
+    $pdo->prepare("DELETE FROM certificados WHERE id = ?")->execute([$id]);
+    $sucesso = "Certificado revogado com sucesso.";
+}
+
 // Métricas (query leve - apenas contagens, sem buscar todos os alunos)
 $totalAlunos  = (int)$pdo->query("SELECT COUNT(*) FROM aprendizes WHERE deleted_at IS NULL")->fetchColumn();
 $ativos       = (int)$pdo->query("SELECT COUNT(*) FROM aprendizes WHERE situacao_aluno = 'cursando' AND deleted_at IS NULL")->fetchColumn();
@@ -1597,6 +1632,93 @@ $aprendizes = $pdo->query("
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ===== SEÇÃO: CERTIFICADOS ===== -->
+    <div id="sec-certificados" class="sec" style="display:none;">
+        <div class="page-header">
+            <h1 class="page-title">Emitir Certificados</h1>
+            <p class="page-desc">Gere o código de autenticidade para alunos concluintes. O certificado físico ou PDF deve ser gerado pelo sistema terceirizado.</p>
+        </div>
+        
+        <div class="widget">
+            <div class="w-head">
+                <div class="w-title"><i data-lucide="award"></i> Registrar Novo Certificado</div>
+            </div>
+            <div class="w-body">
+                <form method="POST" id="formCertificado">
+                    <input type="hidden" name="acao" value="emitir_certificado">
+                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                        <div>
+                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Aluno Concluinte *</label>
+                            <select name="aprendiz_id" class="input-field" required>
+                                <option value="">Selecione o aluno...</option>
+                                <?php foreach ($aprendizes as $a): ?>
+                                    <option value="<?= $a['id'] ?>"><?= htmlspecialchars($a['nome']) ?> (<?= htmlspecialchars($a['curso_nome'] ?? 'Sem curso') ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Curso / Título do Certificado *</label>
+                            <input type="text" name="curso" class="input-field" placeholder="Ex: Técnico em Eletromecânica" required>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                        <div>
+                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Carga Horária (horas) *</label>
+                            <input type="number" name="carga_horaria" class="input-field" placeholder="Ex: 1200" required>
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Data de Conclusão *</label>
+                            <input type="date" name="data_conclusao" class="input-field" required>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align:right;">
+                        <button type="submit" class="btn-primary"><i data-lucide="check" style="width:14px;height:14px;display:inline;"></i> Emitir Código de Validação</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="widget" style="margin-top:20px;">
+            <div class="w-head">
+                <div class="w-title"><i data-lucide="list"></i> Certificados Emitidos</div>
+            </div>
+            <div class="w-body" style="padding:0;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Aluno</th>
+                            <th>Curso</th>
+                            <th>Emissão</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $certs = $pdo->query("SELECT c.*, a.nome as aluno_nome FROM certificados c JOIN aprendizes a ON c.aprendiz_id = a.id ORDER BY c.data_emissao DESC")->fetchAll();
+                        if(empty($certs)): ?>
+                            <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted)">Nenhum certificado registrado ainda.</td></tr>
+                        <?php else: foreach($certs as $c): ?>
+                            <tr>
+                                <td style="font-family:monospace;font-weight:bold;color:var(--brand)"><?= $c['codigo'] ?></td>
+                                <td><?= htmlspecialchars($c['aluno_nome']) ?></td>
+                                <td><?= htmlspecialchars($c['curso']) ?></td>
+                                <td><?= date('d/m/Y H:i', strtotime($c['data_emissao'])) ?></td>
+                                <td>
+                                    <a href="?del_cert=<?= $c['id'] ?>" onclick="return confirm('Revogar este certificado?')" style="color:var(--red);font-size:0.8rem;font-weight:600;">Revogar</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

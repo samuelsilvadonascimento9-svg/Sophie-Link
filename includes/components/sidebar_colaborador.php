@@ -30,6 +30,9 @@
                 <div class="nav-link" id="nav-documentos" onclick="showSec('documentos', this)">
                     <i data-lucide="file-text"></i> Declarações
                 </div>
+                <div class="nav-link" id="nav-certificados" onclick="showSec('certificados', this)">
+                    <i data-lucide="award"></i> Certificados
+                </div>
                 <div class="nav-link" id="nav-faltas" onclick="showSec('faltas', this)">
                     <i data-lucide="user-x"></i> Justificar Faltas
                     <?php if (($faltasPendentes ?? 0) > 0): ?>

@@ -93,6 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         <a href="#cursos" class="sm-link" onclick="toggleMenu()"><i data-lucide="book-open"></i> Nossos Cursos</a>
         <a href="#contato" class="sm-link" onclick="toggleMenu()"><i data-lucide="map-pin"></i> Contato</a>
 
+        <div class="sm-section">Serviços</div>
+        <a href="verificar-certificado.php" class="sm-link"><i data-lucide="shield-check"></i> Verificar Certificado</a>
+
         <div class="sm-section">Portais</div>
 
         <!-- Accordion: Sou Aluno -->
@@ -666,6 +669,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         <li><a href="#cursos">Nossos Cursos</a></li>
                         <li><a href="#parceiros">Empresas Parceiras</a></li>
                         <li><a href="#fale-conosco">Fale Conosco</a></li>
+                        <li><a href="verificar-certificado.php" style="color: var(--brand); font-weight: 500;"><i data-lucide="shield-check" style="width: 14px; height: 14px; margin-right: 4px; display: inline-block; vertical-align: middle;"></i>Verificar Certificado</a></li>
                     </ul>
                 </div>
             </div>
