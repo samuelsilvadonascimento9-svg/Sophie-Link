@@ -80,15 +80,32 @@ try {
     $client = new PaymentClient();
     $payment = $client->get($payment_id);
     
-    // O webhook pode ser chamado várias vezes e por vários motivos (ex: pagamento criado, pendente, rejeitado).
-    // Nós só processamos a baixa da fatura se o status for realmente 'approved' (aprovado).
+    // O webhook pode ser chamado várias vezes e por vários motivos.
     if ($payment->status === 'approved') {
-        // Buscamos a referência da fatura (que nós passamos lá no checkout_mp.php)
         $fatura_id = $payment->external_reference;
-        
         if ($fatura_id) {
             $stmt = $pdo->prepare("UPDATE financeiro SET status = 'pago', data_pagamento = NOW() WHERE id = ?");
             $stmt->execute([$fatura_id]);
+            
+            // Recibo Automático via WhatsApp
+            $ch = curl_init('http://' . $_SERVER['HTTP_HOST'] . '/devweb/Sophie-Link/public/api/whatsapp/send_webhook.php');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                'fatura_id' => $fatura_id, 
+                'is_receipt' => true,
+                'server_key' => 'mp_webhook_secret_local'
+            ]));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_exec($ch);
+            curl_close($ch);
+        }
+    } elseif (in_array($payment->status, ['rejected', 'cancelled', 'refunded', 'charged_back'])) {
+        $fatura_id = $payment->external_reference;
+        if ($fatura_id) {
+            $novoStatus = ($payment->status === 'refunded' || $payment->status === 'charged_back') ? 'estornado' : 'falhou';
+            $stmt = $pdo->prepare("UPDATE financeiro SET status = ?, observacoes = CONCAT(IFNULL(observacoes, ''), '\n[MP] Status de pagamento: ', ?) WHERE id = ?");
+            $stmt->execute([$novoStatus, $payment->status, $fatura_id]);
         }
     }
     

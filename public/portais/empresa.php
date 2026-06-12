@@ -317,6 +317,31 @@ function urlFin(string $status = '', string $mes = ''): string {
         window._chartEvolPago    = <?= $evolPago ?>;
         window._chartEvolPend    = <?= $evolPend ?>;
         window._activeTab        = <?= json_encode($activeTab) ?>;
+
+        async function assinarPlano(valor) {
+            if (valor <= 0) {
+                alert('O valor estimado da fatura precisa ser maior que zero para assinar o plano.');
+                return;
+            }
+            if (!confirm('Deseja configurar o débito automático mensal (R$ ' + valor.toFixed(2) + ')?\n\nVocê será redirecionado para o ambiente seguro do Mercado Pago.')) {
+                return;
+            }
+            try {
+                const res = await fetch('../api/pagamentos/subscription_mp.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({valor: valor})
+                });
+                const data = await res.json();
+                if (data.success && data.init_point) {
+                    window.location.href = data.init_point;
+                } else {
+                    alert('Erro ao criar assinatura: ' + (data.error || 'Desconhecido'));
+                }
+            } catch (err) {
+                alert('Falha na comunicação com o servidor.');
+            }
+        }
     </script>
 </head>
 <body>
@@ -478,13 +503,18 @@ function urlFin(string $status = '', string $mes = ''): string {
                 </div>
                 <?php endif; ?>
             </div>
-            <div class="fatura-actions">
-                <a href="relatorio_empresa_print.php" target="_blank" class="btn btn-primary">
-                    <i data-lucide="printer"></i> Imprimir Extrato
-                </a>
-                <button class="btn btn-outline" onclick="showSec('financeiro',document.getElementById('nav-financeiro'))">
-                    <i data-lucide="file-text"></i> Ver Extrato
+            <div class="fatura-actions" style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-primary" onclick="assinarPlano(<?= $estimativaFatura ?>)" style="background:#16A34A;border-color:#16A34A;width:100%;justify-content:center;">
+                    <i data-lucide="repeat"></i> Assinar Plano Mensal
                 </button>
+                <div style="display:flex;gap:8px;width:100%;">
+                    <a href="relatorio_empresa_print.php" target="_blank" class="btn btn-primary" style="flex:1;justify-content:center;">
+                        <i data-lucide="printer"></i> Imprimir Extrato
+                    </a>
+                    <button class="btn btn-outline" onclick="showSec('financeiro',document.getElementById('nav-financeiro'))" style="flex:1;justify-content:center;">
+                        <i data-lucide="file-text"></i> Ver Extrato
+                    </button>
+                </div>
             </div>
         </div>
     </div>

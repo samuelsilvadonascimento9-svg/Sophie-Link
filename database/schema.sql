@@ -95,6 +95,30 @@ CREATE TABLE aprendizes (
     FOREIGN KEY (turma_id) REFERENCES turmas(id) ON DELETE SET NULL
 );
 
+CREATE TABLE leads_comercial (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(150),
+    telefone VARCHAR(20),
+    origem VARCHAR(100),
+    status ENUM('novo', 'contato', 'qualificado', 'perdido') DEFAULT 'novo',
+    observacoes TEXT,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE chat_conversations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    visitor_name VARCHAR(150),
+    visitor_phone VARCHAR(20),
+    visitor_email VARCHAR(150),
+    usuario_id INT NULL,
+    mode ENUM('manual', 'ai', 'human_needed') DEFAULT 'manual',
+    status ENUM('open', 'closed') DEFAULT 'open',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+);
+
 CREATE TABLE contratos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     aprendiz_id INT NOT NULL,

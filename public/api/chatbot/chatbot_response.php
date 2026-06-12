@@ -51,9 +51,39 @@ if ($conversationId <= 0 || !ChatHelpers::conversationExists($conversationId)) {
 ChatHelpers::saveMessage($conversationId, 'user', $message);
 
 if ($mode === 'ai') {
-    $history = ChatHelpers::getConversationHistoryForAi($conversationId, 12);
-    $responseText = getAiResponse($message, "Sophie Link", ['api_key' => $openRouterKey, 'model' => 'openai/gpt-oss-120b:free'], $studioProfile, $history);
-    $sender = 'ai';
+    $pdo = \Core\Connect::getInstance();
+    
+    // Captura Ativa de Leads
+    $phoneRegex = '/\(?\d{2}\)?\s?9?\d{4}-?\d{4}/';
+    if (preg_match($phoneRegex, $message, $matches)) {
+        $extractedPhone = preg_replace('/[^0-9]/', '', $matches[0]);
+        $stmt = $pdo->prepare("SELECT id FROM leads_comercial WHERE telefone = ?");
+        $stmt->execute([$extractedPhone]);
+        if (!$stmt->fetch()) {
+            $pdo->prepare("INSERT INTO leads_comercial (nome, telefone, origem, chat_conversation_id) VALUES (?, ?, 'chatbot_ai', ?)")
+                ->execute(['Lead do Chat', $extractedPhone, $conversationId]);
+        }
+    }
+
+    $normalized = mb_strtolower(trim($message));
+    if (str_contains($normalized, 'humano') || str_contains($normalized, 'atendente') || str_contains($normalized, 'pessoa')) {
+        $pdo->prepare("UPDATE chat_conversations SET chatbot_type = 'human_needed' WHERE id = ?")->execute([$conversationId]);
+        $mode = 'human_needed';
+        $responseText = "Entendido. Estou transferindo o seu atendimento para a nossa secretaria. Em breve um humano continuará esta conversa!";
+        $sender = 'bot';
+    } else {
+        $history = ChatHelpers::getConversationHistoryForAi($conversationId, 12);
+        $responseText = getAiResponse($message, "Sophie Link", ['api_key' => $openRouterKey, 'model' => 'openai/gpt-oss-120b:free'], $studioProfile, $history);
+        $sender = 'ai';
+        
+        if (str_contains(mb_strtolower($responseText), 'secretaria') || str_contains(mb_strtolower($responseText), 'transferir')) {
+            $pdo->prepare("UPDATE chat_conversations SET chatbot_type = 'human_needed' WHERE id = ?")->execute([$conversationId]);
+            $mode = 'human_needed';
+        }
+    }
+} elseif ($mode === 'human_needed') {
+    $responseText = "Seu atendimento já foi transferido para nossa equipe. Por favor, aguarde um instante.";
+    $sender = 'bot';
 } else {
     $responseText = getManualResponse($message, $studioProfile);
     $sender = 'bot';
@@ -126,13 +156,26 @@ function getAiResponse(string $userMessage, string $companyName, array $openRout
 
     $studioContext = buildStudioContext($studioProfile);
 
+    // RAG: Injeção de Dados Dinâmicos do Banco
+    $pdo = \Core\Connect::getInstance();
+    $stmtCursos = $pdo->query("SELECT c.nome, COUNT(t.id) as turmas_ativas FROM cursos c LEFT JOIN turmas t ON t.curso_id = c.id GROUP BY c.id");
+    $dbCursos = $stmtCursos->fetchAll(PDO::FETCH_ASSOC);
+    $ragText = "\n\nDADOS EM TEMPO REAL DO BANCO DE DADOS:\n";
+    if ($dbCursos) {
+        foreach ($dbCursos as $c) {
+            $ragText .= "- Curso: {$c['nome']} (Turmas ativas no momento: {$c['turmas_ativas']})\n";
+        }
+    } else {
+        $ragText .= "Nenhum curso ativo no momento.\n";
+    }
+
     $systemPrompt = "Você é a assistente virtual do Centro Técnico Sophie Link. "
         . "Seu objetivo é apresentar os cursos, tirar dúvidas sobre as turmas e incentivar novas matrículas. Seja amigável e profissional. "
         . "1. IDIOMA: Responda SEMPRE em Português do Brasil. "
-        . "2. PRECISÃO: NUNCA invente preços ou prometa vagas que não tem. Diga que vai confirmar com a secretaria. "
+        . "2. QUALIFICAÇÃO: Se o usuário demonstrar interesse em um curso, AJA COMO VENDEDOR: pergunte o nome dele e o número de telefone (WhatsApp) antes de enviar qualquer link de matrícula. "
         . "3. CONCISÃO: Responda no máximo 2 ou 3 frases curtas. "
-        . "4. CONVERSÃO: Se o aluno quiser se matricular, mande ESTE link: [Falar no WhatsApp](" . LINK_WHATSAPP . "). "
-        . "DADOS OFICIAIS DO SOPHIE LINK:\n{$studioContext}";
+        . "4. CONVERSÃO: Após pegar o telefone, mande ESTE link: [Falar no WhatsApp](" . LINK_WHATSAPP . "). Se ele pedir para falar com atendente humano, diga que vai 'transferir para a secretaria'."
+        . "DADOS OFICIAIS DO SOPHIE LINK:\n{$studioContext}{$ragText}";
 
     $messages = buildMessagesForAi($systemPrompt, $history, $userMessage);
 

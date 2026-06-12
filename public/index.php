@@ -278,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             function showSlide(index) {
                 slides.forEach(slide => slide.classList.remove('active'));
                 if (index >= totalSlides) currentSlide = 0;
-                else if (index < 0) currentSlide = totalSlides - 1;
+                else if (index <0) currentSlide = totalSlides - 1;
                 else currentSlide = index;
                 
                 slides[currentSlide].classList.add('active');

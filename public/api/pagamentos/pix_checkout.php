@@ -143,6 +143,7 @@ try {
         "description" => 'Mensalidade Sophie Link - ' . $fatura['competencia'],
         "payment_method_id" => "pix",
         "external_reference" => (string)$fatura['id'],
+        "date_of_expiration" => date('Y-m-d\TH:i:s.000P', strtotime('+24 hours')),
         "payer" => [
             "email" => $payerEmail,
             "first_name" => $payerFirstName,
