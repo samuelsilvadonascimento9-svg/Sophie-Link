@@ -4,12 +4,8 @@ namespace Models;
 use Core\Connect;
 use PDO;
 
-class Disciplina {
-    private PDO $pdo;
-
-    public function __construct() {
-        $this->pdo = Connect::getInstance();
-    }
+class Disciplina extends \Core\Model {
+    protected string $table = 'disciplinas';
 
     public function listar(): array {
         $sql = "

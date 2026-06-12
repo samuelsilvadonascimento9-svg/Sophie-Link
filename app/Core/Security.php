@@ -17,6 +17,17 @@ class Security {
     }
 
     /**
+     * Realiza um redirecionamento seguro para evitar Open Redirect.
+     * Só permite caminhos relativos ao domínio (começando com /).
+     */
+    public static function safeRedirect(string $url): void {
+        if (!empty($url) && str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+            header('Location: ' . $url);
+            exit;
+        }
+    }
+
+    /**
      * Valida um token CSRF
      */
     public static function validateCsrfToken(?string $token): bool {
@@ -30,57 +41,61 @@ class Security {
     }
 
     /**
-     * Proteção contra Força Bruta (Rate Limiting usando a sessão para simplificar,
-     * num cenário real usaríamos Redis ou Banco de Dados baseado no IP).
+     * Proteção contra Força Bruta por IP
      */
     public static function checkRateLimit(int $maxAttempts = 5, int $lockoutTimeMinutes = 5): bool {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $pdo = \Core\Connect::getInstance();
+        
+        $stmt = $pdo->prepare("SELECT tentativas, bloqueado_ate FROM login_attempts WHERE ip = ?");
+        $stmt->execute([$ip]);
+        $row = $stmt->fetch();
+        
+        if ($row && $row['bloqueado_ate'] && new \DateTime() < new \DateTime($row['bloqueado_ate'])) {
+            return false; // Ainda bloqueado
         }
-        
-        $now = time();
-        
-        if (isset($_SESSION['login_lockout_until']) && $now < $_SESSION['login_lockout_until']) {
-            // Rate limit disabled as per user request
-            return false;
-        }
-        
-        // Limpar bloqueio se já passou o tempo
-        if (isset($_SESSION['login_lockout_until']) && $now >= $_SESSION['login_lockout_until']) {
-            unset($_SESSION['login_lockout_until']);
-            $_SESSION['login_attempts'] = 0;
-        }
-        
         return true;
     }
 
     public static function registerFailedLogin(int $maxAttempts = 5, int $lockoutTimeMinutes = 5): void {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $pdo = \Core\Connect::getInstance();
         
-        $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
+        $stmt = $pdo->prepare("SELECT id, tentativas FROM login_attempts WHERE ip = ?");
+        $stmt->execute([$ip]);
+        $row = $stmt->fetch();
         
-        if ($_SESSION['login_attempts'] >= $maxAttempts) {
-            // Rate limit disabled as per user request
-            $_SESSION['login_lockout_until'] = time() + ($lockoutTimeMinutes * 60);
+        if ($row) {
+            $tentativas = $row['tentativas'] + 1;
+            $bloqueado_ate = null;
+            if ($tentativas >= $maxAttempts) {
+                $bloqueado_ate = date('Y-m-d H:i:s', strtotime("+$lockoutTimeMinutes minutes"));
+            }
+            $stmtUpdate = $pdo->prepare("UPDATE login_attempts SET tentativas = ?, bloqueado_ate = ? WHERE id = ?");
+            $stmtUpdate->execute([$tentativas, $bloqueado_ate, $row['id']]);
+        } else {
+            $stmtInsert = $pdo->prepare("INSERT INTO login_attempts (ip, tentativas) VALUES (?, 1)");
+            $stmtInsert->execute([$ip]);
         }
     }
     
     public static function clearLoginAttempts(): void {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        unset($_SESSION['login_attempts']);
-        unset($_SESSION['login_lockout_until']);
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $pdo = \Core\Connect::getInstance();
+        $stmt = $pdo->prepare("DELETE FROM login_attempts WHERE ip = ?");
+        $stmt->execute([$ip]);
     }
     
     public static function getLockoutRemainingMinutes(): int {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        if (isset($_SESSION['login_lockout_until'])) {
-            $diff = $_SESSION['login_lockout_until'] - time();
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $pdo = \Core\Connect::getInstance();
+        
+        $stmt = $pdo->prepare("SELECT bloqueado_ate FROM login_attempts WHERE ip = ?");
+        $stmt->execute([$ip]);
+        $row = $stmt->fetch();
+        
+        if ($row && $row['bloqueado_ate']) {
+            $diff = strtotime($row['bloqueado_ate']) - time();
             return $diff > 0 ? (int)ceil($diff / 60) : 0;
         }
         return 0;

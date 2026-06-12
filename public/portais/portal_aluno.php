@@ -53,20 +53,12 @@ $_SESSION['usuario_nome'] = $aluno['nome'];
 $_SESSION['usuario_tipo'] = 'aluno';
 
 // Buscar Notas com Disciplina
-$stmtNotas = $pdo->prepare("
-    SELECT n.*, d.nome AS disciplina_nome 
-    FROM notas n 
-    LEFT JOIN disciplinas d ON d.id = n.disciplina_id
-    WHERE n.aprendiz_id = ? 
-    ORDER BY n.data_registro DESC
-");
-$stmtNotas->execute([$aluno_id]);
-$notasDb = $stmtNotas->fetchAll();
+$notaModel = new \Models\Nota();
+$notasDb = $notaModel->listarPorAluno($aluno_id);
 
 // Buscar Frequência
-$stmtFreq = $pdo->prepare("SELECT * FROM frequencia WHERE aprendiz_id = ?");
-$stmtFreq->execute([$aluno_id]);
-$freqDb = $stmtFreq->fetchAll();
+$freqModel = new \Models\Frequencia();
+$freqDb = $freqModel->listarPorAluno($aluno_id);
 
 $totalAulas = count($freqDb);
 
@@ -440,8 +432,8 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
             <div class="sb-user">
                 <div class="sb-avatar"><?= strtoupper(substr($aluno['nome'], 0, 1)) ?></div>
                 <div>
-                    <div class="sb-uname"><?= htmlspecialchars($aluno['nome']) ?></div>
-                    <div class="sb-urole"><?= htmlspecialchars($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Curso Genérico') ?></div>
+                    <div class="sb-uname"><?= h($aluno['nome']) ?></div>
+                    <div class="sb-urole"><?= h($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Curso Genérico') ?></div>
                     <div class="sb-ra">ID: <?= str_pad($aluno['id'], 6, '0', STR_PAD_LEFT) ?></div>
                 </div>
             </div>
@@ -516,11 +508,11 @@ $jsonMediaTurmaAv = json_encode($mediaTurmaAv);
                                 </div>
                                 <div class="inst-info">
                                     <div class="inst-badge">MATRÍCULA ATIVA</div>
-                                    <h2><?= htmlspecialchars($aluno['nome']) ?></h2>
+                                    <h2><?= h($aluno['nome']) ?></h2>
                                     <div class="inst-details">
-                                        <span><i data-lucide="hash"></i> RA: <?= htmlspecialchars($aluno['ra'] ?? date('Y') . str_pad($aluno['id'], 4, '0', STR_PAD_LEFT)) ?></span>
-                                        <span><i data-lucide="book-open"></i> <?= htmlspecialchars($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Aprendizagem') ?></span>
-                                        <span><i data-lucide="users"></i> <?= htmlspecialchars($aluno['turma_nome'] ?? 'Sem Turma') ?></span>
+                                        <span><i data-lucide="hash"></i> RA: <?= h($aluno['ra'] ?? date('Y') . str_pad($aluno['id'], 4, '0', STR_PAD_LEFT)) ?></span>
+                                        <span><i data-lucide="book-open"></i> <?= h($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Aprendizagem') ?></span>
+                                        <span><i data-lucide="users"></i> <?= h($aluno['turma_nome'] ?? 'Sem Turma') ?></span>
                                     </div>
                                 </div>
                             </div>

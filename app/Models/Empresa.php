@@ -4,12 +4,8 @@ namespace Models;
 use Core\Connect;
 use PDO;
 
-class Empresa {
-    private PDO $pdo;
-
-    public function __construct() {
-        $this->pdo = Connect::getInstance();
-    }
+class Empresa extends \Core\Model {
+    protected string $table = 'empresas';
 
     /** Lista todas as empresas com contagem de aprendizes */
     public function listar(string $busca = '', string $status = ''): array {

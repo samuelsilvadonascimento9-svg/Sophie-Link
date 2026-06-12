@@ -7,9 +7,21 @@ require_once __DIR__ . '/../../../includes/db.php';
 
 use Models\ChatMessage;
 
+require_once __DIR__ . '/../../../includes/auth.php';
+protect_page(['aluno', 'colaborador', 'admin', 'professor']);
+
 $conversationId = isset($_GET['conversation_id']) ? (int) $_GET['conversation_id'] : 0;
 
 if ($conversationId <= 0) {
+    echo json_encode(['messages' => []]);
+    exit;
+}
+
+// Verificar se a conversa pertence ao usuário atual
+$pdo = \Core\Connect::getInstance();
+$stmt = $pdo->prepare("SELECT id FROM chat_conversations WHERE id = ? AND usuario_id = ?");
+$stmt->execute([$conversationId, $_SESSION['usuario_id']]);
+if (!$stmt->fetch()) {
     echo json_encode(['messages' => []]);
     exit;
 }

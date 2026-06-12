@@ -1,6 +1,7 @@
 <?php
 // login.php — Página de Login | Centro Técnico Profissionalizante Sophie Link
-require_once '../../app/Core/Auth.php';
+require_once '../../includes/db.php';
+require_once '../../includes/auth.php';
 $csrf_token = Security::generateCsrfToken();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['force_logout']) || isset($_GET['tipo']))) {
@@ -71,8 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['empresa_id']    = $user['empresa_id'];
             // Verifica se tem redirecionamento pendente
             if (isset($_GET['redirect']) && !empty($_GET['redirect'])) {
-                header('Location: ' . filter_var($_GET['redirect'], FILTER_SANITIZE_URL));
-                exit;
+                Security::safeRedirect($_GET['redirect'] ?? '');
             }
 
             switch ($user['nivel']) {

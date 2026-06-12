@@ -116,6 +116,8 @@ CREATE TABLE frequencia (
     horario_entrada TIME NULL,
     horario_saida TIME NULL,
     status ENUM('presente', 'falta', 'justificada') NOT NULL,
+    status_justificativa VARCHAR(50) DEFAULT 'nenhuma',
+    arquivo_justificativa VARCHAR(255) NULL,
     justificativa TEXT,
     registrado_por INT,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -295,3 +297,15 @@ CREATE TABLE IF NOT EXISTS solicitacoes_documentos (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (aprendiz_id) REFERENCES aprendizes(id) ON DELETE CASCADE
 );
+
+-- Tabela login_attempts para rate limiting de força bruta
+CREATE TABLE IF NOT EXISTS `login_attempts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(45) NOT NULL,
+  `tentativas` int(11) DEFAULT 1,
+  `bloqueado_ate` datetime DEFAULT NULL,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_ip` (`ip`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

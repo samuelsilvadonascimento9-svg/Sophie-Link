@@ -1,6 +1,6 @@
 <?php
 // login.php — Página de Login | Centro Técnico Profissionalizante Sophie Link
-require_once '../../app/Core/Auth.php';
+require_once '../../includes/auth.php';
 $csrf_token = Security::generateCsrfToken();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['force_logout']) || isset($_GET['tipo']))) {
@@ -32,7 +32,7 @@ if (isset($_SESSION['usuario_id'])) {
             header('Location: ../portais/colaborador.php');
             break;
         case 'aluno':
-            header('Location: ../portais/aluno.php');
+            header('Location: ../portais/portal_aluno.php');
             break;
         default:
             header('Location: ../index.php');
@@ -71,8 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['empresa_id']    = $user['empresa_id'];
             // Verifica se tem redirecionamento pendente
             if (isset($_GET['redirect']) && !empty($_GET['redirect'])) {
-                header('Location: ' . filter_var($_GET['redirect'], FILTER_SANITIZE_URL));
-                exit;
+                Security::safeRedirect($_GET['redirect'] ?? '');
             }
 
             switch ($user['nivel']) {
@@ -92,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: ../portais/colaborador.php');
                     break;
                 case 'aluno':
-                    header('Location: ../portais/aluno.php');
+                    header('Location: ../portais/portal_aluno.php');
                     break;
                 default:
                     header('Location: ../index.php');

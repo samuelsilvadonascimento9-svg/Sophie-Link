@@ -1,1 +1,7 @@
 .env
+vendor/
+composer.phar
+app.log
+app_mail.log
+database/backups/
+migrate_*.php

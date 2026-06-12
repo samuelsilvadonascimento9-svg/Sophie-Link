@@ -3,7 +3,6 @@
 session_start();
 require_once '../../../includes/auth.php';
 protect_page(['colaborador', 'admin']);
-require_once '../../../includes/db.php';
 require_once '../../../app/Core/Security.php';
 $pdo = \Core\Connect::getInstance();
 header('Content-Type: application/json');

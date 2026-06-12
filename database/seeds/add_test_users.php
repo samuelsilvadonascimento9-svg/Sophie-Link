@@ -1,6 +1,6 @@
 <?php
 if (php_sapi_name() !== 'cli') die('Acesso negado');
-require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../../includes/db.php';
 
 $senhaHash = password_hash('123456', PASSWORD_DEFAULT);
 

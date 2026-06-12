@@ -9,11 +9,11 @@ try {
     $pdo = new PDO("mysql:host=$host;charset=utf8mb4", $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
-    
+
     // Ler o schema.sql e executar
     $pdo->exec("CREATE DATABASE IF NOT EXISTS sophie_link CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
     $pdo->exec("USE sophie_link;");
-    
+
     // Tenta carregar o schema atualizado se existir
     $schemaFile = __DIR__ . '/schema.sql';
     if (file_exists($schemaFile)) {
@@ -21,7 +21,7 @@ try {
         // Como já criamos as tabelas manualmente via código antes ou o db já existe, 
         // vamos dropar e recriar para garantir o novo schema
     }
-    
+
     // ===== LIMPAR DADOS (Recriando as tabelas limpas para refletir novo schema) =====
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
     $pdo->exec("DROP TABLE IF EXISTS logs_auditoria;");
@@ -37,11 +37,11 @@ try {
     $pdo->exec("DROP TABLE IF EXISTS usuarios;");
     $pdo->exec("DROP TABLE IF EXISTS empresas;");
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-    
+
     // Executando o schema.sql
     $schema = file_get_contents(__DIR__ . '/schema.sql');
     $pdo->exec($schema);
-    
+
     // ===== INSERIR DADOS: EMPRESAS =====
     $stmtEmp = $pdo->prepare("INSERT INTO empresas (nome, cnpj, responsavel, email) VALUES (?, ?, ?, ?)");
     $empresas = [
@@ -55,11 +55,11 @@ try {
         $empIds[] = $pdo->lastInsertId();
     }
     $valeId = $empIds[0];
-    
+
     // ===== INSERIR DADOS: USUÁRIOS =====
     $senhaHash = password_hash('admin', PASSWORD_DEFAULT);
     $stmtUser = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, nivel, empresa_id) VALUES (?, ?, ?, ?, ?)");
-    
+
     $usuarios = [
         ['Prof. Carlos Menezes', 'admin', $senhaHash, 'professor', null],
         ['Vale - Partilhar', 'admin', $senhaHash, 'empresa', $valeId],
@@ -116,10 +116,10 @@ try {
     // ===== INSERIR DADOS: PROFESSOR_DISCIPLINA =====
     $stmtProfDisc = $pdo->prepare("INSERT INTO professor_disciplina (usuario_id, disciplina_id, turma_id) VALUES (?, ?, ?)");
     $stmtProfDisc->execute([$professorId, $discIds[0], $turmaIds[0]]); // Carlos -> Elementos de Maquinas na ELM
-    
+
     // ===== INSERIR DADOS: APRENDIZES =====
     $stmtApr = $pdo->prepare("INSERT INTO aprendizes (nome, cpf, email, turma_id, situacao_aluno) VALUES (?, ?, ?, ?, ?)");
-    
+
     $aprendizes = [
         ['Ana Paula Souza', '111.111.111-11', 'ana.souza@aluno.com', $turmaIds[0], 'cursando'],
         ['Fernanda Rocha', '222.222.222-22', 'fernanda.r@aluno.com', $turmaIds[0], 'cursando'],
@@ -131,16 +131,16 @@ try {
         $stmtApr->execute($a);
         $aprIds[] = $pdo->lastInsertId();
     }
-    
+
     $anaId = $aprIds[0];
-    
+
     // ===== INSERIR DADOS: CONTRATOS =====
     $stmtContrato = $pdo->prepare("INSERT INTO contratos (aprendiz_id, empresa_id, data_inicio, data_fim, valor) VALUES (?, ?, ?, ?, ?)");
     foreach ($aprIds as $idAluno) {
         // Todos para a Vale por enquanto, com duração de 1 ano
         $stmtContrato->execute([$idAluno, $valeId, '2025-01-10', '2026-01-10', 850.00]);
     }
-    
+
     // ===== INSERIR DADOS: FINANCEIRO =====
     $stmtFin = $pdo->prepare("INSERT INTO financeiro (empresa_id, competencia, valor, status, data_vencimento) VALUES (?, ?, ?, ?, ?)");
     // Vale S.A.
@@ -148,14 +148,14 @@ try {
     $stmtFin->execute([$valeId, '2026-04', 3400.00, 'pago', '2026-04-10']);
     // Sotreq S.A.
     $stmtFin->execute([$empresas[1]['id'] ?? 2, '2026-05', 850.00, 'pendente', '2026-05-10']);
-    
+
     // ===== INSERIR DADOS: FREQUÊNCIA =====
     $stmtFreq = $pdo->prepare("INSERT INTO frequencia (aprendiz_id, disciplina_id, data_registro, status) VALUES (?, ?, ?, ?)");
     $diasMaio = ['2026-05-02', '2026-05-04', '2026-05-09', '2026-05-11', '2026-05-16', '2026-05-18'];
     foreach ($diasMaio as $dia) {
         $stmtFreq->execute([$anaId, $discIds[0], $dia, 'presente']);
     }
-    
+
     // ===== INSERIR DADOS: NOTAS =====
     $stmtNota = $pdo->prepare("INSERT INTO notas (aprendiz_id, disciplina_id, atividade, valor_nota, data_registro) VALUES (?, ?, ?, ?, ?)");
     $notasAna = [
@@ -176,10 +176,8 @@ try {
     // ===== INSERIR DADOS: LOGS DE AUDITORIA =====
     $stmtLog = $pdo->prepare("INSERT INTO logs_auditoria (usuario_id, acao, descricao) VALUES (?, ?, ?)");
     $stmtLog->execute([$userAdminId, 'RESEED_DB', 'Banco de dados recriado e populado com sementes padrão.']);
-    
+
     echo "Dados inseridos com sucesso!\n";
-    
 } catch (PDOException $e) {
     die("Erro: " . $e->getMessage());
 }
-?>

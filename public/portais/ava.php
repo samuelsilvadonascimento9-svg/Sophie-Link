@@ -20,7 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'solicit
         if ($aId) {
             $tipo = $_POST['tipo_documento'] ?? 'matricula';
             if (in_array($tipo, ['matricula', 'frequencia', 'historico'])) {
-                $pdo->prepare("INSERT INTO solicitacoes_documentos (aprendiz_id, tipo_documento) VALUES (?, ?)")->execute([$aId, $tipo]);
+                $solicitacaoModel = new \Models\Solicitacao();
+                $solicitacaoModel->criar(['aprendiz_id' => $aId, 'tipo_documento' => $tipo]);
                 $_SESSION['flash_msg'] = "Solicitação de $tipo enviada com sucesso!";
             }
         }
@@ -77,29 +78,14 @@ if ($isProf) {
     $ra        = str_pad($aluno['id'], 6, '0', STR_PAD_LEFT);
 
     // Notas para progresso e boletim
-    $stmtNotas = $pdo->prepare("
-        SELECT n.atividade, n.valor_nota, d.nome AS disciplina_nome
-        FROM notas n
-        LEFT JOIN disciplinas d ON d.id = n.disciplina_id
-        WHERE n.aprendiz_id = ?
-        ORDER BY n.data_registro DESC
-    ");
-    $stmtNotas->execute([$aluno_id]);
-    $notasDb = $stmtNotas->fetchAll();
+    $notaModel = new \Models\Nota();
+    $notasDb = $notaModel->listarPorAluno($aluno_id);
     $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
 
     // Boletim agrupado por disciplina
     $boletim = [];
-    $stmtBoletim = $pdo->prepare("
-        SELECT n.valor_nota, d.nome AS disciplina_nome, n.disciplina_id,
-               (SELECT COUNT(f2.id) FROM frequencia f2 WHERE f2.aprendiz_id = n.aprendiz_id AND f2.disciplina_id = n.disciplina_id AND f2.status = 'falta') AS total_faltas
-        FROM notas n
-        LEFT JOIN disciplinas d ON d.id = n.disciplina_id
-        WHERE n.aprendiz_id = ?
-        ORDER BY n.disciplina_id, n.data_registro ASC
-    ");
-    $stmtBoletim->execute([$aluno_id]);
-    foreach ($stmtBoletim->fetchAll() as $row) {
+    $boletimDb = $notaModel->listarBoletimPorAluno($aluno_id);
+    foreach ($boletimDb as $row) {
         $disc = $row['disciplina_nome'] ?? 'Disciplina';
         if (!isset($boletim[$disc])) {
             $boletim[$disc] = ['notas' => [], 'faltas' => (int)$row['total_faltas']];
@@ -195,17 +181,8 @@ if ($isProf) {
     }
 
     // ─── Frequência real do aluno (últimas 30 presenças) ───────────────────────
-    $stmtFreq = $pdo->prepare("
-        SELECT f.data_registro, f.status, f.horario_entrada, f.horario_saida,
-               d.nome AS disciplina_nome
-        FROM frequencia f
-        LEFT JOIN disciplinas d ON d.id = f.disciplina_id
-        WHERE f.aprendiz_id = ?
-        ORDER BY f.data_registro DESC
-        LIMIT 30
-    ");
-    $stmtFreq->execute([$aluno_id]);
-    $frequenciaAluno = $stmtFreq->fetchAll();
+    $freqModel = new \Models\Frequencia();
+    $frequenciaAluno = array_slice($freqModel->listarPorAluno($aluno_id), 0, 30);
 
     // Calcular % de presença
     $totalRegistros = count($frequenciaAluno);

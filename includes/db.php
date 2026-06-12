@@ -2,6 +2,7 @@
 // includes/db.php
 
 require_once __DIR__ . '/../app/Core/Autoloader.php';
+require_once __DIR__ . '/helpers.php';
 
 // Configurações de Segurança da Sessão (deve ser chamado antes de qualquer session_start())
 if (session_status() === PHP_SESSION_NONE) {

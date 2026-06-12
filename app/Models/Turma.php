@@ -4,12 +4,8 @@ namespace Models;
 use Core\Connect;
 use PDO;
 
-class Turma {
-    private PDO $pdo;
-
-    public function __construct() {
-        $this->pdo = Connect::getInstance();
-    }
+class Turma extends \Core\Model {
+    protected string $table = 'turmas';
 
     public function listar(): array {
         $sql = "

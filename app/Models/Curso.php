@@ -4,12 +4,8 @@ namespace Models;
 use Core\Connect;
 use PDO;
 
-class Curso {
-    private PDO $pdo;
-
-    public function __construct() {
-        $this->pdo = Connect::getInstance();
-    }
+class Curso extends \Core\Model {
+    protected string $table = 'cursos';
 
     public function listar(): array {
         $stmt = $this->pdo->query("SELECT * FROM cursos ORDER BY nome ASC");

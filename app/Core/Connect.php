@@ -60,5 +60,16 @@ class Connect
 
         return self::$instance;
     }
+    public static function getEnv(string $key, $default = null)
+    {
+        $envFile = __DIR__ . '/../../.env';
+        if (file_exists($envFile)) {
+            $envVariables = parse_ini_file($envFile);
+            if ($envVariables) {
+                return $envVariables[$key] ?? $default;
+            }
+        }
+        return $default;
+    }
 }
 ?>
