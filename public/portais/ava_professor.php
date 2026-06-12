@@ -56,13 +56,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Upload de arquivo (PDF ou outros)
             if (!empty($_FILES['arquivo']['name'])) {
                 $ext = strtolower(pathinfo($_FILES['arquivo']['name'], PATHINFO_EXTENSION));
-                $allowed = ['pdf','doc','docx','ppt','pptx','xlsx','zip','jpg','png'];
-                if (!in_array($ext, $allowed)) {
+                $allowed_ext = ['pdf','doc','docx','ppt','pptx','xlsx','zip','jpg','png'];
+                if (!in_array($ext, $allowed_ext)) {
                     throw new Exception('Tipo de arquivo não permitido. Use: PDF, DOC, PPT, XLSX, ZIP ou imagem.');
                 }
                 if ($_FILES['arquivo']['size'] > 20 * 1024 * 1024) {
                     throw new Exception('Arquivo muito grande. Máximo: 20 MB.');
                 }
+
+                // SEGURANÇA: valida o MIME type real do arquivo (não confia apenas na extensão)
+                // Mapeamento de MIME reais para cada extensão permitida
+                $allowed_mime = [
+                    'application/pdf',
+                    'application/msword',                                                  // .doc
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+                    'application/vnd.ms-powerpoint',                                       // .ppt
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+                    'application/vnd.ms-excel',                                            // .xls
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',   // .xlsx
+                    'application/zip', 'application/x-zip-compressed',                    // .zip
+                    'image/jpeg', 'image/png',                                             // imagens
+                ];
+                $real_mime = mime_content_type($_FILES['arquivo']['tmp_name']);
+                if (!in_array($real_mime, $allowed_mime)) {
+                    throw new Exception("Conteúdo do arquivo não é compatível com a extensão enviada. Tipo detectado: $real_mime");
+                }
+
                 $arquivo_nome = $_FILES['arquivo']['name'];
                 $arquivo_path = 'public/uploads/ava/' . uniqid('mat_') . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $arquivo_nome);
                 $fullPath = __DIR__ . '/../../' . $arquivo_path;
@@ -70,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception('Falha ao salvar o arquivo. Verifique permissões do diretório.');
                 }
             }
+
 
             $stmt = $pdo->prepare("
                 INSERT INTO ava_materiais
@@ -84,6 +104,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data_registro = $_POST['data_registro'];
             $parts   = explode('-', $_POST['disciplina_turma_id']);
             $disc_id = (int)$parts[0];
+
+            // PERFORMANCE: prepare() FORA do loop. O banco compila a query 1x;
+            // dentro do loop apenas execute() trocando os parâmetros.
+            $stmtFreq = $pdo->prepare("
+                INSERT INTO frequencia
+                    (aprendiz_id, disciplina_id, data_registro, status, horario_entrada, horario_saida, registrado_por)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    status          = VALUES(status),
+                    horario_entrada = VALUES(horario_entrada),
+                    horario_saida   = VALUES(horario_saida),
+                    registrado_por  = VALUES(registrado_por)
+            ");
+
             foreach ($_POST as $key => $val) {
                 if (strpos($key, 'freq_') === 0) {
                     $aluno_id = (int)str_replace('freq_', '', $key);
@@ -92,17 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $saida    = $_POST['saida_'   . $aluno_id] ?? null;
                     if (empty($entrada)) $entrada = null;
                     if (empty($saida))   $saida   = null;
-                    $stmt = $pdo->prepare("
-                        INSERT INTO frequencia
-                            (aprendiz_id, disciplina_id, data_registro, status, horario_entrada, horario_saida, registrado_por)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
-                        ON DUPLICATE KEY UPDATE
-                            status = VALUES(status),
-                            horario_entrada = VALUES(horario_entrada),
-                            horario_saida   = VALUES(horario_saida),
-                            registrado_por  = VALUES(registrado_por)
-                    ");
-                    $stmt->execute([$aluno_id, $disc_id, $data_registro, $status, $entrada, $saida, $_SESSION['usuario_id']]);
+                    $stmtFreq->execute([$aluno_id, $disc_id, $data_registro, $status, $entrada, $saida, $_SESSION['usuario_id']]);
                 }
             }
             $sucesso = 'Frequência lançada com sucesso!';
@@ -114,21 +138,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $parts   = explode('-', $_POST['disciplina_turma_id']);
             $disc_id = (int)$parts[0];
             if (!$atividade) throw new Exception('Informe o nome da atividade/prova.');
+
+            // PERFORMANCE: prepare() FORA do loop. O banco compila a query 1x;
+            // dentro do loop apenas execute() trocando os parâmetros.
+            $stmtNota = $pdo->prepare("
+                INSERT INTO notas
+                    (aprendiz_id, disciplina_id, atividade, valor_nota, data_registro, registrado_por)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    valor_nota     = VALUES(valor_nota),
+                    data_registro  = VALUES(data_registro),
+                    registrado_por = VALUES(registrado_por)
+            ");
+
             foreach ($_POST as $key => $val) {
                 if (strpos($key, 'nota_') === 0 && $val !== '') {
                     $aluno_id = (int)str_replace('nota_', '', $key);
                     $nota     = (float)$val;
                     if ($nota < 0 || $nota > 10) throw new Exception("Nota inválida para aluno #$aluno_id.");
-                    $stmt = $pdo->prepare("
-                        INSERT INTO notas
-                            (aprendiz_id, disciplina_id, atividade, valor_nota, data_registro, registrado_por)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                        ON DUPLICATE KEY UPDATE
-                            valor_nota     = VALUES(valor_nota),
-                            data_registro  = VALUES(data_registro),
-                            registrado_por = VALUES(registrado_por)
-                    ");
-                    $stmt->execute([$aluno_id, $disc_id, $atividade, $nota, $data_registro, $_SESSION['usuario_id']]);
+                    $stmtNota->execute([$aluno_id, $disc_id, $atividade, $nota, $data_registro, $_SESSION['usuario_id']]);
                 }
             }
             $sucesso = 'Notas lançadas com sucesso!';
@@ -152,9 +180,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $imagem_capa = null;
             if (!empty($_FILES['imagem_capa']['name'])) {
                 $ext = strtolower(pathinfo($_FILES['imagem_capa']['name'], PATHINFO_EXTENSION));
-                $allowed = ['jpg','jpeg','png','webp'];
-                if (!in_array($ext, $allowed)) throw new Exception('Imagem de capa deve ser JPG, PNG ou WEBP.');
-                
+                $allowed_ext  = ['jpg','jpeg','png','webp'];
+                // SEGURANCA: valida o MIME type real do arquivo (não confia apenas na extensão)
+                $allowed_mime = ['image/jpeg','image/png','image/webp'];
+                $real_mime    = mime_content_type($_FILES['imagem_capa']['tmp_name']);
+
+                if (!in_array($ext, $allowed_ext) || !in_array($real_mime, $allowed_mime)) {
+                    throw new Exception('Imagem de capa deve ser um arquivo JPG, PNG ou WEBP real.');
+                }
+
                 $imagem_nome = 'capa_' . uniqid() . '.' . $ext;
                 $imagem_path = 'public/uploads/ava/' . $imagem_nome;
                 $fullPath = __DIR__ . '/../../' . $imagem_path;

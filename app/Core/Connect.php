@@ -6,11 +6,13 @@ namespace Core;
 class Connect
 {
     // Opções padrão do PDO: lança exceções em erros, retorna arrays associativos
+    // MYSQL_ATTR_INIT_COMMAND sincroniza o fuso horário do MySQL com o PHP
     private const OPTIONS = [
-        \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-        \PDO::ATTR_CASE               => \PDO::CASE_NATURAL,
-        \PDO::ATTR_EMULATE_PREPARES   => false,
+        \PDO::ATTR_ERRMODE                  => \PDO::ERRMODE_EXCEPTION,
+        \PDO::ATTR_DEFAULT_FETCH_MODE       => \PDO::FETCH_ASSOC,
+        \PDO::ATTR_CASE                     => \PDO::CASE_NATURAL,
+        \PDO::ATTR_EMULATE_PREPARES         => false,
+        \PDO::MYSQL_ATTR_INIT_COMMAND       => "SET time_zone = '-03:00'",
     ];
 
     /** @var \PDO|null */
@@ -19,6 +21,9 @@ class Connect
     // Retorna a conexão existente ou cria uma nova se for a primeira chamada
     public static function getInstance(): \PDO
     {
+        // Garante fuso horário correto no PHP (America/Sao_Paulo = UTC-3)
+        date_default_timezone_set('America/Sao_Paulo');
+
         if (self::$instance) {
             return self::$instance; // Reutiliza a conexão já aberta
         }

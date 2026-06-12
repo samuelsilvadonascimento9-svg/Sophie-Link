@@ -193,39 +193,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'add_emp
     }
 }
 
-// Buscar aprendizes
+// Métricas (query leve - apenas contagens, sem buscar todos os alunos)
+$totalAlunos  = (int)$pdo->query("SELECT COUNT(*) FROM aprendizes WHERE deleted_at IS NULL")->fetchColumn();
+$ativos       = (int)$pdo->query("SELECT COUNT(*) FROM aprendizes WHERE situacao_aluno = 'cursando' AND deleted_at IS NULL")->fetchColumn();
+$concluidos   = (int)$pdo->query("SELECT COUNT(*) FROM aprendizes WHERE situacao_aluno = 'concluido' AND deleted_at IS NULL")->fetchColumn();
+
+// Faltas pendentes
+$faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE status = 'falta'")->fetchColumn());
+
+// Dados necessários para formulários e modais (continuam sendo buscados normalmente)
+$turmasDb         = $pdo->query("SELECT t.id, t.nome, c.nome as curso_nome FROM turmas t JOIN cursos c ON t.curso_id = c.id ORDER BY c.nome, t.nome")->fetchAll(PDO::FETCH_ASSOC);
+$listaProfessores = $pdo->query("SELECT id, nome, email, criado_em FROM usuarios WHERE nivel = 'professor' AND deleted_at IS NULL ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
+$listaEmpresas    = $empresaModel->listar();
+
+// Lista de alunos para o seletor de documentos (seção "Emitir Documento")
 $aprendizes = $pdo->query("
-    SELECT a.*, e.nome AS empresa_nome, c.nome AS curso_nome, t.nome AS turma_nome
+    SELECT a.id, a.nome, a.email, a.situacao_aluno,
+           c.nome AS curso_nome, t.nome AS turma_nome
     FROM aprendizes a
-    LEFT JOIN contratos cont ON a.id = cont.aprendiz_id AND cont.status = 'ativo'
-    LEFT JOIN empresas e ON cont.empresa_id = e.id
     LEFT JOIN turmas t ON a.turma_id = t.id
     LEFT JOIN cursos c ON t.curso_id = c.id
     WHERE a.deleted_at IS NULL
     ORDER BY a.nome ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
-
-// Turmas para select
-$turmasDb = $pdo->query("SELECT t.id, t.nome, c.nome as curso_nome FROM turmas t JOIN cursos c ON t.curso_id = c.id ORDER BY c.nome, t.nome")->fetchAll(PDO::FETCH_ASSOC);
-
-// Buscar Professores
-$listaProfessores = $pdo->query("SELECT id, nome, email, criado_em FROM usuarios WHERE nivel = 'professor' AND deleted_at IS NULL ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
-
-// Buscar Empresas
-$listaEmpresas = $empresaModel->listar();
-
-// Métricas
-$totalAlunos  = count($aprendizes);
-$ativos       = 0;
-$concluidos   = 0;
-foreach ($aprendizes as $a) {
-    if ($a['situacao_aluno'] === 'cursando') $ativos++;
-    if ($a['situacao_aluno'] === 'concluido') $concluidos++;
-}
-
-// Faltas pendentes
-$faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE status = 'falta'")->fetchColumn());
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -244,87 +236,9 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
     <div id="toast-container"></div>
 
     <div class="app">
-        <!-- ===== SIDEBAR ===== -->
-        <aside class="sidebar">
-            <div class="sb-header">
-                <div class="sb-logo-wrap">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                        <path d="M2 17l10 5 10-5" />
-                        <path d="M2 12l10 5 10-5" />
-                    </svg>
-                </div>
-                <div>
-                    <div class="sb-brand">Sophie<span>Link</span></div>
-                </div>
-            </div>
+        <!-- ===== SIDEBAR (Componente reutilizável) ===== -->
+        <?php require_once '../../includes/components/sidebar_colaborador.php'; ?>
 
-            <nav class="sb-menu">
-                <!-- Gestão -->
-                <div class="sb-section-group" id="group-gestao">
-                    <div class="sb-section-label" onclick="this.parentElement.classList.toggle('collapsed')">
-                        Gestão <i data-lucide="chevron-down"></i>
-                    </div>
-                    <div class="sb-section-content">
-                        <div class="nav-link active" id="nav-alunos" onclick="showSec('alunos', this)">
-                            <i data-lucide="users"></i> Alunos
-                        </div>
-                        <div class="nav-link" id="nav-documentos" onclick="showSec('documentos', this)">
-                            <i data-lucide="file-text"></i> Declarações
-                        </div>
-                        <div class="nav-link" id="nav-faltas" onclick="showSec('faltas', this)">
-                            <i data-lucide="user-x"></i> Justificar Faltas
-                            <?php if ($faltasPendentes > 0): ?>
-                                <span class="nav-badge"><?= $faltasPendentes ?></span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cadastros -->
-                <div class="sb-section-group collapsed" id="group-cadastros">
-                    <div class="sb-section-label" onclick="this.parentElement.classList.toggle('collapsed')">
-                        Cadastros <i data-lucide="chevron-down"></i>
-                    </div>
-                    <div class="sb-section-content">
-                        <div class="nav-link" id="nav-matricular" onclick="showSec('matricular', this)">
-                            <i data-lucide="user-plus"></i> Matricular Aluno
-                        </div>
-                        <div class="nav-link" id="nav-professores" onclick="showSec('professores', this)">
-                            <i data-lucide="graduation-cap"></i> Professores
-                        </div>
-                        <div class="nav-link" id="nav-empresas" onclick="showSec('empresas', this)">
-                            <i data-lucide="briefcase"></i> Empresas
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Planejamento -->
-                <div class="sb-section-group collapsed" id="group-planejamento">
-                    <div class="sb-section-label" onclick="this.parentElement.classList.toggle('collapsed')">
-                        Planejamento <i data-lucide="chevron-down"></i>
-                    </div>
-                    <div class="sb-section-content">
-                        <div class="nav-link" id="nav-calendario" onclick="showSec('calendario', this)">
-                            <i data-lucide="calendar"></i> Calendário Letivo
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="sb-footer">
-                <div class="sb-user">
-                    <div class="sb-avatar"><?= $iniciais ?></div>
-                    <div>
-                        <div class="sb-uname"><?= htmlspecialchars($primeiroNome) ?></div>
-                        <div class="sb-urole">Apoio Administrativo</div>
-                    </div>
-                    <a href="../auth/logout.php" class="sb-logout" title="Sair">
-                        <i data-lucide="log-out"></i>
-                    </a>
-                </div>
-            </div>
-        </aside>
 
         <!-- ===== WORKSPACE ===== -->
         <div class="workspace">
@@ -392,12 +306,25 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                         <div class="panel-head">
                             <div class="panel-title">Lista de Alunos</div>
                             <div class="panel-actions">
-                                <input type="text" id="tableSearchInput" class="form-control" placeholder="Buscar por nome, RA ou empresa..." style="width:260px; padding:7px 12px;" oninput="filterTable()">
-                                <select id="filterSituacao" class="form-control" style="width:auto; padding:6px 10px; font-size:12px;" onchange="filterTable()">
+                                <input type="text" id="tableSearchInput" class="form-control"
+                                    placeholder="Buscar por nome, RA ou e-mail..."
+                                    style="width:260px; padding:7px 12px;"
+                                    oninput="debounceSearch()">
+                                <select id="filterSituacao" class="form-control"
+                                    style="width:auto; padding:6px 10px; font-size:12px;"
+                                    onchange="carregarAlunos(1)">
                                     <option value="">Todas as situações</option>
                                     <option value="cursando">Cursando</option>
-                                    <option value="formado">Formado</option>
-                                    <option value="evadido">Evadido</option>
+                                    <option value="concluido">Concluído</option>
+                                    <option value="desligado">Desligado</option>
+                                    <option value="trancado">Trancado</option>
+                                </select>
+                                <select id="limitSelect" class="form-control"
+                                    style="width:auto; padding:6px 10px; font-size:12px;"
+                                    onchange="carregarAlunos(1)">
+                                    <option value="10">10 por pág.</option>
+                                    <option value="20">20 por pág.</option>
+                                    <option value="50">50 por pág.</option>
                                 </select>
                             </div>
                         </div>
@@ -413,61 +340,133 @@ $faltasPendentes = (int)($pdo->query("SELECT COUNT(*) FROM frequencia WHERE stat
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php foreach ($aprendizes as $a):
-                                        $ra = str_pad($a['id'], 6, '0', STR_PAD_LEFT);
-                                        $inicial = strtoupper(mb_substr($a['nome'], 0, 1));
-                                        $situacao = $a['situacao_aluno'];
-                                        $badgeClass = match ($situacao) {
-                                            'cursando' => 'badge-green',
-                                            'formado'  => 'badge-blue',
-                                            'evadido'  => 'badge-red',
-                                            default    => 'badge-gray'
-                                        };
-                                    ?>
-                                        <tr data-nome="<?= strtolower(htmlspecialchars($a['nome'])) ?>"
-                                            data-empresa="<?= strtolower(htmlspecialchars($a['empresa_nome'] ?? '')) ?>"
-                                            data-ra="<?= $ra ?>"
-                                            data-situacao="<?= $situacao ?>">
-                                            <td><span class="ra-code"><?= $ra ?></span></td>
+                                <tbody id="alunosTbody">
+                                    <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">
+                                        <div class="spinner" style="margin:0 auto 8px;width:22px;height:22px;border-width:3px;"></div>
+                                        Carregando...
+                                    </td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Paginação Server-Side -->
+                        <div id="paginacaoWrap" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:13px;color:var(--text-muted);">
+                            <span id="paginacaoInfo">—</span>
+                            <div style="display:flex;gap:6px;">
+                                <button class="btn btn-sm btn-outline" id="btnPagPrev" onclick="mudarPagina(-1)" disabled>
+                                    ← Anterior
+                                </button>
+                                <button class="btn btn-sm btn-outline" id="btnPagNext" onclick="mudarPagina(1)" disabled>
+                                    Próxima →
+                                </button>
+                            </div>
+                        </div>
+
+                        <script>
+                        // ── Paginação Server-Side ──────────────────────────────────────────
+                        let _pag = { page: 1, pages: 1 };
+                        let _debounceTimer = null;
+
+                        function debounceSearch() {
+                            clearTimeout(_debounceTimer);
+                            _debounceTimer = setTimeout(() => carregarAlunos(1), 400);
+                        }
+
+                        function mudarPagina(delta) {
+                            const nova = _pag.page + delta;
+                            if (nova >= 1 && nova <= _pag.pages) carregarAlunos(nova);
+                        }
+
+                        function carregarAlunos(page) {
+                            const search   = document.getElementById('tableSearchInput').value.trim();
+                            const situacao = document.getElementById('filterSituacao').value;
+                            const limit    = document.getElementById('limitSelect').value;
+
+                            const tbody = document.getElementById('alunosTbody');
+                            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">
+                                <div class="spinner" style="margin:0 auto 8px;width:22px;height:22px;border-width:3px;"></div>
+                                Carregando...
+                            </td></tr>`;
+
+                            const params = new URLSearchParams({ page, limit, search, situacao });
+                            fetch(`../api/alunos/get_alunos_paginated.php?${params}`)
+                                .then(r => r.json())
+                                .then(data => {
+                                    if (!data.success) { tbody.innerHTML = `<tr><td colspan="6">Erro ao carregar dados.</td></tr>`; return; }
+
+                                    _pag.page  = data.page;
+                                    _pag.pages = data.pages;
+
+                                    document.getElementById('btnPagPrev').disabled = data.page <= 1;
+                                    document.getElementById('btnPagNext').disabled = data.page >= data.pages;
+                                    document.getElementById('paginacaoInfo').textContent =
+                                        `Mostrando ${(data.page - 1) * data.limit + 1}–${Math.min(data.page * data.limit, data.total)} de ${data.total} alunos`;
+
+                                    if (data.alunos.length === 0) {
+                                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">
+                                            <i data-lucide="users" style="width:36px;height:36px;opacity:.3;display:block;margin:0 auto 8px;"></i>
+                                            Nenhum aluno encontrado.
+                                        </td></tr>`;
+                                        lucide.createIcons();
+                                        return;
+                                    }
+
+                                    const badgeMap = {
+                                        cursando:  'badge-green',
+                                        concluido: 'badge-blue',
+                                        desligado: 'badge-red',
+                                        trancado:  'badge-gray',
+                                    };
+
+                                    tbody.innerHTML = data.alunos.map(a => {
+                                        const badge = badgeMap[a.situacao_aluno] ?? 'badge-gray';
+                                        const inicial = (a.nome || '?')[0].toUpperCase();
+                                        return `<tr>
+                                            <td><span class="ra-code">${a.ra}</span></td>
                                             <td>
                                                 <div class="aluno-cell">
-                                                    <div class="aluno-avatar"><?= $inicial ?></div>
+                                                    <div class="aluno-avatar">${inicial}</div>
                                                     <div>
-                                                        <div class="aluno-name"><?= htmlspecialchars($a['nome']) ?></div>
-                                                        <div class="aluno-email"><?= htmlspecialchars($a['email'] ?? 'Sem e-mail') ?></div>
+                                                        <div class="aluno-name">${escHtml(a.nome)}</div>
+                                                        <div class="aluno-email">${escHtml(a.email || 'Sem e-mail')}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><?= htmlspecialchars($a['empresa_nome'] ?? '—') ?></td>
-                                            <td><?= htmlspecialchars($a['curso_nome'] ?? '—') ?></td>
-                                            <td><span class="badge <?= $badgeClass ?>"><?= $situacao ?></span></td>
+                                            <td>${escHtml(a.empresa_nome || '—')}</td>
+                                            <td>${escHtml(a.curso_nome   || '—')}</td>
+                                            <td><span class="badge ${badge}">${escHtml(a.situacao_aluno)}</span></td>
                                             <td>
                                                 <div class="action-btns">
-                                                    <button class="icon-btn" title="Editar dados" onclick="abrirEdicao(<?= $a['id'] ?>)">
+                                                    <button class="icon-btn" title="Editar dados" onclick="abrirEdicao(${a.id})">
                                                         <i data-lucide="pencil"></i>
                                                     </button>
-                                                    <a href="../reports/declaracao_print.php?aluno_id=<?= $a['id'] ?>&tipo=matricula" target="_blank" class="icon-btn" title="Gerar Declaração de Matrícula">
+                                                    <a href="../reports/declaracao_print.php?aluno_id=${a.id}&tipo=matricula"
+                                                       target="_blank" class="icon-btn" title="Gerar Declaração">
                                                         <i data-lucide="file-text"></i>
                                                     </a>
-                                                    <button class="icon-btn danger" title="Ver histórico de faltas" onclick="showSec('faltas', document.getElementById('nav-faltas'))">
+                                                    <button class="icon-btn danger" title="Ver faltas"
+                                                        onclick="showSec('faltas', document.getElementById('nav-faltas'))">
                                                         <i data-lucide="calendar-x"></i>
                                                     </button>
                                                 </div>
                                             </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                            <?php if (empty($aprendizes)): ?>
-                                <div class="empty-state">
-                                    <i data-lucide="users"></i>
-                                    <p>Nenhum aluno cadastrado ainda.</p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
+                                        </tr>`;
+                                    }).join('');
+
+                                    lucide.createIcons(); // Re-renderiza ícones Lucide nos novos elementos
+                                })
+                                .catch(() => {
+                                    tbody.innerHTML = `<tr><td colspan="6" style="color:red;text-align:center;padding:20px;">Falha na conexão com a API.</td></tr>`;
+                                });
+                        }
+
+                        function escHtml(str) {
+                            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                        }
+
+                        // Carrega ao iniciar a página
+                        document.addEventListener('DOMContentLoaded', () => carregarAlunos(1));
+                        </script>
+
 
                 <!-- ===== SEÇÃO: DECLARAÇÕES ===== -->
                 <div id="sec-documentos" class="sec">

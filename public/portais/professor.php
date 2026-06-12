@@ -8,6 +8,9 @@ protect_page(['professor', 'admin', 'coordenadora']);
 require_once '../../includes/db.php';
 /** @var \PDO $pdo */
 
+// CSRF — gerado uma vez, reutilizado em todos os formulários da página
+$csrfToken = Security::generateCsrfToken();
+
 $usuario_id = $_SESSION['usuario_id'];
 $nome = $_SESSION['usuario_nome'] ?? 'Professor';
 $primeiroNome = explode(' ', str_replace(['Prof. ','Dr. '], '', $nome))[0];
@@ -17,27 +20,55 @@ $erro = '';
 
 // Lógica de Lançamento de Nota
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'lancar_nota') {
-    $aprendiz_id = $_POST['aprendiz_id'] ?? null;
-    $disciplina_id = $_POST['disciplina_id'] ?? null;
-    $atividade = trim($_POST['atividade'] ?? '');
-    $valor_nota = $_POST['valor_nota'] ?? null;
+    // ─── PROTEÇÃO CSRF ────────────────────────────────────────────────────────
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = 'Requ. inválida (token CSRF). Recarregue a página e tente novamente.';
+    } else {
+    $aprendiz_id   = (int)($_POST['aprendiz_id']   ?? 0);
+    $disciplina_id = (int)($_POST['disciplina_id'] ?? 0);
+    $atividade     = trim($_POST['atividade']  ?? '');
+    $valor_nota    = $_POST['valor_nota'] ?? null;
     $data_registro = date('Y-m-d');
 
     if ($aprendiz_id && $disciplina_id && $atividade && $valor_nota !== null) {
         try {
-            $stmt = $pdo->prepare("INSERT INTO notas (aprendiz_id, disciplina_id, atividade, valor_nota, data_registro, registrado_por) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$aprendiz_id, $disciplina_id, $atividade, $valor_nota, $data_registro, $usuario_id]);
-            $sucesso = "Nota lançada com sucesso para a atividade '$atividade'.";
+            // ─── PROTEÇÃO IDOR: Confirma que o professor leciona ESTA disciplina
+            // para a TURMA do aluno antes de aceitar o lançamento ────────────────
+            $stmtAuth = $pdo->prepare("
+                SELECT 1
+                FROM professor_disciplina pd
+                JOIN aprendizes a ON a.turma_id = pd.turma_id
+                WHERE pd.usuario_id    = ?
+                  AND pd.disciplina_id = ?
+                  AND a.id             = ?
+                LIMIT 1
+            ");
+            $stmtAuth->execute([$usuario_id, $disciplina_id, $aprendiz_id]);
+
+            if (!$stmtAuth->fetchColumn()) {
+                $erro = "Acesso negado: você não leciona esta disciplina para este aluno.";
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO notas (aprendiz_id, disciplina_id, atividade, valor_nota, data_registro, registrado_por) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$aprendiz_id, $disciplina_id, $atividade, $valor_nota, $data_registro, $usuario_id]);
+                $sucesso = "Nota lançada com sucesso para a atividade '$atividade'.";
+            }
+            // ────────────────────────────────────────────────────────────────────
         } catch (Exception $e) {
             $erro = "Erro ao lançar nota: " . $e->getMessage();
         }
     } else {
         $erro = "Preencha todos os campos obrigatórios.";
     }
+    } // end CSRF check
 }
+
 
 // Lógica de Criação de Turma pelo Professor
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'criar_turma') {
+    // ─── PROTEÇÃO CSRF ────────────────────────────────────────────────────────
+    if (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+        $erro = 'Requ. inválida (token CSRF). Recarregue a página e tente novamente.';
+    } else {
     $curso_id = $_POST['curso_id'] ?? null;
     $disciplina_id = $_POST['disciplina_id'] ?? null;
     $nome_turma = trim($_POST['nome_turma'] ?? '');
@@ -69,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } else {
         $erro = "Preencha todos os campos obrigatórios para criar a turma.";
     }
+    } // end CSRF check
 }
 
 // Buscar Turmas do Professor
@@ -293,7 +325,7 @@ $disciplinasAtivas = $pdo->query("SELECT id, nome, curso_id FROM disciplinas ORD
                     <div class="card-body">
                         <form method="POST">
                             <input type="hidden" name="action" value="lancar_nota">
-                            
+                            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                             <div class="form-group">
                                 <label class="form-label">Turma e Disciplina</label>
                                 <select name="disciplina_id" id="disciplinaSelect" class="form-control" required onchange="updateAlunos()">
@@ -343,7 +375,7 @@ $disciplinasAtivas = $pdo->query("SELECT id, nome, curso_id FROM disciplinas ORD
         <form method="POST">
             <div class="modal-body">
                 <input type="hidden" name="action" value="criar_turma">
-                
+                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                 <div class="form-group">
                     <label class="form-label">Curso *</label>
                     <select name="curso_id" id="modalCurso" class="form-control" required onchange="filtrarDisciplinas()">

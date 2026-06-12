@@ -20,15 +20,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'solicit
         if ($aId) {
             $tipo = $_POST['tipo_documento'] ?? 'matricula';
             if (in_array($tipo, ['matricula', 'frequencia', 'historico'])) {
-                $solicitacaoModel = new \Models\Solicitacao();
-                $solicitacaoModel->criar(['aprendiz_id' => $aId, 'tipo_documento' => $tipo]);
-                $_SESSION['flash_msg'] = "Solicitação de $tipo enviada com sucesso!";
+
+                // ─── RATE LIMIT: impede pedidos duplicados do mesmo tipo no mesmo dia ──
+                $stmtDup = $pdo->prepare("
+                    SELECT COUNT(*) FROM solicitacoes_documentos
+                    WHERE aprendiz_id    = ?
+                      AND tipo_documento = ?
+                      AND DATE(criado_em) = CURDATE()
+                      AND status = 'pendente'
+                ");
+                $stmtDup->execute([$aId, $tipo]);
+                $jaExiste = (int)$stmtDup->fetchColumn();
+
+                if ($jaExiste > 0) {
+                    $_SESSION['flash_msg'] = "Você já tem uma solicitação de '$tipo' pendente hoje. Aguarde a secretaria concluir.";
+                } else {
+                    $solicitacaoModel = new \Models\Solicitacao();
+                    $solicitacaoModel->criar(['aprendiz_id' => $aId, 'tipo_documento' => $tipo]);
+                    $_SESSION['flash_msg'] = "Solicitação de $tipo enviada com sucesso!";
+                }
+                // ─────────────────────────────────────────────────────────────────────
             }
         }
     }
     header("Location: ava.php");
     exit;
 }
+
 
 // ─── PROFESSOR ────────────────────────────────────────────────────────────────
 if ($isProf) {
@@ -63,8 +81,10 @@ if ($isProf) {
     $turmasProfAva = [];
 
     // Dados básicos do aluno
+    // JOIN só por email (campo único). O OR por nome foi removido
+    // pois dois alunos com o mesmo nome retornariam dados errados.
     $stmtAluno = $pdo->prepare("SELECT a.* FROM aprendizes a
-                                JOIN usuarios u ON u.email = a.email OR u.nome = a.nome
+                                JOIN usuarios u ON u.email = a.email
                                 WHERE u.id = ? LIMIT 1");
     $stmtAluno->execute([$_SESSION['usuario_id']]);
     $aluno = $stmtAluno->fetch();
@@ -80,7 +100,15 @@ if ($isProf) {
     // Notas para progresso e boletim
     $notaModel = new \Models\Nota();
     $notasDb = $notaModel->listarPorAluno($aluno_id);
-    $progressoTotal = count($notasDb) > 0 ? min(100, count($notasDb) * 33) : 10;
+
+    // Calcula progresso real: média das notas / 10 × 100
+    // Se não houver notas ainda, mostra 5% (barra não vazia)
+    if (count($notasDb) > 0) {
+        $mediaNotas = array_sum(array_column($notasDb, 'valor_nota')) / count($notasDb);
+        $progressoTotal = (int)round(($mediaNotas / 10) * 100);
+    } else {
+        $progressoTotal = 5;
+    }
 
     // Boletim agrupado por disciplina
     $boletim = [];
@@ -111,11 +139,9 @@ if ($isProf) {
         $disciplinasAluno = $stmtDiscs->fetchAll();
     }
 
-    // ─── Todos os materiais do AVA agrupados por disciplina e tipo ───────────
+    // ─── Todos os materiais do AVA agrupados por disciplina e tipo ─────────
     $materiaisAluno   = [];
     $atividadesAluno  = [];
-    $avisosTurma = [];
-    $proximosEventos = [];
     $materiaisPorDisc = [];
     if ($turma_id) {
         $stmtAllMats = $pdo->prepare("
