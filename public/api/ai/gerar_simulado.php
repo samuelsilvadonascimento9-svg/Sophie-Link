@@ -42,6 +42,15 @@ Siga EXATAMENTE este formato JSON:
 Retorne APENAS um JSON válido. Não coloque blocos de markdown ```json.";
 
 try {
+    // Garante que a chave esteja disponível via putenv antes de chamar o AIClient
+    $envPath = __DIR__ . '/../../../.env';
+    if (file_exists($envPath)) {
+        foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+            if (strpos(trim($line), '#') === 0 || strpos($line, '=') === false) continue;
+            list($k, $v) = explode('=', $line, 2);
+            putenv(trim($k) . '=' . trim($v));
+        }
+    }
     $aiText = \Core\AIClient::gerarResposta($prompt);
 } catch (\Exception $e) {
     http_response_code(500);

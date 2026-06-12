@@ -31,26 +31,34 @@ class AIClient {
 
         $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Necessário em XAMPP local
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Necessário em XAMPP local
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);           // Timeout de 60s
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);    // Timeout de conexão 15s
+        curl_setopt($ch, CURLOPT_USERAGENT, 'SophieLink/1.0');
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             "Authorization: Bearer {$apiKey}",
             "Content-Type: application/json",
-            "HTTP-Referer: http://localhost", // Opcional/Necessário para OpenRouter
+            "HTTP-Referer: http://localhost",
             "X-Title: Sophie Link"
         ]);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-            "model" => $model,
-            "messages" => [
+            "model"      => $model,
+            "max_tokens" => 2000,
+            "messages"   => [
                 ["role" => "user", "content" => $prompt]
             ]
         ]));
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
         curl_close($ch);
 
         if ($httpCode !== 200) {
-            throw new \Exception('Erro na API de IA. HTTP Code: ' . $httpCode . ' Detalhes: ' . $response);
+            $detail = $curlError ? "cURL Error: {$curlError}" : $response;
+            throw new \Exception('Erro na API de IA. HTTP Code: ' . $httpCode . ' Detalhes: ' . $detail);
         }
 
         $responseData = json_decode($response, true);
