@@ -440,7 +440,7 @@ $gargalosProf = $stmtGargalos->fetchAll();
                         // Determina a imagem de fundo: usa a do banco se existir, senão a padrão fotográfica
                         $bgImage = !empty($tp['imagem_capa']) ? '../' . $tp['imagem_capa'] : '../assets/images/course_placeholder.png';
                         ?>
-                        <div class="disc-card">
+                        <a href="gerenciar_disciplina.php?disc=<?= $tp['disc_id'] ?>&turma=<?= $tp['turma_id'] ?>" class="disc-card" style="text-decoration:none; color:inherit; display:block;">
                             <div class="disc-cover" style="background-image: url('<?= $bgImage ?>'); background-size: cover; background-position: center;">
                                 <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);"></div>
                                 <span class="disc-badge"><?= htmlspecialchars($tp['turma_nome']) ?></span>
@@ -453,15 +453,12 @@ $gargalosProf = $stmtGargalos->fetchAll();
                                 <div class="disc-stat"><i data-lucide="users"></i> <?= $nAlunos ?> alunos</div>
                                 <div class="disc-stat"><i data-lucide="file-text"></i> <?= $nMats ?> materiais</div>
                             </div>
-                            <div class="disc-footer">
-                                <button class="disc-btn disc-btn-primary"
-                                    onclick="showSec('materiais',document.getElementById('btn-materiais'))">+ Material</button>
-                                <button class="disc-btn disc-btn-ghost"
-                                    onclick="showSec('frequencia',document.getElementById('btn-frequencia'))">Chamada</button>
-                                <button class="disc-btn disc-btn-ghost"
-                                    onclick="showSec('diario',document.getElementById('btn-diario'))">Notas</button>
+                            <div class="disc-footer" style="justify-content: center; background: #FFF0E6; border-top: 1px solid #FFD5B8;">
+                                <div style="color: var(--brand); font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                                    Acessar Painel da Disciplina <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                         <?php endforeach; ?>
                     </div>
                     <?php endif; ?>
