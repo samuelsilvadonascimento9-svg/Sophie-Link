@@ -290,32 +290,15 @@ $gargalosProf = $stmtGargalos->fetchAll();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../assets/css/portais/professor.css">
-    <link rel="stylesheet" href="../assets/css/premium.css">
+    <link rel="stylesheet" href="../assets/css/portais/professor.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/premium.css?v=<?= time() ?>">
     <style>
-        .filter-row { display: none; }
-        .filter-row.active { display: table-row; }
-        .tipo-badge {
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: 3px 9px; border-radius: 20px; font-size: 0.65rem; font-weight: 700;
-        }
-        .tipo-pdf      { background: #EFF6FF; color: #1D4ED8; }
-        .tipo-atividade{ background: #FFF7ED; color: #C2410C; }
-        .tipo-aviso    { background: #F0FDF4; color: #15803D; }
-        .upload-zone {
-            border: 2px dashed var(--c-border); border-radius: var(--radius);
-            padding: 24px; text-align: center; cursor: pointer;
-            transition: all 0.2s; background: var(--c-bg);
-        }
-        .upload-zone:hover { border-color: var(--c-brand); background: var(--c-brand-lt); }
-        .upload-zone.dragover { border-color: var(--c-brand); background: var(--c-brand-lt); }
-        .mat-row:hover { background: var(--c-bg); }
-        .tab-btn {
-            padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
-            border: 1px solid var(--c-border); background: none; cursor: pointer; color: var(--c-text-muted);
-            transition: all 0.15s;
-        }
-        .tab-btn.active { background: var(--c-brand); color: #fff; border-color: var(--c-brand); }
+        /* Contador de presença em tempo real */
+        #freq-counter { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; padding: 8px 12px; background: var(--bg); border-radius: var(--radius); display: none; }
+        #freq-counter strong { color: var(--text); }
+        #freq-counter .cnt-green { color: var(--green); font-weight: 700; }
+        #freq-counter .cnt-red   { color: var(--red);   font-weight: 700; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -378,34 +361,108 @@ $gargalosProf = $stmtGargalos->fetchAll();
         <?php endif; ?>
 
         <!-- ============================================================
-             SEC: INÍCIO — Minhas disciplinas + materiais recentes
+             SEC: INÍCIO — Dashboard do Professor
              ============================================================ -->
         <div id="sec-inicio" class="sec active">
-            <!-- Cards de turmas -->
+
+            <!-- ── Métricas ────────────────────────────────────────── -->
+            <?php
+            $totalAlunos   = count($alunosDb);
+            $totalMats     = count($materiaisProf);
+            $totalAtvOpen  = count(array_filter($materiaisProf, fn($m) => $m['tipo'] === 'atividade' && !empty($m['data_entrega']) && $m['data_entrega'] >= date('Y-m-d')));
+            ?>
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-icon mi-purple"><i data-lucide="book-open"></i></div>
+                    <div>
+                        <div class="metric-val"><?= count($turmasProf) ?></div>
+                        <div class="metric-label">Disciplinas / Turmas</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon mi-green"><i data-lucide="users"></i></div>
+                    <div>
+                        <div class="metric-val"><?= $totalAlunos ?></div>
+                        <div class="metric-label">Alunos nas Turmas</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon mi-blue"><i data-lucide="layers"></i></div>
+                    <div>
+                        <div class="metric-val"><?= $totalMats ?></div>
+                        <div class="metric-label">Materiais Publicados</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon mi-amber"><i data-lucide="clock"></i></div>
+                    <div>
+                        <div class="metric-val"><?= $totalAtvOpen ?></div>
+                        <div class="metric-label">Atividades em Aberto</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Cards de Disciplinas (Grid) ──────────────────────── -->
             <div class="widget">
                 <div class="w-head">
                     <div class="w-title"><i data-lucide="book-open"></i> Minhas Disciplinas / Turmas</div>
                     <span class="w-action" onclick="showSec('materiais', document.getElementById('btn-materiais'))">+ Publicar Material</span>
                 </div>
-                <div class="w-body" style="display:flex;gap:14px;flex-wrap:wrap;">
+                <div class="w-body">
                     <?php if (empty($turmasProf)): ?>
-                        <div style="color:var(--c-text-muted);font-size:0.85rem;">Nenhuma disciplina atribuída ainda.</div>
+                        <div style="color:var(--muted);font-size:0.85rem;padding:12px 0;">Nenhuma disciplina atribuída ainda. Aguarde a coordenação ou crie uma nova matéria.</div>
                     <?php else: ?>
-                        <?php foreach ($turmasProf as $tp): ?>
-                        <div style="width:240px;border:1px solid var(--c-border);border-radius:var(--radius-lg);overflow:hidden;">
-                            <div style="height:90px;background:linear-gradient(135deg,var(--c-brand) 0%,#4C1D95 100%);position:relative;">
-                                <i data-lucide="book-open" style="position:absolute;right:12px;bottom:8px;width:40px;height:40px;color:rgba(255,255,255,0.2);"></i>
+                    <div class="disc-grid">
+                        <?php
+                        // Conta alunos e materiais por turma para exibir nos cards
+                        $alunosPorTurma = [];
+                        foreach ($alunosDb as $al) {
+                            $alunosPorTurma[$al['turma_id']] = ($alunosPorTurma[$al['turma_id']] ?? 0) + 1;
+                        }
+                        $matsPorDisc = [];
+                        foreach ($materiaisProf as $mm) {
+                            $matsPorDisc[$mm['disciplina_id']] = ($matsPorDisc[$mm['disciplina_id']] ?? 0) + 1;
+                        }
+                        // Gera cor única por disciplina (hash para tom diferente)
+                        $gradients = [
+                            'linear-gradient(135deg,#7C3AED 0%,#4C1D95 100%)',
+                            'linear-gradient(135deg,#2563EB 0%,#1E40AF 100%)',
+                            'linear-gradient(135deg,#059669 0%,#065F46 100%)',
+                            'linear-gradient(135deg,#D97706 0%,#92400E 100%)',
+                            'linear-gradient(135deg,#DC2626 0%,#991B1B 100%)',
+                            'linear-gradient(135deg,#0891B2 0%,#164E63 100%)',
+                        ];
+                        ?>
+                        <?php foreach ($turmasProf as $i => $tp): ?>
+                        <?php
+                        $grad     = $gradients[$i % count($gradients)];
+                        $nAlunos  = $alunosPorTurma[$tp['turma_id']] ?? 0;
+                        $nMats    = $matsPorDisc[$tp['disc_id']] ?? 0;
+                        ?>
+                        <div class="disc-card">
+                            <div class="disc-cover" style="background:<?= $grad ?>">
+                                <span class="disc-badge"><?= htmlspecialchars($tp['turma_nome']) ?></span>
+                                <i data-lucide="book-open" class="disc-cover-icon"></i>
                             </div>
-                            <div style="padding:10px 12px;">
-                                <div style="font-weight:700;font-size:0.82rem;color:var(--c-brand);margin-bottom:2px;"><?= htmlspecialchars($tp['disciplina_nome']) ?></div>
-                                <div style="font-size:0.7rem;color:var(--c-text-muted);"><?= htmlspecialchars($tp['turma_nome']) ?></div>
-                                <div style="display:flex;gap:8px;margin-top:8px;">
-                                    <button onclick="showSec('materiais',document.getElementById('btn-materiais'))" style="font-size:0.68rem;padding:4px 8px;border-radius:4px;border:1px solid var(--c-brand);color:var(--c-brand);background:none;cursor:pointer;">+ Material</button>
-                                    <button onclick="showSec('frequencia',document.getElementById('btn-frequencia'))" style="font-size:0.68rem;padding:4px 8px;border-radius:4px;border:1px solid var(--c-border);color:var(--c-text-muted);background:none;cursor:pointer;">Chamada</button>
-                                </div>
+                            <div class="disc-body">
+                                <div class="disc-name"><?= htmlspecialchars($tp['disciplina_nome']) ?></div>
+                                <div class="disc-turma"><?= htmlspecialchars($tp['turma_nome']) ?></div>
+                            </div>
+                            <div class="disc-stats">
+                                <div class="disc-stat"><i data-lucide="users"></i> <?= $nAlunos ?> alunos</div>
+                                <div class="disc-stat"><i data-lucide="file-text"></i> <?= $nMats ?> materiais</div>
+                            </div>
+                            <div class="disc-footer">
+                                <button class="disc-btn disc-btn-primary"
+                                    onclick="showSec('materiais',document.getElementById('btn-materiais'))">+ Material</button>
+                                <button class="disc-btn disc-btn-ghost"
+                                    onclick="showSec('frequencia',document.getElementById('btn-frequencia'))">Chamada</button>
+                                <button class="disc-btn disc-btn-ghost"
+                                    onclick="showSec('diario',document.getElementById('btn-diario'))">Notas</button>
                             </div>
                         </div>
                         <?php endforeach; ?>
+                    </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -643,10 +700,15 @@ $gargalosProf = $stmtGargalos->fetchAll();
                             <tbody id="tbody-notas">
                                 <?php foreach ($alunosDb as $a): ?>
                                 <tr class="filter-row turma-<?= $a['turma_id'] ?>">
-                                    <td><?= str_pad($a['id'], 6, '0', STR_PAD_LEFT) ?></td>
+                                    <td style="font-size:0.72rem;color:var(--muted);"><?= str_pad($a['id'], 6, '0', STR_PAD_LEFT) ?></td>
                                     <td style="font-weight:600;"><?= htmlspecialchars($a['nome']) ?></td>
-                                    <td><?= htmlspecialchars($a['turma_nome']) ?></td>
-                                    <td><input type="number" step="0.1" min="0" max="10" name="nota_<?= $a['id'] ?>" class="input-field" style="width:100px;" placeholder="0.0"></td>
+                                    <td style="font-size:0.8rem;color:var(--muted);"><?= htmlspecialchars($a['turma_nome']) ?></td>
+                                    <td>
+                                        <input type="number" step="0.1" min="0" max="10"
+                                               name="nota_<?= $a['id'] ?>" class="input-field nota-input"
+                                               style="width:90px;" placeholder="0.0"
+                                               oninput="colorNota(this)">
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -687,28 +749,36 @@ $gargalosProf = $stmtGargalos->fetchAll();
                                 <input type="date" name="data_registro" class="input-field" value="<?= date('Y-m-d') ?>" required>
                             </div>
                         </div>
+                        <!-- Contador de presença em tempo real -->
+                        <div id="freq-counter">
+                            <span class="cnt-green">0 presentes</span> &nbsp;·&nbsp; <span class="cnt-red">0 faltas</span> &nbsp;·&nbsp; <strong id="cnt-total">0 alunos</strong> nesta turma
+                        </div>
+
                         <table class="data-table">
-                            <thead><tr><th>RA</th><th>Aluno</th><th>Tipo</th><th>Entrada / Saída</th><th>Presença</th></tr></thead>
+                            <thead><tr><th>RA</th><th>Aluno</th><th>Tipo</th><th>Entrada / Saída</th><th style="width:140px;">Presença</th></tr></thead>
                             <tbody id="tbody-frequencia">
                                 <?php foreach ($alunosDb as $a): ?>
                                 <tr class="filter-row turma-<?= $a['turma_id'] ?>">
-                                    <td><?= str_pad($a['id'], 6, '0', STR_PAD_LEFT) ?></td>
+                                    <td style="font-size:0.72rem;color:var(--muted);"><?= str_pad($a['id'], 6, '0', STR_PAD_LEFT) ?></td>
                                     <td style="font-weight:600;"><?= htmlspecialchars($a['nome']) ?></td>
-                                    <td><span style="font-size:0.7rem;padding:3px 6px;background:#e5e7eb;border-radius:4px;"><?= ucfirst($a['tipo']) ?></span></td>
+                                    <td><span style="font-size:0.68rem;padding:3px 7px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--muted);"><?= ucfirst($a['tipo']) ?></span></td>
                                     <td>
                                         <?php if ($a['tipo'] === 'aprendiz'): ?>
-                                            <input type="time" name="entrada_<?= $a['id'] ?>" class="input-field" style="width:100px;display:inline-block;">
-                                            <span style="color:var(--c-text-muted);margin:0 4px;">—</span>
-                                            <input type="time" name="saida_<?= $a['id'] ?>" class="input-field" style="width:100px;display:inline-block;">
+                                            <input type="time" name="entrada_<?= $a['id'] ?>" class="input-field" style="width:96px;display:inline-block;">
+                                            <span style="color:var(--muted);margin:0 3px;">–</span>
+                                            <input type="time" name="saida_<?= $a['id'] ?>" class="input-field" style="width:96px;display:inline-block;">
                                         <?php else: ?>
-                                            <span style="color:#9ca3af;font-size:0.8rem;">N/A</span>
+                                            <span style="color:var(--muted);font-size:0.78rem;">N/A</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <select name="freq_<?= $a['id'] ?>" class="input-field" style="width:130px;">
-                                            <option value="P">✅ Presente</option>
-                                            <option value="F">❌ Falta</option>
-                                        </select>
+                                        <!-- Toggle visual P / F (substitui <select>) -->
+                                        <div class="freq-toggle">
+                                            <input type="radio" name="freq_<?= $a['id'] ?>" id="p_<?= $a['id'] ?>" value="P" checked onchange="updateFreqCounter()">
+                                            <label for="p_<?= $a['id'] ?>">✓ Presente</label>
+                                            <input type="radio" name="freq_<?= $a['id'] ?>" id="f_<?= $a['id'] ?>" value="F" onchange="updateFreqCounter()">
+                                            <label for="f_<?= $a['id'] ?>">✗ Falta</label>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -876,6 +946,11 @@ function filterAlunos(val, section) {
         const turmaId = val.split('-')[1];
         tbody.querySelectorAll('.turma-' + turmaId).forEach(r => r.classList.add('active'));
     }
+    // Atualiza contador de presença ao trocar turma
+    if (section === 'frequencia') updateFreqCounter();
+    // Exibe contador ao selecionar turma
+    const counter = document.getElementById('freq-counter');
+    if (counter && section === 'frequencia') counter.style.display = val ? 'block' : 'none';
 }
 
 function toggleDataEntrega(tipo) {
@@ -887,7 +962,7 @@ function showFileName(input) {
     const label = document.getElementById('upload-label');
     if (input.files && input.files[0]) {
         const size = (input.files[0].size / 1024 / 1024).toFixed(2);
-        label.innerHTML = `<strong>${input.files[0].name}</strong> (${size} MB) — <span style="color:var(--c-green);">✓ Pronto</span>`;
+        label.innerHTML = `<strong>${input.files[0].name}</strong> (${size} MB) &nbsp;·&nbsp; <span style="color:var(--green);">✓ Pronto para envio</span>`;
     }
 }
 
@@ -908,6 +983,36 @@ function filterMats(tipo) {
     document.querySelectorAll('#mats-table .mat-row').forEach(r => {
         r.style.display = (tipo === 'all' || r.dataset.tipo === tipo) ? '' : 'none';
     });
+}
+
+// ── Cor live nos inputs de nota ────────────────────────────────────────────
+function colorNota(input) {
+    const v = parseFloat(input.value);
+    input.classList.remove('ok','med','bad');
+    if (!isNaN(v)) {
+        if (v >= 7)      input.classList.add('ok');
+        else if (v >= 5) input.classList.add('med');
+        else             input.classList.add('bad');
+    }
+}
+
+// ── Contador de presença em tempo real ────────────────────────────────────
+function updateFreqCounter() {
+    const visibleRows = document.querySelectorAll('#tbody-frequencia .filter-row.active');
+    let presentes = 0, faltas = 0;
+    visibleRows.forEach(row => {
+        const fRadio = row.querySelector('input[type="radio"]:checked');
+        if (fRadio) {
+            if (fRadio.value === 'P') presentes++;
+            else faltas++;
+        }
+    });
+    const c = document.getElementById('freq-counter');
+    if (c) {
+        c.querySelector('.cnt-green').textContent = presentes + ' presentes';
+        c.querySelector('.cnt-red').textContent   = faltas + ' faltas';
+        document.getElementById('cnt-total').textContent = (presentes + faltas) + ' alunos';
+    }
 }
 </script>
 <script src="../assets/js/portais/professor.js"></script>

@@ -22,9 +22,23 @@ function protect_page(array $allowed_levels = []) {
     $pos = strpos($script, '/public/');
     $base = ($pos !== false) ? substr($script, 0, $pos) : '';
 
+    // Determina a página de login apropriada com base no nível do usuário
+    // ou no nível exigido pela página atual (para quando a sessão já está vazia)
+    $login_page = '/public/auth/login_aluno.php'; // Padrão
+    $target_level = $_SESSION['usuario_nivel'] ?? (!empty($allowed_levels) ? $allowed_levels[0] : '');
+
+    if ($target_level === 'professor') {
+        $login_page = '/public/auth/login_professor.php';
+    } elseif ($target_level === 'empresa') {
+        $login_page = '/public/auth/login_empresa.php';
+    } elseif (in_array($target_level, ['colaborador', 'coordenadora', 'admin'])) {
+        // Se a página é restrita a admin/colaborador, manda pro painel interno
+        $login_page = '/public/auth/login_colaborador.php'; 
+    }
+
     if (!isset($_SESSION['usuario_id'])) {
-        // Redireciona para login
-        header('Location: ' . $base . '/public/auth/login_aluno.php');
+        // Redireciona para login adequado
+        header('Location: ' . $base . $login_page);
         exit;
     }
     
@@ -32,7 +46,7 @@ function protect_page(array $allowed_levels = []) {
     if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
         session_unset();
         session_destroy();
-        header('Location: ' . $base . '/public/auth/login_aluno.php?msg=Sessao+expirada');
+        header('Location: ' . $base . $login_page . '?msg=Sessao+expirada');
         exit;
     }
     
