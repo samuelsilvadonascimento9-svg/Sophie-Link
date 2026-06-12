@@ -48,62 +48,8 @@ $prefillEmail = '';
 $erro = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once '../../app/Core/Connect.php';
-    if (!Security::checkRateLimit(5, 5)) {
-        $minutos = Security::getLockoutRemainingMinutes();
-        $erro = "Muitas tentativas falhas. Tente novamente em " . $minutos . " minutos.";
-    } elseif (!Security::validateCsrfToken($_POST['csrf_token'] ?? '')) {
-        $erro = "Sessão expirada ou requisição inválida. Recarregue a página.";
-    } else {
-    $email = trim($_POST['email'] ?? '');
-    $senha = $_POST['senha'] ?? '';
-
-    if (!$email || !$senha) {
-        $erro = 'Preencha todos os campos.';
-    } else {
-        $user = \Models\Usuario::autenticar($email, $senha, $niveis_esperados);
-
-        if ($user) {
-            Security::clearLoginAttempts();
-            $_SESSION['usuario_id']    = $user['id'];
-            $_SESSION['usuario_nome']  = $user['nome'];
-            $_SESSION['usuario_nivel'] = $user['nivel'];
-            $_SESSION['empresa_id']    = $user['empresa_id'];
-            // Verifica se tem redirecionamento pendente
-            if (isset($_GET['redirect']) && !empty($_GET['redirect'])) {
-                Security::safeRedirect($_GET['redirect'] ?? '');
-            }
-
-            switch ($user['nivel']) {
-                case 'admin':
-                    header('Location: ../admin/dashboard.php');
-                    break;
-                case 'coordenadora':
-                    header('Location: ../admin/painel_academico.php');
-                    break;
-                case 'empresa':
-                    header('Location: ../portais/empresa.php');
-                    break;
-                case 'professor':
-                    header('Location: ../portais/ava_professor.php');
-                    break;
-                case 'colaborador':
-                    header('Location: ../portais/colaborador.php');
-                    break;
-                case 'aluno':
-                    header('Location: ../portais/portal_aluno.php');
-                    break;
-                default:
-                    header('Location: ../index.php');
-                    break;
-            }
-            exit;
-        } else {
-            Security::registerFailedLogin();
-            $erro = 'E-mail ou senha inválidos para este portal.';
-        }
-    }
-    }
+    require_once '../../app/Controllers/AuthController.php';
+    $erro = \Controllers\AuthController::handleLogin($niveis_esperados);
 }
 ?>
 <!DOCTYPE html>

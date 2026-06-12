@@ -10,6 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
             s.style.display = 'none';
         }
     });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const cursoIdStr = urlParams.get('curso');
+    if (cursoIdStr) {
+        const discId = parseInt(cursoIdStr, 10);
+        openCourse(null, discId);
+    }
 });
 
 /* ----------------------------------------------------------------

@@ -592,3 +592,52 @@ img { display: block; max-width: 100%; }
     background: var(--c-border-lt);
     color: var(--c-text);
 }
+
+/* ================================================================
+   ACESSIBILIDADE ABSOLUTA (Alto Contraste)
+   ================================================================ */
+html.high-contrast {
+    /* Cores Extremas para Alto Contraste */
+    --c-brand: #FFFF00 !important;
+    --c-brand-d: #FFFF00 !important;
+    --c-brand-lt: #000000 !important;
+    --c-bg: #000000 !important;
+    --c-surface: #000000 !important;
+    --c-text: #FFFF00 !important;
+    --c-text-2: #FFFF00 !important;
+    --c-text-muted: #FFFFFF !important;
+    --c-text-link: #00FFFF !important;
+    --c-border: #FFFF00 !important;
+    --c-border-lt: #FFFF00 !important;
+    --c-accent: #000000 !important;
+    --c-accent-lt: #000000 !important;
+}
+
+html.high-contrast body,
+html.high-contrast .panel,
+html.high-contrast .card,
+html.high-contrast .topnav,
+html.high-contrast .subnav,
+html.high-contrast .sidebar,
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+    background: #000 !important;
+    color: #FF0 !important;
+    border-color: #FF0 !important;
+}
+
+html.high-contrast a,
+html.high-contrast i,
+html.high-contrast .subnav-link {
+    color: #0FF !important;
+}
+
+html.high-contrast .btn-primary,
+html.high-contrast .tn-icon-btn.active,
+html.high-contrast .subnav-link.active {
+    background: #FF0 !important;
+    color: #000 !important;
+    font-weight: 900 !important;
+}
+

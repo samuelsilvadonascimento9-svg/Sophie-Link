@@ -10,8 +10,7 @@ header('Content-Type: application/json');
 
 // === CONFIGURAÇÃO DO MERCADO PAGO ===
 // Substitua pelo seu Access Token real do painel: https://www.mercadopago.com.br/developers/panel/app
-$mpAccessToken = 'APP_USR-6836003344835449-060310-e3161895eb8d95272de7ecf76cd26fa9-2244514896';
-MercadoPagoConfig::setAccessToken($mpAccessToken);
+MercadoPagoConfig::setAccessToken(\Core\Connect::getEnv('MP_ACCESS_TOKEN'));
 
 // URL base do seu servidor local (sem espaços e sem %20)
 $baseUrl = 'http://localhost/DevWeb/Sophie%20Link/public';

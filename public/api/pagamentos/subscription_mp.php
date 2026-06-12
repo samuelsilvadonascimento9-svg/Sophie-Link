@@ -16,7 +16,7 @@ $pdo = \Core\Connect::getInstance();
 header('Content-Type: application/json');
 
 // === CONFIGURAÇÃO DO MERCADO PAGO ===
-$mpAccessToken = \Core\Connect::getEnv('MP_ACCESS_TOKEN') ?: 'APP_USR-6836003344835449-060310-e3161895eb8d95272de7ecf76cd26fa9-2244514896';
+$mpAccessToken = \Core\Connect::getEnv('MP_ACCESS_TOKEN');
 MercadoPagoConfig::setAccessToken($mpAccessToken);
 
 $data = json_decode(file_get_contents('php://input'), true);

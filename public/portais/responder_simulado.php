@@ -107,7 +107,7 @@ if ($jaRespondeu) {
 <body>
     <div class="container">
         <div style="margin-bottom: 2rem;">
-            <a href="ava.php" style="color: #64748B; text-decoration: none; font-size: 0.85rem;">← Voltar para o AVA</a>
+            <a href="ava.php?curso=<?= $simulado['disciplina_id'] ?>" style="color: #64748B; text-decoration: none; font-size: 0.85rem;">← Voltar para o AVA</a>
             <h1 style="margin: 1rem 0 0.5rem; color: #8B5CF6;"><i data-lucide="sparkles" style="vertical-align: middle;"></i> <?= htmlspecialchars($simulado['titulo']) ?></h1>
             <p style="color: #64748B; margin: 0;">Disciplina: <?= htmlspecialchars($simulado['disciplina_nome']) ?></p>
         </div>

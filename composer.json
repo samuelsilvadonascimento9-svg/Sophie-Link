@@ -1,5 +1,14 @@
 {
     "require": {
-        "mercadopago/dx-php": "^3.10"
+        "mercadopago/dx-php": "^3.10",
+        "phpmailer/phpmailer": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Core\\": "app/Core/",
+            "Models\\": "app/Models/",
+            "Helpers\\": "app/Helpers/",
+            "Controllers\\": "app/Controllers/"
+        }
     }
 }

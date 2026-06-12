@@ -270,18 +270,80 @@ if (!$isProf) {
         
         <div style="width:1px;background:var(--c-border);height:20px;margin:0 4px;"></div>
 
-        <button class="tn-icon-btn" title="Apps">
-            <i data-lucide="layout-grid"></i>
-        </button>
-        <button class="tn-icon-btn" title="Mensagens" onclick="showSec('mensagens')">
-            <i data-lucide="mail"></i>
-            <span class="tn-badge">2</span>
-        </button>
-        <button class="tn-icon-btn" title="Chat">
-            <i data-lucide="message-circle"></i>
-        </button>
+        <!-- Apps / Cursos -->
         <div style="position: relative;">
-            <button class="tn-icon-btn" title="Notificações" onclick="toggleNotifDropdown()">
+            <button class="tn-icon-btn" title="Selecionar um curso..." onclick="toggleDropdown('apps-dropdown')">
+                <i data-lucide="layout-grid"></i>
+            </button>
+            <div id="apps-dropdown" style="display:none; position:absolute; top:40px; right:0; width:450px; background:#fff; border:1px solid var(--c-border); border-radius:var(--radius); box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:9999;">
+                <div style="max-height:350px; overflow-y:auto; padding: 5px 0;">
+                    <?php 
+                    $cursosList = $isProf ? $turmasProfAva : $disciplinasAluno;
+                    if (empty($cursosList)): 
+                    ?>
+                        <div style="padding:15px; text-align:center; color:var(--c-text-muted); font-size:0.8rem;">Nenhum curso disponível.</div>
+                    <?php else: ?>
+                        <?php foreach($cursosList as $cList): 
+                            $cNome = $isProf ? $cList['disciplina_nome'] : $cList['nome'];
+                            $cId = $isProf ? $cList['disciplina_id'] : $cList['id'];
+                        ?>
+                            <a href="#" onclick="openCourse(event, <?= $cId ?>); toggleDropdown('apps-dropdown');" style="display:flex; justify-content:space-between; align-items:center; padding:12px 15px; border-bottom:1px solid var(--c-border-lt); text-decoration:none; color:var(--c-text-link); font-size:0.85rem; background:#fff; transition:background 0.15s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='#fff'">
+                                <span><?= htmlspecialchars($cNome) ?></span>
+                                <i data-lucide="pin" style="width:14px; height:14px; color:var(--c-text-muted);"></i>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensagens -->
+        <div style="position: relative;">
+            <button class="tn-icon-btn" title="Mensagens" onclick="toggleDropdown('msgs-dropdown')">
+                <i data-lucide="mail"></i>
+                <span class="tn-badge">2</span>
+            </button>
+            <div id="msgs-dropdown" style="display:none; position:absolute; top:40px; right:0; width:300px; background:#fff; border:1px solid var(--c-border); border-radius:var(--radius); box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:9999;">
+                <div style="padding:10px 15px; border-bottom:1px solid var(--c-border); font-weight:600; font-size:0.85rem; color:var(--c-brand); display:flex; justify-content:space-between;">
+                    <span>Mensagens</span>
+                    <a href="#" onclick="showSec('mensagens'); toggleDropdown('msgs-dropdown');" style="font-size:0.75rem; color:var(--c-text-link); text-decoration:none; font-weight:normal;">Ver todas</a>
+                </div>
+                <div style="max-height:300px; overflow-y:auto;">
+                    <a href="#" style="display:flex; gap:10px; padding:10px 15px; border-bottom:1px solid var(--c-border); text-decoration:none; color:var(--c-text); background:#f8f9fa;">
+                        <div style="width:36px; height:36px; background:var(--c-brand); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.8rem; flex-shrink:0;">SC</div>
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:600;">Secretaria</div>
+                            <div style="font-size:0.75rem; color:var(--c-text-muted); margin-top:3px;">Bem-vindo ao novo semestre!</div>
+                        </div>
+                    </a>
+                    <a href="#" style="display:flex; gap:10px; padding:10px 15px; border-bottom:1px solid var(--c-border); text-decoration:none; color:var(--c-text); background:#f8f9fa;">
+                        <div style="width:36px; height:36px; background:var(--c-teal); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.8rem; flex-shrink:0;">PR</div>
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:600;">Prof. Roberto</div>
+                            <div style="font-size:0.75rem; color:var(--c-text-muted); margin-top:3px;">Aviso importante sobre o trabalho...</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div style="position: relative;">
+            <button class="tn-icon-btn" title="Chat" onclick="toggleDropdown('chat-dropdown')">
+                <i data-lucide="message-circle"></i>
+            </button>
+            <div id="chat-dropdown" style="display:none; position:absolute; top:40px; right:0; width:300px; background:#fff; border:1px solid var(--c-border); border-radius:var(--radius); box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:9999;">
+                <div style="padding:10px 15px; border-bottom:1px solid var(--c-border); font-weight:600; font-size:0.85rem; color:var(--c-brand);">Chat Online</div>
+                <div style="padding:20px; text-align:center; color:var(--c-text-muted);">
+                    <i data-lucide="message-square" style="width:32px; height:32px; margin:0 auto 10px; opacity:0.3; display:block;"></i>
+                    <span style="font-size:0.8rem;">Nenhum usuário online no momento.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notificações -->
+        <div style="position: relative;">
+            <button class="tn-icon-btn" title="Notificações" onclick="toggleDropdown('notif-dropdown')">
                 <i data-lucide="bell"></i>
                 <?php if ($unreadNotifCount > 0): ?>
                     <span class="tn-badge"><?= $unreadNotifCount ?></span>
@@ -306,10 +368,33 @@ if (!$isProf) {
     </div>
 
     <script>
-    function toggleNotifDropdown() {
-        const dd = document.getElementById('notif-dropdown');
-        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    function toggleDropdown(id) {
+        // Fechar todos os outros
+        const dropdowns = ['apps-dropdown', 'msgs-dropdown', 'chat-dropdown', 'notif-dropdown'];
+        dropdowns.forEach(ddId => {
+            if (ddId !== id) {
+                const el = document.getElementById(ddId);
+                if (el) el.style.display = 'none';
+            }
+        });
+        
+        // Alternar o clicado
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
     }
+    
+    // Fechar dropdowns ao clicar fora
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.tn-icons')) {
+            const dropdowns = ['apps-dropdown', 'msgs-dropdown', 'chat-dropdown', 'notif-dropdown'];
+            dropdowns.forEach(ddId => {
+                const el = document.getElementById(ddId);
+                if (el) el.style.display = 'none';
+            });
+        }
+    });
     </script>
 
     <div style="width:1px;background:var(--c-border);height:28px;margin:0 8px;"></div>
@@ -334,11 +419,7 @@ if (!$isProf) {
     <div class="subnav-sep"></div>
     <span class="subnav-link" id="snav-frequencia" onclick="showSec('frequencia')">Frequência</span>
     <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-publicacoes" onclick="showSec('publicacoes')">Publicações</span>
-    <div class="subnav-sep"></div>
     <span class="subnav-link" id="snav-ajuda" onclick="showSec('ajuda')">Ajuda</span>
-    <div class="subnav-sep"></div>
-    <span class="subnav-link" id="snav-descobrir" onclick="showSec('descobrir')">Descobrir</span>
     <div class="subnav-sep"></div>
     <a href="portal_aluno.php" class="subnav-link subnav-link-portal">Portal do aluno</a>
 </div>
@@ -1037,24 +1118,111 @@ if (!$isProf) {
 </div>
 </div>
 
-
 <!-- ================================================================
-     SEÇÃO: PUBLICAÇÕES / FEED
+     SEÇÃO: BOLETIM (NOTAS)
      ================================================================ -->
-<div id="sec-publicacoes" class="page-section">
+<div id="sec-notas" class="page-section">
 <div class="page-wrap">
     <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
         <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
     </button>
-    <div class="panel" style="background:#fff;border:1px solid #ccc;padding:20px;border-radius:8px;">
-        <div class="panel-head" style="font-size:1.2rem;font-weight:bold;margin-bottom:15px;"><i data-lucide="message-square" style="width:15px;height:15px;color:var(--c-brand);"></i> Publicações da Turma</div>
-        <div style="text-align:center;color:#333;">
-            <i data-lucide="globe" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.3;"></i>
-            As publicações e fóruns de discussão estarão disponíveis em breve.
+    <div class="panel" style="padding:1.5rem;">
+        <div class="panel-head" style="margin-bottom:15px;">
+            <div class="panel-title"><i data-lucide="file-check-2" style="width:15px;height:15px;color:var(--c-brand);"></i> Meu Boletim</div>
+        </div>
+        <?php if(empty($boletim)): ?>
+            <div style="text-align:center;color:var(--c-text-muted);padding:2rem;">
+                Nenhuma nota lançada até o momento.
+            </div>
+        <?php else: ?>
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:var(--c-bg-alt);border-bottom:2px solid var(--c-border);">
+                            <th style="padding:10px;text-align:left;">Disciplina</th>
+                            <th style="padding:10px;text-align:center;">Faltas</th>
+                            <th style="padding:10px;text-align:center;">Nota Final (Média)</th>
+                            <th style="padding:10px;text-align:center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($boletim as $disc => $dados): 
+                            $media = count($dados['notas']) > 0 ? array_sum($dados['notas']) / count($dados['notas']) : 0;
+                            $status = $media >= 6 ? 'Aprovado' : ($media > 0 ? 'Recuperação' : 'Cursando');
+                            $corStatus = $media >= 6 ? 'var(--c-green)' : ($media > 0 ? 'var(--c-amber)' : 'var(--c-brand)');
+                        ?>
+                        <tr style="border-bottom:1px solid var(--c-border-lt);">
+                            <td style="padding:12px 10px;font-weight:600;"><?= htmlspecialchars($disc) ?></td>
+                            <td style="padding:12px 10px;text-align:center;"><?= $dados['faltas'] ?></td>
+                            <td style="padding:12px 10px;text-align:center;font-weight:700;"><?= number_format($media, 1, ',', '.') ?></td>
+                            <td style="padding:12px 10px;text-align:center;font-weight:700;color:<?= $corStatus ?>;"><?= $status ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+</div>
+
+<!-- ================================================================
+     SEÇÃO: FREQUÊNCIA
+     ================================================================ -->
+<div id="sec-frequencia" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel" style="padding:1.5rem;">
+        <div class="panel-head" style="margin-bottom:15px;display:flex;justify-content:space-between;align-items:center;">
+            <div class="panel-title"><i data-lucide="clipboard-check" style="width:15px;height:15px;color:var(--c-brand);"></i> Histórico de Frequência</div>
+            <div style="font-size:1rem;font-weight:800;color:<?= $percPresenca >= 75 ? 'var(--c-green)' : 'var(--c-red)' ?>;">
+                Frequência Geral: <?= $percPresenca ?>%
+            </div>
+        </div>
+        <?php if(empty($frequenciaAluno)): ?>
+            <div style="text-align:center;color:var(--c-text-muted);padding:2rem;">
+                Nenhum registro de frequência encontrado.
+            </div>
+        <?php else: ?>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;">
+                <?php foreach($frequenciaAluno as $f): 
+                    $isPres = $f['status'] === 'presente';
+                ?>
+                <div style="border:1px solid <?= $isPres ? '#bbf7d0' : '#fecaca' ?>; background:<?= $isPres ? '#f0fdf4' : '#fef2f2' ?>; padding:10px; border-radius:6px; display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="<?= $isPres ? 'check-circle' : 'x-circle' ?>" style="color:<?= $isPres ? '#16a34a' : '#dc2626' ?>; width:18px;"></i>
+                    <div>
+                        <div style="font-size:0.75rem;font-weight:700;color:#333;"><?= date('d/m/Y', strtotime($f['data'])) ?></div>
+                        <div style="font-size:0.65rem;color:#555;"><?= htmlspecialchars($f['disciplina'] ?? 'Aula') ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+</div>
+
+<!-- ================================================================
+     SEÇÃO: MENSAGENS
+     ================================================================ -->
+<div id="sec-mensagens" class="page-section">
+<div class="page-wrap">
+    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
+        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
+    </button>
+    <div class="panel" style="padding:20px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;">
+        <i data-lucide="mail" style="width:48px;height:48px;color:var(--c-brand);opacity:0.2;margin-bottom:15px;"></i>
+        <div style="font-size:1.2rem;font-weight:bold;margin-bottom:10px;color:var(--c-text);">Caixa de Mensagens</div>
+        <div style="text-align:center;color:var(--c-text-muted);max-width:400px;font-size:0.85rem;">
+            A sua caixa de entrada está limpa. Você pode enviar e receber mensagens de professores e da coordenação por aqui em breve.
         </div>
     </div>
 </div>
 </div>
+
+
 
 <!-- ================================================================
      SEÇÃO: AJUDA
@@ -1074,23 +1242,7 @@ if (!$isProf) {
 </div>
 </div>
 
-<!-- ================================================================
-     SEÇÃO: DESCOBRIR
-     ================================================================ -->
-<div id="sec-descobrir" class="page-section">
-<div class="page-wrap">
-    <button onclick="showSec('home')" style="display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--c-border);border-radius:var(--radius);padding:7px 14px;cursor:pointer;font-family:var(--f-body);font-size:0.78rem;font-weight:600;color:var(--c-text-muted);margin-bottom:1.25rem;">
-        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar ao início
-    </button>
-    <div class="panel" style="background:#fff;border:1px solid #ccc;padding:20px;border-radius:8px;">
-        <div class="panel-head" style="font-size:1.2rem;font-weight:bold;margin-bottom:15px;"><i data-lucide="compass" style="width:15px;height:15px;color:var(--c-brand);"></i> Descobrir Novos Cursos</div>
-        <div style="text-align:center;color:#333;">
-            <i data-lucide="search" style="width:36px;height:36px;margin:0 auto 10px;display:block;opacity:0.3;"></i>
-            Explore nossa vitrine de cursos extracurriculares aqui.
-        </div>
-    </div>
-</div>
-</div>
+
 
 <!-- ================================================================
      MODAL DE ENTREGA DE ATIVIDADE

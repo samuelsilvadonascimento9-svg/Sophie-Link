@@ -333,3 +333,17 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
   PRIMARY KEY (`id`),
   KEY `idx_ip` (`ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Tabela para fila de e-mails (Cron Jobs)
+CREATE TABLE IF NOT EXISTS `email_queue` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `to_email` VARCHAR(150) NOT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `body` TEXT NOT NULL,
+  `is_html` TINYINT(1) DEFAULT 1,
+  `status` ENUM('pending', 'sent', 'failed') DEFAULT 'pending',
+  `error_message` TEXT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `sent_at` TIMESTAMP NULL DEFAULT NULL,
+  `attempts` INT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

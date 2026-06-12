@@ -2,7 +2,7 @@
 // solicitar_justificativa.php — Recebe upload de justificativa do aluno (Atestados)
 session_start();
 require_once '../../includes/auth.php';
-protect_page(['aprendiz']);
+protect_page(['aluno']);
 
 require_once '../../includes/db.php';
 /** @var \PDO $pdo */

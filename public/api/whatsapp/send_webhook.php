@@ -8,7 +8,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 $isServerCall = isset($data['server_key']) && $data['server_key'] === 'mp_webhook_secret_local';
 if (!$isServerCall) {
     require_once '../../../includes/auth.php';
-    protect_page(['admin', 'coordenador']);
+    protect_page(['admin', 'coordenadora']);
 }
 require_once '../../../includes/db.php';
 /** @var PDO $pdo */

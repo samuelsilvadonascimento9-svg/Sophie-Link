@@ -2,7 +2,7 @@
 // C:\xampp\htdocs\devweb\Sophie-Link\public\admin\cobranca_whatsapp.php
 session_start();
 require_once '../../includes/auth.php';
-protect_page(['admin', 'coordenador']);
+protect_page(['admin', 'coordenadora']);
 require_once '../../includes/db.php';
 /** @var PDO $pdo */
 

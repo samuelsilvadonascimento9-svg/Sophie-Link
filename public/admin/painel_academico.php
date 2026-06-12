@@ -22,7 +22,7 @@ if (isset($_GET['action'])) {
     $id = $_GET['id'] ?? null;
     
     if ($action === 'delete_aprendiz' && $id && in_array($nivel, ['admin', 'coordenadora'])) {
-        $pdo->prepare("DELETE FROM aprendizes WHERE id = ?")->execute([$id]);
+        $pdo->prepare("UPDATE aprendizes SET deleted_at = NOW(), situacao_aluno = 'evadido' WHERE id = ?")->execute([$id]);
         $pdo->prepare("INSERT INTO logs_auditoria (usuario_id, acao, descricao) VALUES (?, 'DELETE_APRENDIZ', ?)")->execute([$usuario_id, "Excluiu aprendiz ID $id"]);
         $msg = "Aprendiz excluído com sucesso.";
     }

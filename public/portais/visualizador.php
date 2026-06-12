@@ -243,8 +243,8 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
     <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="sb-top">
-            <a href="ava.php" class="btn-back"><i data-lucide="chevron-left" style="width:16px;"></i> Voltar</a>
-            <button class="btn-close" onclick="window.location.href='ava.php'"><i data-lucide="x" style="width:18px;"></i></button>
+            <a href="ava.php?curso=<?= $disciplina_id ?>" class="btn-back"><i data-lucide="chevron-left" style="width:16px;"></i> Voltar</a>
+            <button class="btn-close" onclick="window.location.href='ava.php?curso=<?= $disciplina_id ?>'"><i data-lucide="x" style="width:18px;"></i></button>
         </div>
         
         <div class="sb-header">
@@ -275,7 +275,7 @@ $fileUrl = $material['arquivo_path'] ? '../' . $material['arquivo_path'] : '';
         </div>
         
         <div class="sb-footer">
-            <a href="ava.php" class="sb-end-link">Fim da unidade</a>
+            <a href="ava.php?curso=<?= $disciplina_id ?>" class="sb-end-link">Fim da unidade</a>
         </div>
     </div>
 
