@@ -77,7 +77,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
         <!-- BRANDING (Left) -->
         <div class="login-branding">
             <div class="brand-top">
-                <div class="brand-logo"><img src="../assets/images/image-removebg-preview (1).png" alt="Sophie Link"></div>
+                <div class="brand-logo"><img src="../assets/images/logoNome.png" alt="Sophie Link"></div>
                 <h1 class="brand-title">O seu futuro<br>começa aqui.</h1>
                 <p class="brand-desc">Acompanhe suas notas, frequências, histórico escolar e boletos em um só lugar. Tudo focado no seu aprendizado.</p>
             </div>

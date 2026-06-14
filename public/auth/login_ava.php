@@ -129,7 +129,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 <body>
     <header class="ava-navbar">
         <div class="ava-brand">
-            <img src="../assets/images/image-removebg-preview (1).png" alt="Sophie Link">
+            <img src="../assets/images/logoNome.png" alt="Sophie Link">
             <span class="ava-brand-text">AVA</span>
         </div>
         <a href="../index.php" class="ava-back"><i data-lucide="arrow-left" style="width:16px;"></i> Voltar ao portal principal</a>

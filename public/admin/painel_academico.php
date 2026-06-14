@@ -101,7 +101,7 @@ $alertas = $pdo->query("
 
     <aside class="sidebar">
         <div class="sb-brand" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-            <img src="../assets/images/image-removebg-preview (1).png" alt="Sophie Link" style="height: 32px; object-fit: contain;">
+            <img src="../assets/images/logoNome.png" alt="Sophie Link" style="height: 32px; object-fit: contain;">
             <div class="sb-tag" style="margin-top: 4px;">Gestão Acadêmica</div>
         </div>
 

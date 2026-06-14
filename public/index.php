@@ -49,19 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
 
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "EducationalOrganization",
-      "name": "Centro Técnico Profissionalizante Sophie Link",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Avenida Amazonas, 64 - Bairro Rio Verde",
-        "addressLocality": "Parauapebas",
-        "addressRegion": "PA",
-        "addressCountry": "BR"
-      },
-      "telephone": "+55-94-99999-9999"
-    }
+        {
+            "@context": "https://schema.org",
+            "@type": "EducationalOrganization",
+            "name": "Centro Técnico Profissionalizante Sophie Link",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Avenida Amazonas, 64 - Bairro Rio Verde",
+                "addressLocality": "Parauapebas",
+                "addressRegion": "PA",
+                "addressCountry": "BR"
+            },
+            "telephone": "+55-94-99999-9999"
+        }
     </script>
 </head>
 
@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             <div class="geo-rect-1"></div>
             <div class="geo-rect-2"></div>
             <div class="geo-rect-3"></div>
-            
+
             <!-- Elementos Flutuantes -->
             <div class="float-box float-box-1">
                 <i data-lucide="book-open"></i>
@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         <p class="hero-subtitle-new">Prepare-se para o mercado de trabalho com uma metodologia que valoriza o aprendizado prático e o talento de quem transforma o mundo.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
-                        <img src="assets/images/ava_hero.png" alt="Painel do ambiente virtual de aprendizagem">
+                        <img src="assets/images/ai_tech_student.png" alt="Painel do ambiente virtual de aprendizagem">
                     </div>
                 </div>
             </div>
@@ -233,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         <p class="hero-subtitle-new">Domine as tecnologias mais requisitadas pelas grandes indústrias e destaque-se no polo tecnológico de Carajás.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
-                        <img src="assets/images/tech_student_hero-removebg-preview.webp" alt="Estudante de tecnologia segurando um notebook">
+                        <img src="assets/images/tech_student.webp" alt="Estudante de tecnologia segurando um notebook">
                     </div>
                 </div>
             </div>
@@ -258,7 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         <p class="hero-subtitle-new">Treinamentos e certificações de excelência, com foco absoluto na segurança e alta produtividade operacional.</p>
                     </div>
                     <div class="slide-image-wrapper animate-image">
-                        <img src="assets/images/hero_aprendiz-removebg-preview.webp" alt="Operador da indústria com EPI e capacete de segurança">
+                        <img src="assets/images/aprendiz.webp" alt="Operador da indústria com EPI e capacete de segurança">
                     </div>
                 </div>
             </div>
@@ -281,21 +281,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             function showSlide(index) {
                 slides.forEach(slide => slide.classList.remove('active'));
                 if (index >= totalSlides) currentSlide = 0;
-                else if (index <0) currentSlide = totalSlides - 1;
+                else if (index < 0) currentSlide = totalSlides - 1;
                 else currentSlide = index;
-                
+
                 slides[currentSlide].classList.add('active');
                 resetProgress();
             }
 
-            function nextSlide() { showSlide(currentSlide + 1); }
-            function prevSlide() { showSlide(currentSlide - 1); }
+            function nextSlide() {
+                showSlide(currentSlide + 1);
+            }
+
+            function prevSlide() {
+                showSlide(currentSlide - 1);
+            }
 
             function resetProgress() {
                 clearInterval(slideInterval);
                 progressBar.style.transition = 'none';
                 progressBar.style.width = '0%';
-                
+
                 // Só anima se a aba estiver visível
                 if (document.visibilityState === 'visible') {
                     setTimeout(() => {
@@ -654,11 +659,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         <footer class="footer-dark" id="contato">
             <div class="fd-inner">
                 <div class="fd-brand-col">
-                    <div class="fd-logo">Sophie <span>Link</span></div>
+                    <div class="fd-logo sl-glitch-fx" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" title="Voltar ao topo">
+                        <div class="glitch-original">Sophie <span>Link</span></div>
+                        <div class="glitch-layer glitch-top">
+                            <div class="glitch-text">Sophie <span>Link</span></div>
+                        </div>
+                        <div class="glitch-layer glitch-bot">
+                            <div class="glitch-text">Sophie <span>Link</span></div>
+                        </div>
+                    </div>
                     <p class="fd-desc">Centro Técnico Profissionalizante comprometido com a formação de jovens para o mercado industrial e de mineração da Região dos Carajás.</p>
-                    <div class="fd-addr">
+                    <a href="https://maps.app.goo.gl/QNMhxocz63pQhng29" target="_blank" class="fd-addr fd-addr-link">
                         <i data-lucide="map-pin"></i>
                         Av. Amazonas, 64 – Rio Verde, Parauapebas – PA
+                    </a>
+                    <div class="fd-socials">
+                        <a href="https://www.instagram.com/sophielink_kolpingbrasil" target="_blank" title="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="https://www.facebook.com/1144265205434947" target="_blank" title="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                        </a>
+                        <a href="http://wa.me/5594992106258" target="_blank" title="WhatsApp">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        </a>
                     </div>
                 </div>
 
@@ -747,7 +771,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
 
         <!-- Chatbot Script -->
         <script src="assets/js/chatbot.js?v=1"></script>
-        
+
         <!-- Form Validation Script -->
         <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -770,13 +794,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         let val = this.value.replace(/\D/g, '');
                         if (val.length > 11) val = val.slice(0, 11);
                         if (val.length > 2) {
-                            val = '(' + val.slice(0,2) + ') ' + val.slice(2);
+                            val = '(' + val.slice(0, 2) + ') ' + val.slice(2);
                         }
                         if (val.length > 10) {
-                            val = val.slice(0,10) + '-' + val.slice(10);
+                            val = val.slice(0, 10) + '-' + val.slice(10);
                         }
                         this.value = val;
-                        
+
                         if (val.replace(/\D/g, '').length < 10) {
                             this.setCustomValidity('O telefone deve ter no mínimo 10 dígitos com DDD.');
                         } else {
@@ -792,4 +816,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
             lucide.createIcons();
         </script>
 </body>
+
 </html>
