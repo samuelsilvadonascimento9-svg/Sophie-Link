@@ -109,183 +109,187 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ================================================================
-   SUBMARINE PASSWORD TOGGLE — AVA Login
+   CANDLE PASSWORD TOGGLE — AVA Login
    ================================================================ */
-.sub-login-wrapper {
+.candle-login-wrapper {
     position: relative;
     border-radius: 14px;
-    padding: 62px 16px 14px;
+    padding: 72px 16px 14px;
     transition: background-color 0.6s ease, box-shadow 0.6s ease;
     overflow: hidden;
 }
 
-/* Estado: senha oculta → fundo fundo do mar escuro */
-.sub-login-wrapper.hidden-pass {
-    background-color: #0b1d2a;
+/* Estado: senha oculta → escuro */
+.candle-login-wrapper.hidden-pass {
+    background-color: #2D1427;
     box-shadow: 0 8px 24px rgba(0,0,0,0.7);
 }
 
-/* Estado: senha visível → água iluminada */
-.sub-login-wrapper.show-pass {
-    background-color: #1c4562;
-    box-shadow: 0 8px 24px rgba(28,69,98,0.55);
+/* Estado: senha visível → iluminado pela vela */
+.candle-login-wrapper.show-pass {
+    background-color: #4a2842;
+    box-shadow: 0 8px 24px rgba(255, 107, 0, 0.25), inset 0 0 40px rgba(255, 107, 0, 0.1);
 }
 
-/* ----- Submarino ----- */
-.submarine-container {
+/* ----- Velinha ----- */
+.candle-container {
     position: absolute;
-    top: 14px;
-    left: 16px;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 10;
-    animation: sub-float 4s ease-in-out infinite;
 }
 
-.submarine {
+.candle {
     position: relative;
-    width: 64px;
-    height: 42px;
-}
-
-.sub-body {
-    position: absolute;
-    top: 12px;
-    width: 64px;
-    height: 28px;
-    background: #FF6B00;  /* Laranja Sophie Link */
-    border-radius: 20px;
-    z-index: 2;
-}
-
-/* Janelinha */
-.window {
-    position: absolute;
-    top: 7px;
-    right: 10px;
-    width: 12px;
-    height: 12px;
-    background: #0b1d2a;
-    border: 2px solid rgba(255,255,255,0.7);
-    border-radius: 50%;
-    transition: background 0.4s ease, box-shadow 0.4s ease;
-}
-
-/* Periscópio */
-.periscope {
-    position: absolute;
-    top: 2px;
-    left: 38px;
-    width: 6px;
-    height: 14px;
-    background: #FF6B00;
-    border-radius: 4px 4px 0 0;
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transform-origin: bottom center;
-    z-index: 3;
-}
-.periscope::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -3px;
-    width: 8px;
-    height: 5px;
-    background: #FF6B00;
-    border-radius: 3px;
-}
-
-/* Hélice */
-.propeller {
-    position: absolute;
-    top: 16px;
-    left: -6px;
-    width: 8px;
-    height: 18px;
-    background: #D95A00;
-    border-radius: 3px;
-    animation: sub-spin 0.25s linear infinite;
-    z-index: 2;
-}
-
-/* Holofote */
-.light-beam {
-    position: absolute;
-    top: 4px;
-    right: -18px;
-    width: 0;
+    width: 42px;
     height: 56px;
-    background: linear-gradient(to right, rgba(255,235,100,0.8), rgba(255,235,100,0));
-    clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 65%);
-    transform-origin: left center;
-    transition: width 0.5s ease, opacity 0.5s ease;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 1;
+    background: #fff;
+    border: 3px solid #673C63;
+    border-bottom: 0px;
+    border-radius: 6px 6px 0 0;
+    box-shadow: -3px 0px 0px #e0e0e0 inset;
 }
+
+/* O Pavio */
+.candle::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 10px;
+    background: #673C63;
+    border-radius: 2px;
+}
+
+/* Fogo (Apagado por padrão) */
+.flame {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 20px;
+    background: #FF6B00; /* Laranja Sophie Link */
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 0 15px #FF6B00, 0 0 30px #FFC107;
+    animation: candle-dance 0.5s infinite alternate;
+}
+
+/* Fumaça */
+.smoke {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    opacity: 1;
+    animation: candle-smoke 2s infinite ease-in;
+}
+
+/* Rostinho */
+.eyes {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 6px;
+    box-sizing: border-box;
+}
+
+.eye {
+    width: 6px;
+    height: 2px; /* Dormindo */
+    background: #673C63;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.blush {
+    position: absolute;
+    top: 25px;
+    width: 8px;
+    height: 4px;
+    background: #ffb6c1;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.blush.left { left: 4px; }
+.blush.right { right: 4px; }
 
 /* ----- Estados ----- */
-/* Senha oculta: periscópio recolhido, janela apagada */
-.sub-login-wrapper.hidden-pass .periscope { transform: translateY(8px); }
-.sub-login-wrapper.hidden-pass .window    { background: #0b1d2a; box-shadow: none; }
-
-/* Senha visível: periscópio levantado, janela acesa, holofote ligado */
-.sub-login-wrapper.show-pass .periscope { transform: translateY(-8px); }
-.sub-login-wrapper.show-pass .window {
-    background: #ffeb64;
-    box-shadow: 0 0 10px #ffeb64, 0 0 20px rgba(255,235,100,0.4);
+.candle-login-wrapper.show-pass .flame { opacity: 1; }
+.candle-login-wrapper.show-pass .smoke { opacity: 0; animation: none; }
+.candle-login-wrapper.show-pass .eye {
+    height: 8px;
+    width: 6px;
+    border-radius: 50%;
+    transform: translateY(4px);
 }
-.sub-login-wrapper.show-pass .light-beam { width: 260px; opacity: 1; }
+.candle-login-wrapper.show-pass .blush { opacity: 1; }
 
 /* ----- Input Row ----- */
-.sub-input-row {
+.candle-input-row {
     position: relative;
     display: flex;
     align-items: center;
     z-index: 5;
 }
 
-.sub-pass-input {
-    background: rgba(255,255,255,0.07) !important;
-    border-color: rgba(255,255,255,0.12) !important;
+.candle-pass-input {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.1) !important;
     color: #fff !important;
     padding-right: 48px !important;
     transition: background 0.4s, border-color 0.4s, color 0.4s !important;
 }
 
-.sub-pass-input::placeholder { color: rgba(255,255,255,0.38) !important; }
+.candle-pass-input::placeholder { color: rgba(255,255,255,0.3) !important; }
 
-.sub-login-wrapper.show-pass .sub-pass-input {
-    background: rgba(255,255,255,0.13) !important;
-    border-color: rgba(255,235,100,0.4) !important;
-    color: #fffde6 !important;
+.candle-login-wrapper.show-pass .candle-pass-input {
+    background: rgba(255,107,0,0.08) !important;
+    border-color: rgba(255,107,0,0.4) !important;
+    color: #FFF3E0 !important;
 }
 
-.sub-pass-input:focus {
-    box-shadow: 0 0 0 3px rgba(255,107,0,0.3) !important;
+.candle-pass-input:focus {
+    box-shadow: 0 0 0 3px rgba(255,107,0,0.25) !important;
     border-color: var(--c-primary) !important;
 }
 
-.sub-toggle-btn {
+.candle-toggle-btn {
     position: absolute;
     right: 14px;
     background: transparent;
     border: none;
     cursor: pointer;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.4);
     display: flex;
     align-items: center;
     padding: 0;
     transition: color 0.3s;
+    outline: none;
 }
-.sub-toggle-btn:hover { color: #fff; }
-.sub-login-wrapper.show-pass .sub-toggle-btn { color: #ffeb64; }
+.candle-toggle-btn:hover { color: #fff; }
+.candle-login-wrapper.show-pass .candle-toggle-btn { color: #FF6B00; }
 
 /* Keyframes */
-@keyframes sub-float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-8px); }
+@keyframes candle-dance {
+    0% { transform: translateX(-50%) scale(1) rotate(-3deg); }
+    100% { transform: translateX(-50%) scale(1.1) rotate(3deg); background: #FFC107; }
 }
 
-@keyframes sub-spin {
-    100% { transform: rotateX(360deg); }
+@keyframes candle-smoke {
+    0% { transform: translate(-50%, 0) scale(1); opacity: 0.8; }
+    100% { transform: translate(-50%, -25px) scale(2); opacity: 0; }
 }
 

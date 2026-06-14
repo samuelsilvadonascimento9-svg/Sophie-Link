@@ -176,21 +176,23 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
                     <div class="av-field">
                         <label class="av-label" for="senhaAva">Senha</label>
-                        <div class="sub-login-wrapper hidden-pass" id="subLoginWrapper">
-                            <div class="submarine-container">
-                                <div class="submarine">
-                                    <div class="periscope"></div>
-                                    <div class="sub-body">
-                                        <div class="window"></div>
-                                        <div class="light-beam"></div>
+                        <div class="candle-login-wrapper hidden-pass" id="candleLoginWrapper">
+                            <div class="candle-container">
+                                <div class="candle">
+                                    <div class="flame"></div>
+                                    <div class="smoke"></div>
+                                    <div class="eyes">
+                                        <div class="eye left"></div>
+                                        <div class="eye right"></div>
                                     </div>
-                                    <div class="propeller"></div>
+                                    <div class="blush left"></div>
+                                    <div class="blush right"></div>
                                 </div>
                             </div>
-                            <div class="sub-input-row">
-                                <input type="password" id="senhaAva" name="senha" class="av-input sub-pass-input <?= $erro ? 'err' : '' ?>" placeholder="Sua senha secreta..." value="<?= $senhaValue ?>" required autocomplete="current-password">
-                                <button type="button" id="subToggleBtn" class="sub-toggle-btn" title="Mostrar/ocultar senha">
-                                    <i data-lucide="eye-off" id="subEyeIcon" style="width:18px;height:18px;"></i>
+                            <div class="candle-input-row">
+                                <input type="password" id="senhaAva" name="senha" class="av-input candle-pass-input <?= $erro ? 'err' : '' ?>" placeholder="Digite sua senha..." value="<?= $senhaValue ?>" required autocomplete="current-password">
+                                <button type="button" id="candleToggleBtn" class="candle-toggle-btn" title="Mostrar/ocultar senha">
+                                    <i data-lucide="eye-off" style="width:18px;height:18px;"></i>
                                 </button>
                             </div>
                         </div>
@@ -211,16 +213,15 @@ $senhaValue = $prefillEmail ? 'admin' : '';
     <script src="../assets/js/login.js"></script>
     <script>
     (function() {
-        const toggleBtn = document.getElementById('subToggleBtn');
+        const toggleBtn = document.getElementById('candleToggleBtn');
         const passInput  = document.getElementById('senhaAva');
-        const wrapper    = document.getElementById('subLoginWrapper');
+        const wrapper    = document.getElementById('candleLoginWrapper');
         if (!toggleBtn || !passInput || !wrapper) return;
 
         toggleBtn.addEventListener('click', () => {
             const isHidden = passInput.type === 'password';
             passInput.type = isHidden ? 'text' : 'password';
 
-            // User preference: eye-off (slashed) when password is hidden, eye (open) when password is visible
             const iconName = isHidden ? 'eye' : 'eye-off';
             toggleBtn.innerHTML = `<i data-lucide="${iconName}" style="width:18px;height:18px;"></i>`;
             if (window.lucide) window.lucide.createIcons();
