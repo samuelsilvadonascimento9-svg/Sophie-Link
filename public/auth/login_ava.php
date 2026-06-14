@@ -190,7 +190,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
                             <div class="sub-input-row">
                                 <input type="password" id="senhaAva" name="senha" class="av-input sub-pass-input <?= $erro ? 'err' : '' ?>" placeholder="Sua senha secreta..." value="<?= $senhaValue ?>" required autocomplete="current-password">
                                 <button type="button" id="subToggleBtn" class="sub-toggle-btn" title="Mostrar/ocultar senha">
-                                    <i data-lucide="eye" id="subEyeIcon" style="width:18px;height:18px;"></i>
+                                    <i data-lucide="eye-off" id="subEyeIcon" style="width:18px;height:18px;"></i>
                                 </button>
                             </div>
                         </div>
@@ -214,15 +214,15 @@ $senhaValue = $prefillEmail ? 'admin' : '';
         const toggleBtn = document.getElementById('subToggleBtn');
         const passInput  = document.getElementById('senhaAva');
         const wrapper    = document.getElementById('subLoginWrapper');
-        const eyeIcon    = document.getElementById('subEyeIcon');
         if (!toggleBtn || !passInput || !wrapper) return;
 
         toggleBtn.addEventListener('click', () => {
             const isHidden = passInput.type === 'password';
             passInput.type = isHidden ? 'text' : 'password';
 
-            // If it was hidden, it's now visible, so show eye-off. If it was visible, it's now hidden, so show eye.
-            eyeIcon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
+            // User preference: eye-off (slashed) when password is hidden, eye (open) when password is visible
+            const iconName = isHidden ? 'eye' : 'eye-off';
+            toggleBtn.innerHTML = `<i data-lucide="${iconName}" style="width:18px;height:18px;"></i>`;
             if (window.lucide) window.lucide.createIcons();
 
             wrapper.classList.toggle('hidden-pass', !isHidden);
