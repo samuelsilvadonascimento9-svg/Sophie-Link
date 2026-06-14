@@ -41,6 +41,33 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fclose($output);
     exit;
 }
+if (isset($_GET['export']) && $_GET['export'] === 'professores') {
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=professores_sophielink_' . date('Y-m-d') . '.csv');
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fputcsv($output, ['Nome', 'Email', 'Data de Cadastro'], ';');
+    $stmt = $pdo->query("SELECT nome, email, criado_em FROM usuarios WHERE role = 'professor' ORDER BY nome ASC");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        fputcsv($output, $row, ';');
+    }
+    fclose($output);
+    exit;
+}
+if (isset($_GET['export']) && $_GET['export'] === 'empresas') {
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=empresas_sophielink_' . date('Y-m-d') . '.csv');
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fputcsv($output, ['Razão Social', 'CNPJ', 'Responsável', 'Status'], ';');
+    $stmt = $pdo->query("SELECT nome, cnpj, responsavel_nome, ativo FROM empresas ORDER BY nome ASC");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $row['ativo'] = $row['ativo'] ? 'Ativo' : 'Inativo';
+        fputcsv($output, $row, ';');
+    }
+    fclose($output);
+    exit;
+}
 
 $erro = '';
 $sucesso = '';
@@ -279,15 +306,15 @@ $aprendizes = $pdo->query("
         <div class="workspace">
             <header class="topbar">
                 <div class="topbar-left">
-                    <div class="search-wrap">
-                        <i data-lucide="search"></i>
-                        <input type="text" id="searchInput" class="search-input" placeholder="Buscar aluno por nome, RA ou empresa...">
+                    <div>
+                        <div class="topbar-title">Olá, <?= htmlspecialchars($primeiroNome) ?>! 👋</div>
+                        <div class="topbar-subtitle">Bem-vindo(a) de volta ao Portal do Colaborador.</div>
                     </div>
                 </div>
                 <div class="topbar-actions">
-                    <a href="?export=csv" class="btn btn-outline" title="Exportar lista de alunos em CSV">
-                        <i data-lucide="download"></i> Exportar CSV
-                    </a>
+                    <div style="font-size:13px; color:var(--text-muted); font-weight:500;">
+                        <i data-lucide="calendar" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"></i> <?= date('d/m/Y') ?>
+                    </div>
                 </div>
             </header>
 
@@ -341,6 +368,15 @@ $aprendizes = $pdo->query("
                         <div class="panel-head">
                             <div class="panel-title">Lista de Alunos</div>
                             <div class="panel-actions">
+                                <a href="?export=csv" class="btn-download" title="Baixar lista em CSV">
+                                    <span class="dl-icon"><i data-lucide="download" style="width:14px;height:14px;"></i></span>
+                                    <span class="dl-label">Baixar Dados</span>
+                                    <span class="dl-particles">
+                                        <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                        <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                        <span class="dl-dot"></span><span class="dl-dot"></span>
+                                    </span>
+                                </a>
                                 <input type="text" id="tableSearchInput" class="form-control"
                                     placeholder="Buscar por nome, RA ou e-mail..."
                                     style="width:260px; padding:7px 12px;"
@@ -370,7 +406,6 @@ $aprendizes = $pdo->query("
                                         <th>RA</th>
                                         <th>Aluno</th>
                                         <th>Empresa</th>
-                                        <th>Curso</th>
                                         <th>Situação</th>
                                         <th>Ações</th>
                                     </tr>
@@ -468,6 +503,8 @@ $aprendizes = $pdo->query("
                                         tbody.innerHTML = data.alunos.map(a => {
                                             const badge = badgeMap[a.situacao_aluno] ?? 'badge-gray';
                                             const inicial = (a.nome || '?')[0].toUpperCase();
+                                            const curso = escHtml(a.curso_nome || '');
+                                            const cursoHtml = curso ? `<div style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;background:#FFF7ED;color:#C2410C;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:0.4px;text-transform:uppercase;"><svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M22 10v6M2 10l10-5 10 5-10 5z'/><path d='M6 12v5c3 3 9 3 12 0v-5'/></svg>${curso}</div>` : '';
                                             return `<tr>
                                             <td><span class="ra-code">${a.ra}</span></td>
                                             <td>
@@ -476,11 +513,11 @@ $aprendizes = $pdo->query("
                                                     <div>
                                                         <div class="aluno-name">${escHtml(a.nome)}</div>
                                                         <div class="aluno-email">${escHtml(a.email || 'Sem e-mail')}</div>
+                                                        ${cursoHtml}
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>${escHtml(a.empresa_nome || '—')}</td>
-                                            <td>${escHtml(a.curso_nome   || '—')}</td>
                                             <td><span class="badge ${badge}">${escHtml(a.situacao_aluno)}</span></td>
                                             <td>
                                                 <div class="action-btns">
@@ -514,10 +551,12 @@ $aprendizes = $pdo->query("
                             // Carrega ao iniciar a página
                             document.addEventListener('DOMContentLoaded', () => carregarAlunos(1));
                         </script>
+                    </div> <!-- /panel -->
+                </div> <!-- /sec-alunos -->
 
 
-                        <!-- ===== SEÇÃO: DECLARAÇÕES ===== -->
-                        <div id="sec-documentos" class="sec">
+                <!-- ===== SEÇÃO: DECLARAÇÕES ===== -->
+                <div id="sec-documentos" class="sec">
                             <div class="page-header">
                                 <h1 class="page-title">Emissão de Documentos</h1>
                                 <p class="page-desc">Selecione o aluno e o tipo de documento para gerar o PDF oficial, ou atenda as solicitações pendentes.</p>
@@ -591,7 +630,7 @@ $aprendizes = $pdo->query("
                                 <div class="panel-head">
                                     <div class="panel-title">Gerar Novo Documento</div>
                                 </div>
-                                <form action="../reports/declaracao_print.php" method="GET" target="_blank" style="padding: 24px;" onsubmit="if(!document.getElementById('doc_aluno_id').value){ alert('⚠️ Atenção: Por favor, selecione um aluno clicando em uma das linhas da tabela antes de gerar o documento.'); return false; }">
+                                <form action="../reports/declaracao_print.php" method="GET" target="_blank" style="padding: 24px;" onsubmit="if(!document.getElementById('doc_aluno_id').value){ showDocError(); return false; }">
 
                                     <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start;">
 
@@ -676,23 +715,144 @@ $aprendizes = $pdo->query("
                                                 </div>
                                             </div>
 
+                                            <!-- Error Toast -->
+                                            <div id="doc-error-toast" style="
+                                                display: none;
+                                                position: fixed;
+                                                bottom: 32px;
+                                                left: 50%;
+                                                transform: translateX(-50%) translateY(20px);
+                                                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                                                color: #f1f5f9;
+                                                padding: 18px 28px;
+                                                border-radius: 16px;
+                                                box-shadow: 0 20px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.07);
+                                                z-index: 9999;
+                                                max-width: 400px;
+                                                width: max-content;
+                                                animation: none;
+                                                font-family: inherit;
+                                            ">
+                                                <div style="display:flex; align-items:center; gap:14px;">
+                                                    <div style="
+                                                        width: 42px; height: 42px; flex-shrink:0;
+                                                        background: linear-gradient(135deg, #f97316, #ea580c);
+                                                        border-radius: 12px;
+                                                        display: flex; align-items: center; justify-content: center;
+                                                        box-shadow: 0 4px 15px rgba(249,115,22,0.5);
+                                                        color: white;
+                                                    "><i data-lucide="alert-triangle"></i></div>
+                                                    <div>
+                                                        <div style="font-weight:700; font-size:14px; color:#f1f5f9; margin-bottom:3px;">Nenhum aluno selecionado!</div>
+                                                        <div style="font-size:12px; color:#94a3b8; line-height:1.5;">Clique em uma linha da tabela ao lado para selecionar o aluno antes de gerar o documento.</div>
+                                                    </div>
+                                                    <button onclick="hideDocError()" type="button" style="
+                                                        position: absolute; top: 10px; right: 14px;
+                                                        background: none; border: none; color: #64748b;
+                                                        cursor: pointer; font-size: 18px; line-height: 1;
+                                                        transition: color 0.2s;
+                                                    " onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#64748b'">✕</button>
+                                                </div>
+                                                <div style="
+                                                    position: absolute; bottom: 0; left: 0;
+                                                    height: 3px; border-radius: 0 0 16px 16px;
+                                                    background: linear-gradient(90deg, #f97316, #ea580c);
+                                                    width: 100%;
+                                                    animation: none;
+                                                " id="doc-error-bar"></div>
+                                            </div>
+
                                             <style>
-                                                .doc-aluno-row:hover {
-                                                    background: #f8fafc;
+                                                @keyframes doc-toast-in {
+                                                    from { opacity:0; transform: translateX(-50%) translateY(30px) scale(0.95); }
+                                                    to   { opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
                                                 }
-
+                                                @keyframes doc-toast-out {
+                                                    from { opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
+                                                    to   { opacity:0; transform: translateX(-50%) translateY(20px) scale(0.95); }
+                                                }
+                                                @keyframes doc-bar-shrink {
+                                                    from { width: 100%; }
+                                                    to   { width: 0%; }
+                                                }
+                                                @keyframes doc-row-pulse {
+                                                    0%   { box-shadow: 0 0 0 0 rgba(255,107,0,0.4); }
+                                                    70%  { box-shadow: 0 0 0 8px rgba(255,107,0,0); }
+                                                    100% { box-shadow: 0 0 0 0 rgba(255,107,0,0); }
+                                                }
                                                 .doc-aluno-row.selected {
-                                                    background: var(--blue-lt);
+                                                    background: linear-gradient(90deg, #fff7ed 0%, #fff 100%) !important;
+                                                    border-left: 3px solid var(--brand);
                                                 }
-
                                                 .doc-aluno-row.selected .doc-radio {
                                                     border-color: var(--brand);
+                                                    background: var(--brand);
+                                                    box-shadow: 0 0 0 3px rgba(255,107,0,0.2);
                                                 }
-
                                                 .doc-aluno-row.selected .doc-radio-inner {
-                                                    transform: translate(-50%, -50%) scale(1);
+                                                    background: #fff;
+                                                    transform: translate(-50%, -50%) scale(1) !important;
+                                                }
+                                                .selected-badge {
+                                                    display: inline-flex;
+                                                    align-items: center;
+                                                    gap: 4px;
+                                                    background: var(--brand);
+                                                    color: #fff;
+                                                    font-size: 10px;
+                                                    font-weight: 700;
+                                                    padding: 2px 7px;
+                                                    border-radius: 20px;
+                                                    margin-left: 8px;
+                                                    animation: fadeInBadge 0.3s ease;
+                                                    letter-spacing: 0.5px;
+                                                    text-transform: uppercase;
+                                                }
+                                                @keyframes fadeInBadge {
+                                                    from { opacity:0; transform: scale(0.7); }
+                                                    to   { opacity:1; transform: scale(1); }
                                                 }
                                             </style>
+
+                                            <script>
+                                                function showDocError() {
+                                                    const toast = document.getElementById('doc-error-toast');
+                                                    const bar = document.getElementById('doc-error-bar');
+                                                    toast.style.display = 'block';
+                                                    toast.style.animation = 'doc-toast-in 0.4s cubic-bezier(0.4,0,0.2,1) forwards';
+                                                    bar.style.animation = 'doc-bar-shrink 4s linear forwards';
+                                                    // Shake the table container
+                                                    const tbl = document.getElementById('doc_aluno_tbody').closest('div');
+                                                    tbl.style.animation = 'none';
+                                                    setTimeout(() => {
+                                                        tbl.style.animation = 'shakeX 0.5s ease';
+                                                    }, 10);
+                                                    // Auto hide after 4s
+                                                    clearTimeout(window._docErrorTimer);
+                                                    window._docErrorTimer = setTimeout(hideDocError, 4200);
+                                                }
+                                                function hideDocError() {
+                                                    const toast = document.getElementById('doc-error-toast');
+                                                    toast.style.animation = 'doc-toast-out 0.35s cubic-bezier(0.4,0,0.2,1) forwards';
+                                                    setTimeout(() => { toast.style.display = 'none'; }, 350);
+                                                }
+
+                                                /* Shake keyframe injected via JS */
+                                                if (!document.getElementById('_shakeStyle')) {
+                                                    const s = document.createElement('style');
+                                                    s.id = '_shakeStyle';
+                                                    s.textContent = `@keyframes shakeX {
+                                                        0%,100%{transform:translateX(0)}
+                                                        15%{transform:translateX(-8px)}
+                                                        30%{transform:translateX(8px)}
+                                                        45%{transform:translateX(-6px)}
+                                                        60%{transform:translateX(6px)}
+                                                        75%{transform:translateX(-3px)}
+                                                        90%{transform:translateX(3px)}
+                                                    }`;
+                                                    document.head.appendChild(s);
+                                                }
+                                            </script>
 
                                             <script>
                                                 document.addEventListener('DOMContentLoaded', function() {
@@ -771,37 +931,30 @@ $aprendizes = $pdo->query("
                                                         renderTable();
                                                     });
 
-                                                    btnFirst.addEventListener('click', () => {
-                                                        if (currentPage > 1) {
-                                                            currentPage = 1;
-                                                            renderTable();
-                                                        }
-                                                    });
-                                                    btnPrev.addEventListener('click', () => {
-                                                        if (currentPage > 1) {
-                                                            currentPage--;
-                                                            renderTable();
-                                                        }
-                                                    });
-                                                    btnNext.addEventListener('click', () => {
-                                                        if (currentPage * pageSize < filteredRows.length) {
-                                                            currentPage++;
-                                                            renderTable();
-                                                        }
-                                                    });
+                                                    btnFirst.addEventListener('click', () => { if (currentPage > 1) { currentPage = 1; renderTable(); } });
+                                                    btnPrev.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderTable(); } });
+                                                    btnNext.addEventListener('click', () => { if (currentPage * pageSize < filteredRows.length) { currentPage++; renderTable(); } });
                                                     btnLast.addEventListener('click', () => {
                                                         const maxPage = Math.ceil(filteredRows.length / pageSize);
-                                                        if (currentPage < maxPage) {
-                                                            currentPage = maxPage;
-                                                            renderTable();
-                                                        }
+                                                        if (currentPage < maxPage) { currentPage = maxPage; renderTable(); }
                                                     });
 
                                                     rows.forEach(row => {
                                                         row.addEventListener('click', function() {
-                                                            rows.forEach(r => r.classList.remove('selected'));
+                                                            rows.forEach(r => {
+                                                                r.classList.remove('selected');
+                                                                const b = r.querySelector('.selected-badge');
+                                                                if (b) b.remove();
+                                                            });
                                                             this.classList.add('selected');
                                                             hiddenInput.value = this.dataset.id;
+                                                            const nameCell = this.querySelector('td:nth-child(2) div');
+                                                            if (nameCell && !nameCell.querySelector('.selected-badge')) {
+                                                                const badge = document.createElement('span');
+                                                                badge.className = 'selected-badge';
+                                                                badge.innerHTML = '✓ Selecionado';
+                                                                nameCell.appendChild(badge);
+                                                            }
                                                         });
                                                     });
 
@@ -853,8 +1006,14 @@ $aprendizes = $pdo->query("
                                                 </style>
 
                                                 <div style="padding-top:20px; border-top:1px dashed #cbd5e1;">
-                                                    <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:15px; display:flex; justify-content:center; gap:8px; border-radius:10px; box-shadow:0 4px 10px rgba(79, 70, 229, 0.2);">
-                                                        <i data-lucide="printer" style="width:18px;height:18px;"></i> Gerar Documento
+                                                    <button type="submit" class="btn-download" id="btnGerarDoc" style="width:100%; border-radius:10px; height:50px; font-size:14px; justify-content:center;">
+                                                        <span class="dl-icon"><i data-lucide="printer" style="width:18px;height:18px;"></i></span>
+                                                        <span class="dl-label">Gerar Documento</span>
+                                                        <span class="dl-particles">
+                                                            <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                                            <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                                            <span class="dl-dot"></span><span class="dl-dot"></span>
+                                                        </span>
                                                     </button>
                                                     <div style="text-align:center; font-size:11.5px; color:var(--text-muted); margin-top:10px;">
                                                         O documento será aberto em uma nova aba para impressão.
@@ -1487,8 +1646,26 @@ $aprendizes = $pdo->query("
                             </div>
 
                             <div class="panel">
+                                <div class="panel-head">
+                                    <div class="panel-title">Lista de Professores</div>
+                                    <div class="panel-actions">
+                                        <a href="?export=professores" class="btn-download" title="Baixar lista em CSV">
+                                            <span class="dl-icon"><i data-lucide="download" style="width:14px;height:14px;"></i></span>
+                                            <span class="dl-label">Baixar Dados</span>
+                                            <span class="dl-particles">
+                                                <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                                <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                                <span class="dl-dot"></span><span class="dl-dot"></span>
+                                            </span>
+                                        </a>
+                                        <input type="text" id="searchProfessores" class="form-control"
+                                            placeholder="Buscar professor..."
+                                            style="width:220px; padding:7px 12px;"
+                                            oninput="filterProfessores()">
+                                    </div>
+                                </div>
                                 <div class="table-wrap">
-                                    <table class="data-table">
+                                    <table class="data-table" id="professoresTable">
                                         <thead>
                                             <tr>
                                                 <th>Nome</th>
@@ -1531,8 +1708,26 @@ $aprendizes = $pdo->query("
                             </div>
 
                             <div class="panel">
+                                <div class="panel-head">
+                                    <div class="panel-title">Lista de Empresas</div>
+                                    <div class="panel-actions">
+                                        <a href="?export=empresas" class="btn-download" title="Baixar lista em CSV">
+                                            <span class="dl-icon"><i data-lucide="download" style="width:14px;height:14px;"></i></span>
+                                            <span class="dl-label">Baixar Dados</span>
+                                            <span class="dl-particles">
+                                                <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                                <span class="dl-dot"></span><span class="dl-dot"></span><span class="dl-dot"></span>
+                                                <span class="dl-dot"></span><span class="dl-dot"></span>
+                                            </span>
+                                        </a>
+                                        <input type="text" id="searchEmpresas" class="form-control"
+                                            placeholder="Buscar empresa..."
+                                            style="width:220px; padding:7px 12px;"
+                                            oninput="filterEmpresas()">
+                                    </div>
+                                </div>
                                 <div class="table-wrap">
-                                    <table class="data-table">
+                                    <table class="data-table" id="empresasTable">
                                         <thead>
                                             <tr>
                                                 <th>Razão Social</th>
@@ -1564,10 +1759,6 @@ $aprendizes = $pdo->query("
                                 </div>
                             </div>
                         </div>
-
-            </main>
-        </div>
-    </div>
 
     <!-- ===== MODAL: ADD PROFESSOR ===== -->
     <div id="modalProfessor" class="modal-overlay">
@@ -1649,60 +1840,60 @@ $aprendizes = $pdo->query("
     </div>
 
     <!-- ===== SEÇÃO: CERTIFICADOS ===== -->
-    <div id="sec-certificados" class="sec" style="display:none;">
+                <div id="sec-certificados" class="sec">
         <div class="page-header">
             <h1 class="page-title">Emitir Certificados</h1>
             <p class="page-desc">Gere o código de autenticidade para alunos concluintes. O certificado físico ou PDF deve ser gerado pelo sistema terceirizado.</p>
         </div>
 
-        <div class="widget">
-            <div class="w-head">
-                <div class="w-title"><i data-lucide="award"></i> Registrar Novo Certificado</div>
+        <div class="panel">
+            <div class="panel-head">
+                <div class="panel-title"><i data-lucide="award" style="width:16px;height:16px;margin-right:6px;vertical-align:-2px;color:var(--brand)"></i> Registrar Novo Certificado</div>
             </div>
-            <div class="w-body">
+            <div style="padding: 24px;">
                 <form method="POST" id="formCertificado">
                     <input type="hidden" name="acao" value="emitir_certificado">
                     <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-                        <div>
-                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Aluno Concluinte *</label>
-                            <select name="aprendiz_id" class="input-field" required>
+                    <div class="form-row" style="margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Aluno Concluinte *</label>
+                            <select name="aprendiz_id" class="form-control" required>
                                 <option value="">Selecione o aluno...</option>
                                 <?php foreach ($aprendizes as $a): ?>
                                     <option value="<?= $a['id'] ?>"><?= htmlspecialchars($a['nome']) ?> (<?= htmlspecialchars($a['curso_nome'] ?? 'Sem curso') ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div>
-                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Curso / Título do Certificado *</label>
-                            <input type="text" name="curso" class="input-field" placeholder="Ex: Técnico em Eletromecânica" required>
+                        <div class="form-group">
+                            <label class="form-label">Curso / Título do Certificado *</label>
+                            <input type="text" name="curso" class="form-control" placeholder="Ex: Técnico em Eletromecânica" required>
                         </div>
                     </div>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-                        <div>
-                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Carga Horária (horas) *</label>
-                            <input type="number" name="carga_horaria" class="input-field" placeholder="Ex: 1200" required>
+                    <div class="form-row" style="margin-bottom: 24px;">
+                        <div class="form-group">
+                            <label class="form-label">Carga Horária (horas) *</label>
+                            <input type="number" name="carga_horaria" class="form-control" placeholder="Ex: 1200" required>
                         </div>
-                        <div>
-                            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Data de Conclusão *</label>
-                            <input type="date" name="data_conclusao" class="input-field" required>
+                        <div class="form-group">
+                            <label class="form-label">Data de Conclusão *</label>
+                            <input type="date" name="data_conclusao" class="form-control" required>
                         </div>
                     </div>
 
                     <div style="text-align:right;">
-                        <button type="submit" class="btn-primary"><i data-lucide="check" style="width:14px;height:14px;display:inline;"></i> Emitir Código de Validação</button>
+                        <button type="submit" class="btn btn-primary"><i data-lucide="check"></i> Emitir Código de Validação</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="widget" style="margin-top:20px;">
-            <div class="w-head">
-                <div class="w-title"><i data-lucide="list"></i> Certificados Emitidos</div>
+        <div class="panel">
+            <div class="panel-head">
+                <div class="panel-title"><i data-lucide="list" style="width:16px;height:16px;margin-right:6px;vertical-align:-2px;"></i> Certificados Emitidos</div>
             </div>
-            <div class="w-body" style="padding:0;">
+            <div class="table-wrap">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -1727,7 +1918,7 @@ $aprendizes = $pdo->query("
                                     <td><?= htmlspecialchars($c['curso']) ?></td>
                                     <td><?= date('d/m/Y H:i', strtotime($c['data_emissao'])) ?></td>
                                     <td>
-                                        <a href="?del_cert=<?= $c['id'] ?>" onclick="return confirm('Revogar este certificado?')" style="color:var(--red);font-size:0.8rem;font-weight:600;">Revogar</a>
+                                        <a href="?del_cert=<?= $c['id'] ?>" onclick="return confirm('Revogar este certificado?')" class="btn btn-sm btn-outline" style="color:var(--red); border-color:var(--red-lt);">Revogar</a>
                                     </td>
                                 </tr>
                         <?php endforeach;
@@ -1736,7 +1927,11 @@ $aprendizes = $pdo->query("
                 </table>
             </div>
         </div>
-    </div>
+                </div> <!-- /sec-certificados -->
+
+            </main> <!-- /content -->
+        </div> <!-- /workspace -->
+    </div> <!-- /app -->
 
     <!-- ===== MODAL: EDITAR ALUNO ===== -->
     <div id="modalEdicao" class="modal-overlay">

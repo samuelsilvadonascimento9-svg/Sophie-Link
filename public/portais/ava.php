@@ -83,8 +83,10 @@ if ($isProf) {
     // Dados básicos do aluno
     // JOIN só por email (campo único). O OR por nome foi removido
     // pois dois alunos com o mesmo nome retornariam dados errados.
-    $stmtAluno = $pdo->prepare("SELECT a.* FROM aprendizes a
+    $stmtAluno = $pdo->prepare("SELECT a.*, c.nome AS curso_nome FROM aprendizes a
                                 JOIN usuarios u ON u.email = a.email
+                                LEFT JOIN turmas t ON t.id = a.turma_id
+                                LEFT JOIN cursos c ON c.id = t.curso_id
                                 WHERE u.id = ? LIMIT 1");
     $stmtAluno->execute([$_SESSION['usuario_id']]);
     $aluno = $stmtAluno->fetch();
@@ -426,7 +428,18 @@ if (!$isProf) {
 
     <div class="tn-user">
         <div class="tn-avatar"><?= strtoupper(substr($nomeAluno, 0, 2)) ?></div>
-        <div class="tn-user-name"><?= strtoupper(htmlspecialchars($nomeAluno)) ?></div>
+        <div style="display: flex; flex-direction: column; justify-content: center;">
+            <div class="tn-user-name" style="line-height: 1.2;"><?= strtoupper(htmlspecialchars($nomeAluno)) ?></div>
+            <?php if (!$isProf): ?>
+                <div style="font-size: 0.65rem; color: var(--c-brand); font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9;">
+                    <?= htmlspecialchars($aluno['curso_nome'] ?? $aluno['curso'] ?? 'Curso Técnico') ?>
+                </div>
+            <?php else: ?>
+                <div style="font-size: 0.65rem; color: var(--c-brand); font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9;">
+                    Professor(a)
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <a href="../auth/logout.php" class="tn-settings" title="Sair">

@@ -60,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                 "addressRegion": "PA",
                 "addressCountry": "BR"
             },
-            "telephone": "+55-94-99999-9999"
+            "telephone": "+55-94-99210-6258",
+            "email": "aprendizagem@kolpingpbas.com.br"
         }
     </script>
 </head>
@@ -349,7 +350,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
-                    <div class="stat-num" data-target="8" data-suffix=" anos" data-prefix="">0</div>
+                    <div class="stat-num" data-target="27" data-suffix=" anos" data-prefix="">0</div>
                     <div class="stat-label">De história em Parauapebas</div>
                 </div>
             </div>
@@ -365,36 +366,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         <span class="sh-label">Nossa essência</span>
                         <h2 class="sh-title">Por que a Sophie Link?</h2>
                     </div>
-                    <p class="sh-sub">Educação técnica com propósito real, preparando jovens para o mercado industrial de Parauapebas e região.</p>
+                    <p class="sh-sub">Fundada em abril de 1998, a Comunidade Kolping Sophie Link tem 27 anos formando profissionais para o mercado industrial de Parauapebas e região dos Carajás.</p>
                 </div>
 
                 <div class="pillars-grid">
                     <div class="pillar-card reveal">
-                        <div class="pillar-icon"><i data-lucide="hard-hat"></i></div>
+                        <div class="pillar-icon"><i data-lucide="target"></i></div>
                         <div class="pillar-body">
-                            <h3>Prática Industrial</h3>
-                            <p>Laboratórios e treinamentos com equipamentos reais do setor de mineração e eletromecânica.</p>
+                            <h3>Nossa Missão</h3>
+                            <p>Contribuir para a promoção de jovens e adultos por meio de formação técnico-profissionalizante de qualidade, inserindo profissionais conscientes no mercado de trabalho.</p>
                         </div>
                     </div>
                     <div class="pillar-card reveal" style="transition-delay:.08s">
-                        <div class="pillar-icon"><i data-lucide="building-2"></i></div>
+                        <div class="pillar-icon"><i data-lucide="eye"></i></div>
                         <div class="pillar-body">
-                            <h3>Parceria com Empresas</h3>
-                            <p>Convênios com Vale, Sotreq e Kolping que viabilizam bolsas integrais e inserção direta no mercado.</p>
+                            <h3>Nossa Visão</h3>
+                            <p>Ser uma instituição reconhecida pela excelência em educação técnico-profissionalizante, com ampla participação na vida dos alunos, colaboradores, sócios e no mercado de trabalho.</p>
                         </div>
                     </div>
                     <div class="pillar-card reveal" style="transition-delay:.16s">
-                        <div class="pillar-icon"><i data-lucide="award"></i></div>
+                        <div class="pillar-icon"><i data-lucide="heart"></i></div>
                         <div class="pillar-body">
-                            <h3>Certificação Reconhecida</h3>
-                            <p>Diplomas com registro no MEC, reconhecidos pela indústria regional e nacional.</p>
+                            <h3>Nossos Valores</h3>
+                            <p>Fé em Cristo, Solidariedade, Honestidade, Responsabilidade e Qualidade são os pilares que norteiam cada ação da nossa instituição.</p>
                         </div>
                     </div>
                     <div class="pillar-card reveal" style="transition-delay:.24s">
+                        <div class="pillar-icon"><i data-lucide="globe"></i></div>
+                        <div class="pillar-body">
+                            <h3>Presença Global</h3>
+                            <p>Parte da Obra Kolping, presente em 62 países e 5 continentes, atendendo mais de 600 mil alunos. No Brasil, atuamos em 17 estados.</p>
+                        </div>
+                    </div>
+                    <div class="pillar-card reveal" style="transition-delay:.32s">
+                        <div class="pillar-icon"><i data-lucide="hard-hat"></i></div>
+                        <div class="pillar-body">
+                            <h3>Laboratórios de Ponta</h3>
+                            <p>Instalações práticas para Elétrica Predial, Mecânica, Informática, Automação e Elétrica Industrial, além de amplas salas de aula.</p>
+                        </div>
+                    </div>
+                    <div class="pillar-card reveal" style="transition-delay:.40s">
                         <div class="pillar-icon"><i data-lucide="users"></i></div>
                         <div class="pillar-body">
                             <h3>Jovem Aprendiz</h3>
-                            <p>Programa que une teoria e prática profissional para jovens entre 14 e 24 anos, com carteira assinada.</p>
+                            <p>Programa que une teoria e prática profissional para jovens entre 14 e 24 anos, com carteira assinada e formação certificada.</p>
                         </div>
                     </div>
                 </div>
@@ -514,10 +529,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                     <div class="course-card-v2" data-cat="gestao">
                         <div class="ccv2-icon" style="background:#F0FDF4;color:#15803D"><i data-lucide="table-2"></i></div>
                         <div class="ccv2-body">
-                            <div class="ccv2-name">Excel Avançado e Dashboards</div>
-                            <div class="ccv2-meta">Gestão & TI · 80h</div>
+                            <div class="ccv2-name">Excel Avançado</div>
+                            <div class="ccv2-meta">Gestão & TI · 52h</div>
                         </div>
                         <a href="cursos/excel-avancado.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="gestao">
+                        <div class="ccv2-icon" style="background:#EFF6FF;color:#0369A1"><i data-lucide="bar-chart-2"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Power BI</div>
+                            <div class="ccv2-meta">Gestão & TI · 54h</div>
+                        </div>
+                        <a href="cursos/excel-avancado.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="industrial">
+                        <div class="ccv2-icon" style="background:#FFF7ED;color:#C2410C"><i data-lucide="wrench"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Mecânica de Autos + Pesada</div>
+                            <div class="ccv2-meta">Industrial · 404h</div>
+                        </div>
+                        <a href="cursos/mecanica-pesada.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="industrial">
+                        <div class="ccv2-icon" style="background:#FFF1F2;color:#BE123C"><i data-lucide="activity"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Automação Industrial</div>
+                            <div class="ccv2-meta">Industrial · 300h</div>
+                        </div>
+                        <a href="cursos/eletrica-industrial.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="gestao">
+                        <div class="ccv2-icon" style="background:#FDF4FF;color:#7E22CE"><i data-lucide="user-check"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Assistente Administrativo</div>
+                            <div class="ccv2-meta">Gestão · 168h</div>
+                        </div>
+                        <a href="cursos/administracao.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="gestao">
+                        <div class="ccv2-icon" style="background:#F0FDF4;color:#166534"><i data-lucide="cpu"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Iniciação à Robótica</div>
+                            <div class="ccv2-meta">Gestão & TI · 240h</div>
+                        </div>
+                        <a href="cursos/informatica.php" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="gestao">
+                        <div class="ccv2-icon" style="background:#FFFBEB;color:#D97706"><i data-lucide="users-2"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Jovem Aprendiz — Arco Adm.</div>
+                            <div class="ccv2-meta">Aprendizagem · 552h</div>
+                        </div>
+                        <a href="#fale-conosco" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="industrial">
+                        <div class="ccv2-icon" style="background:#FFF7ED;color:#EA580C"><i data-lucide="factory"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Jovem Aprendiz — Eletromec.</div>
+                            <div class="ccv2-meta">Aprendizagem · 672h</div>
+                        </div>
+                        <a href="#fale-conosco" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
+                    </div>
+
+                    <div class="course-card-v2" data-cat="industrial">
+                        <div class="ccv2-icon" style="background:#EFF6FF;color:#1E40AF"><i data-lucide="truck"></i></div>
+                        <div class="ccv2-body">
+                            <div class="ccv2-name">Jovem Aprendiz — Mecânico Diesel</div>
+                            <div class="ccv2-meta">Aprendizagem · 600h</div>
+                        </div>
+                        <a href="#fale-conosco" class="ccv2-arrow"><i data-lucide="arrow-right"></i></a>
                     </div>
 
                 </div>
@@ -595,7 +682,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                                 <div class="ci-icon"><i data-lucide="message-circle"></i></div>
                                 <div>
                                     <div class="ci-label">WhatsApp</div>
-                                    <a href="https://wa.me/5594999999999" class="ci-val ci-link">(94) 9 9999-9999</a>
+                                    <a href="https://wa.me/5594992106258" class="ci-val ci-link">(94) 9 9210-6258</a>
+                                </div>
+                            </div>
+                            <div class="ci-item">
+                                <div class="ci-icon"><i data-lucide="mail"></i></div>
+                                <div>
+                                    <div class="ci-label">E-mail</div>
+                                    <a href="mailto:aprendizagem@kolpingpbas.com.br" class="ci-val ci-link">aprendizagem@kolpingpbas.com.br</a>
                                 </div>
                             </div>
                             <div class="ci-item">
@@ -674,14 +768,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                         Av. Amazonas, 64 – Rio Verde, Parauapebas – PA
                     </a>
                     <div class="fd-socials">
-                        <a href="https://www.instagram.com/sophielink_kolpingbrasil" target="_blank" title="Instagram">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        <a href="https://www.instagram.com/sophielink_kolpingbrasil" target="_blank" title="Instagram" class="fd-social-btn fd-social-insta">
+                            <span class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.51222222" x2="17.51" y2="6.5"></line></svg>
+                            </span>
                         </a>
-                        <a href="https://www.facebook.com/1144265205434947" target="_blank" title="Facebook">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                        <a href="https://www.facebook.com/1144265205434947" target="_blank" title="Facebook" class="fd-social-btn fd-social-face">
+                            <span class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                            </span>
                         </a>
-                        <a href="http://wa.me/5594992106258" target="_blank" title="WhatsApp">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        <a href="http://wa.me/5594992106258" target="_blank" title="WhatsApp" class="fd-social-btn fd-social-whats">
+                            <span class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            </span>
                         </a>
                     </div>
                 </div>

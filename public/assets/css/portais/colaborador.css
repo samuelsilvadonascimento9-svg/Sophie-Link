@@ -467,3 +467,179 @@ select.form-control { cursor: pointer; }
     .sidebar.open { left: 0; }
     .form-row { grid-template-columns: 1fr; }
 }
+
+/* ===================================================================
+   FIZZY DOWNLOAD BUTTON — Adapted from CodePen (CSS-only version)
+   =================================================================== */
+
+.btn-download {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    height: 34px;
+    padding: 0 16px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.3s, color 0.35s, background 0.35s, box-shadow 0.3s;
+    user-select: none;
+    z-index: 1;
+    /* button reset */
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    line-height: 1;
+}
+
+/* sliding fill background */
+.btn-download::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--brand);
+    transform: translateX(-105%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+}
+
+.btn-download:hover::before {
+    transform: translateX(0);
+}
+
+.btn-download:hover {
+    border-color: var(--brand);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(255,107,0,0.35);
+}
+
+/* icon */
+.btn-download .dl-icon {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    flex-shrink: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s;
+}
+
+.btn-download:hover .dl-icon {
+    animation: dl-bounce 0.6s 0.1s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+/* label text */
+.btn-download .dl-label {
+    position: relative;
+    z-index: 2;
+    transition: letter-spacing 0.3s;
+}
+
+.btn-download:hover .dl-label {
+    letter-spacing: 0.5px;
+}
+
+/* particles */
+.btn-download .dl-particles {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.btn-download .dl-dot {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    width: 5px;
+    height: 5px;
+    background: rgba(255,255,255,0.8);
+    pointer-events: none;
+}
+
+/* Animate dots only on hover */
+.btn-download:hover .dl-dot:nth-child(1)  { left: 15%;  top: 80%; animation: dl-particle1 0.7s 0.05s ease-out infinite; }
+.btn-download:hover .dl-dot:nth-child(2)  { left: 30%;  top: 80%; animation: dl-particle2 0.6s 0.15s ease-out infinite; }
+.btn-download:hover .dl-dot:nth-child(3)  { left: 50%;  top: 80%; animation: dl-particle1 0.8s 0.1s  ease-out infinite; }
+.btn-download:hover .dl-dot:nth-child(4)  { left: 65%;  top: 80%; animation: dl-particle2 0.65s 0.2s ease-out infinite; }
+.btn-download:hover .dl-dot:nth-child(5)  { left: 80%;  top: 80%; animation: dl-particle1 0.55s 0.05s ease-out infinite; }
+.btn-download:hover .dl-dot:nth-child(6)  { left: 20%;  top: 50%; animation: dl-particle3 0.7s 0.3s  ease-out infinite; background: rgba(255,220,150,0.9); width: 4px; height: 4px; }
+.btn-download:hover .dl-dot:nth-child(7)  { left: 45%;  top: 50%; animation: dl-particle3 0.8s 0.12s ease-out infinite; background: rgba(255,220,150,0.9); width: 3px; height: 3px; }
+.btn-download:hover .dl-dot:nth-child(8)  { left: 70%;  top: 50%; animation: dl-particle2 0.6s 0.25s ease-out infinite; background: rgba(255,220,150,0.9); width: 4px; height: 4px; }
+
+/* downloading state */
+.btn-download.is-downloading::before {
+    transform: translateX(0) !important;
+    transition: none;
+}
+.btn-download.is-downloading {
+    color: #fff;
+    border-color: var(--brand);
+    pointer-events: none;
+    animation: dl-pulse 0.6s ease infinite alternate;
+}
+.btn-download.is-downloading .dl-icon {
+    animation: dl-spin 0.8s linear infinite !important;
+}
+
+/* done state */
+.btn-download.is-done::before {
+    background: var(--green);
+    transform: translateX(0);
+}
+.btn-download.is-done {
+    border-color: var(--green);
+    color: #fff;
+    pointer-events: none;
+}
+.btn-download.is-done .dl-icon {
+    animation: dl-pop 0.4s cubic-bezier(0.4,0,0.2,1) forwards !important;
+}
+
+/* Keyframes */
+@keyframes dl-bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(3px); }
+}
+
+@keyframes dl-particle1 {
+    0%   { transform: translateY(0) scale(1); opacity: 0.8; }
+    100% { transform: translateY(-20px) translateX(-8px) scale(0); opacity: 0; }
+}
+
+@keyframes dl-particle2 {
+    0%   { transform: translateY(0) scale(1); opacity: 0.8; }
+    100% { transform: translateY(-18px) translateX(10px) scale(0); opacity: 0; }
+}
+
+@keyframes dl-particle3 {
+    0%   { transform: translateY(0) scale(1); opacity: 0.7; }
+    100% { transform: translateY(-24px) translateX(-4px) scale(0); opacity: 0; }
+}
+
+@keyframes dl-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes dl-pulse {
+    from { box-shadow: 0 4px 14px rgba(255,107,0,0.3); }
+    to   { box-shadow: 0 6px 22px rgba(255,107,0,0.55); }
+}
+
+@keyframes dl-pop {
+    0%   { transform: scale(0) rotate(-90deg); opacity: 0; }
+    60%  { transform: scale(1.3) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+}

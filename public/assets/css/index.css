@@ -1938,22 +1938,58 @@ textarea:focus-visible {
     margin-top: 1.5rem;
 }
 
-.fd-socials a {
+/* Base do botão */
+.fd-social-btn {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-    color: #a1a1aa;
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.08);
+    text-decoration: none;
 }
 
-.fd-socials a:hover {
-    background: var(--c-primary);
+/* Ícone — fica acima do fundo que sobe */
+.fd-social-btn .icon {
+    position: relative;
+    z-index: 3;
+    color: #a1a1aa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.5s, transform 0.5s;
+}
+
+/* Fundo que sobe — começa embaixo */
+.fd-social-btn::before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    transition: top 0.5s;
+}
+
+/* Cores de cada rede */
+.fd-social-insta::before { background: #E1306C; }
+.fd-social-face::before  { background: #3b5999; }
+.fd-social-whats::before { background: #25D366; }
+
+/* Hover: fundo sobe */
+.fd-social-btn:hover::before {
+    top: 0;
+}
+
+/* Hover: ícone fica branco e gira 360deg no eixo Y */
+.fd-social-btn:hover .icon {
     color: #fff;
-    transform: translateY(-3px);
+    transform: rotateY(360deg);
 }
 
 .course-card-v2 {

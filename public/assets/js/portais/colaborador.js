@@ -65,6 +65,24 @@ function filterTable() {
     });
 }
 
+function filterProfessores() {
+    const q = document.getElementById('searchProfessores').value.toLowerCase().trim();
+    document.querySelectorAll('#professoresTable tbody tr').forEach(row => {
+        if (!row.querySelector('td')) return; // ignore empty state row
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+    });
+}
+
+function filterEmpresas() {
+    const q = document.getElementById('searchEmpresas').value.toLowerCase().trim();
+    document.querySelectorAll('#empresasTable tbody tr').forEach(row => {
+        if (!row.querySelector('td')) return;
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+    });
+}
+
 if (searchInput) searchInput.addEventListener('input', filterTable);
 if (filterSituacao) filterSituacao.addEventListener('change', filterTable);
 
