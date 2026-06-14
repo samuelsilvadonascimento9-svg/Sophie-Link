@@ -136,29 +136,6 @@ $senhaValue = $prefillEmail ? 'admin' : '';
     </header>
 
     <main class="ava-main">
-        <div class="ava-left">
-            <div class="ava-tag"><i data-lucide="play-circle" style="width:14px;"></i> Plataforma Digital</div>
-            <h1 class="ava-title">Sua sala de aula <span>em qualquer lugar.</span></h1>
-            <p class="ava-desc">Acesse suas disciplinas, participe dos fóruns de discussão, baixe materiais de apoio e entregue trabalhos diretamente pelo Ambiente Virtual de Aprendizagem da Sophie Link.</p>
-            
-            <div class="ava-features">
-                <div class="ava-feat">
-                    <i data-lucide="video"></i>
-                    <div>
-                        <div class="ava-feat-t">Aulas Integradas</div>
-                        <div class="ava-feat-d">Conteúdo digital completo.</div>
-                    </div>
-                </div>
-                <div class="ava-feat">
-                    <i data-lucide="message-square"></i>
-                    <div>
-                        <div class="ava-feat-t">Fóruns</div>
-                        <div class="ava-feat-d">Interação com a turma.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="ava-right">
             <div class="ava-form-box">
                 <div class="ava-fb-title">Entrar no AVA</div>
@@ -167,44 +144,65 @@ $senhaValue = $prefillEmail ? 'admin' : '';
                 <div class="lb-error"><i data-lucide="alert-circle" style="width:16px;"></i> <?= htmlspecialchars($erro) ?></div>
                 <?php endif; ?>
 
-                <form method="POST" action="">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
-                    <div class="av-field">
-                        <label class="av-label" for="email">E-mail Acadêmico</label>
-                        <input type="text" id="email" name="email" class="av-input <?= $erro ? 'err' : '' ?>" placeholder="admin" value="<?= $emailValue ?>" required>
-                    </div>
-
-                    <div class="av-field">
-                        <label class="av-label" for="senhaAva">Senha</label>
-                        <div class="candle-login-wrapper hidden-pass" id="candleLoginWrapper">
-                            <div class="candle-container">
-                                <div class="candle">
-                                    <div class="flame"></div>
-                                    <div class="smoke"></div>
-                                    <div class="eyes">
-                                        <div class="eye left"></div>
-                                        <div class="eye right"></div>
+                <div class="ava-form-split">
+                    <div class="ava-form-left">
+                        <div class="scene-wrapper unlit" id="candleScene">
+                            <div class="candles">
+                                <div class="light__wave"></div>
+                                <div class="candle1">
+                                    <div class="candle1__body">
+                                        <div class="candle1__eyes">
+                                            <span class="candle1__eyes-one"></span>
+                                            <span class="candle1__eyes-two"></span>
+                                        </div>
+                                        <div class="candle1__mouth"></div>
                                     </div>
-                                    <div class="blush left"></div>
-                                    <div class="blush right"></div>
+                                    <div class="candle1__stick"></div>
                                 </div>
+                                <div class="candle2">
+                                    <div class="candle2__body">
+                                        <div class="candle2__eyes">
+                                            <div class="candle2__eyes-one"></div>
+                                            <div class="candle2__eyes-two"></div>
+                                        </div>
+                                    </div>
+                                    <div class="candle2__stick"></div>
+                                </div>
+                                <div class="candle2__fire"></div>
+                                <div class="candle__smoke-one"></div>
+                                <div class="candle__smoke-two"></div>
                             </div>
-                            <div class="candle-input-row">
-                                <input type="password" id="senhaAva" name="senha" class="av-input candle-pass-input <?= $erro ? 'err' : '' ?>" placeholder="Digite sua senha..." value="<?= $senhaValue ?>" required autocomplete="current-password">
-                                <button type="button" id="candleToggleBtn" class="candle-toggle-btn" title="Mostrar/ocultar senha">
-                                    <i data-lucide="eye-off" style="width:18px;height:18px;"></i>
-                                </button>
-                            </div>
+                            <div class="floor"></div>
                         </div>
                     </div>
 
-                    <div class="av-row">
-                        <label class="av-check"><input type="checkbox" name="lembrar"> Manter conectado</label>
-                        <a href="esqueci_senha.php" class="av-forgot">Recuperar senha</a>
-                    </div>
+                    <div class="ava-form-right">
+                        <form method="POST" action="">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <div class="av-field">
+                                <label class="av-label" for="email">E-mail Acadêmico</label>
+                                <input type="text" id="email" name="email" class="av-input <?= $erro ? 'err' : '' ?>" placeholder="admin" value="<?= $emailValue ?>" required>
+                            </div>
 
-                    <button type="submit" class="av-submit">Acessar Minhas Disciplinas</button>
-                </form>
+                            <div class="av-field">
+                                <label class="av-label" for="senhaAva">Senha</label>
+                                <div class="tc-input-row">
+                                    <input type="password" id="senhaAva" name="senha" class="av-input tc-pass-input <?= $erro ? 'err' : '' ?>" placeholder="Digite sua senha..." value="<?= $senhaValue ?>" required autocomplete="current-password">
+                                    <button type="button" id="tcToggleBtn" class="tc-toggle-btn" title="Mostrar/ocultar senha">
+                                        <i data-lucide="eye-off" style="width:18px;height:18px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="av-row">
+                                <label class="av-check"><input type="checkbox" name="lembrar"> Manter conectado</label>
+                                <a href="esqueci_senha.php" class="av-forgot">Recuperar senha</a>
+                            </div>
+
+                            <button type="submit" class="av-submit">Acessar Minhas Disciplinas</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -213,21 +211,43 @@ $senhaValue = $prefillEmail ? 'admin' : '';
     <script src="../assets/js/login.js"></script>
     <script>
     (function() {
-        const toggleBtn = document.getElementById('candleToggleBtn');
-        const passInput  = document.getElementById('senhaAva');
-        const wrapper    = document.getElementById('candleLoginWrapper');
-        if (!toggleBtn || !passInput || !wrapper) return;
+        const toggleBtn = document.getElementById('tcToggleBtn');
+        const passInput = document.getElementById('senhaAva');
+        const scene     = document.getElementById('candleScene');
+        if (!toggleBtn || !passInput || !scene) return;
+
+        let isLit = false;
 
         toggleBtn.addEventListener('click', () => {
-            const isHidden = passInput.type === 'password';
-            passInput.type = isHidden ? 'text' : 'password';
+            isLit = !isLit;
+            
+            if (isLit) {
+                passInput.type = 'text';
+                toggleBtn.innerHTML = '<i data-lucide="eye" style="width:18px;height:18px;"></i>';
+                if (window.lucide) window.lucide.createIcons();
 
-            const iconName = isHidden ? 'eye' : 'eye-off';
-            toggleBtn.innerHTML = `<i data-lucide="${iconName}" style="width:18px;height:18px;"></i>`;
-            if (window.lucide) window.lucide.createIcons();
+                scene.classList.remove('unlit', 'blowing');
+                scene.classList.add('lit');
+            } else {
+                passInput.type = 'password';
+                toggleBtn.innerHTML = '<i data-lucide="eye-off" style="width:18px;height:18px;"></i>';
+                if (window.lucide) window.lucide.createIcons();
 
-            wrapper.classList.toggle('hidden-pass', !isHidden);
-            wrapper.classList.toggle('show-pass', isHidden);
+                scene.classList.add('blowing');
+
+                setTimeout(() => {
+                    if (!isLit) {
+                        scene.classList.remove('lit');
+                        scene.classList.add('unlit');
+                    }
+                }, 250);
+
+                setTimeout(() => {
+                    if (!isLit) {
+                        scene.classList.remove('blowing');
+                    }
+                }, 800);
+            }
         });
     })();
     </script>
