@@ -53,6 +53,35 @@ a { text-decoration: none; color: inherit; }
     box-shadow: 0 20px 40px rgba(0,0,0,0.05);
     width: 100%;
     margin: 0 auto;
+    transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+    color: var(--c-text);
+}
+
+.ava-form-box.unlit {
+    background: #000;
+    border-color: #333;
+    color: #F9FAFB;
+}
+
+.ava-form-box.unlit .ava-fb-title,
+.ava-form-box.unlit .av-label,
+.ava-form-box.unlit .av-check {
+    color: #F9FAFB;
+}
+
+.ava-form-box.unlit .av-input,
+.ava-form-box.unlit .tc-input-row {
+    background: #111;
+    border-color: #333;
+    color: #F9FAFB;
+}
+
+.ava-form-box.unlit .av-input::placeholder {
+    color: #666;
+}
+
+.ava-form-box.unlit .lb-error {
+    background: rgba(239, 68, 68, 0.1);
 }
 
 .ava-form-split {
@@ -123,7 +152,7 @@ a { text-decoration: none; color: inherit; }
     position: relative;
     width: 350px;
     height: 250px;
-    transform: scale(0.85); /* Adjust scale to fit the left column */
+    transform: scale(1.2); /* Adjust scale to fit the left column */
     z-index: 10;
 }
 
@@ -289,20 +318,20 @@ a { text-decoration: none; color: inherit; }
 /* ========================================= */
 
 /* 1. LIGADO (Aceso) */
-.scene-wrapper.lit .candle2__fire {
+.ava-form-box.lit .candle2__fire {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
     animation: tc-dance-fire 0.3s infinite alternate;
 }
 
-.scene-wrapper.lit .light__wave {
+.ava-form-box.lit .light__wave {
     transform: translate(-50%, -50%) scale(2.5);
     border: 2px solid rgba(255, 107, 0, 0.15); /* Orange tint */
     animation: tc-pulse-light 1.5s infinite alternate;
 }
 
-.scene-wrapper.lit .candle2__eyes-one, 
-.scene-wrapper.lit .candle2__eyes-two {
+.ava-form-box.lit .candle2__eyes-one, 
+.ava-form-box.lit .candle2__eyes-two {
     border-radius: 100%;
     background: #673C63;
     transform: translate(-80%, 0%);
@@ -310,7 +339,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* 2. DESLIGADO (Apagado / Triste) */
-.scene-wrapper.unlit .candle2__eyes-one {
+.ava-form-box.unlit .candle2__eyes-one {
     background: transparent;
     border: solid #673C63;
     border-radius: 0px;
@@ -319,7 +348,7 @@ a { text-decoration: none; color: inherit; }
     transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-.scene-wrapper.unlit .candle2__eyes-two {
+.ava-form-box.unlit .candle2__eyes-two {
     background: transparent;
     border: solid #673C63;
     border-radius: 0px;
@@ -329,21 +358,21 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* 3. SOPRANDO (Transição) */
-.scene-wrapper.blowing .candle1 {
+.ava-form-box.blowing .candle1 {
     transform: scale(1.1, 1.1) translate(60%, -28%);
 }
-.scene-wrapper.blowing .candle1__mouth {
+.ava-form-box.blowing .candle1__mouth {
     width: 15px; height: 15px; left: 30%;
     transition: none; /* Abre a boca imediatamente */
 }
-.scene-wrapper.blowing .candle2 {
+.ava-form-box.blowing .candle2 {
     transform: scale(1.18, 0.82) translate(60%, -10%);
     background: #F44336;
     border-color: #F44336;
     box-shadow: -2px 0px 0px #F44336 inset;
 }
-.scene-wrapper.blowing .candle__smoke-one { animation: tc-blow-smoke-1 0.6s forwards; }
-.scene-wrapper.blowing .candle__smoke-two { animation: tc-blow-smoke-2 0.6s forwards; }
+.ava-form-box.blowing .candle__smoke-one { animation: tc-blow-smoke-1 0.6s forwards; }
+.ava-form-box.blowing .candle__smoke-two { animation: tc-blow-smoke-2 0.6s forwards; }
 
 
 /* ========================================= */
@@ -374,6 +403,8 @@ a { text-decoration: none; color: inherit; }
     outline: none;
 }
 .tc-toggle-btn:hover { color: #FF6B00; }
+.ava-form-box.unlit .tc-toggle-btn { color: #555; }
+.ava-form-box.unlit .tc-toggle-btn:hover { color: #FF9800; }
 
 /* Keyframes */
 @keyframes tc-dance-fire {

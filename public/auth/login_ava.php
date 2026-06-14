@@ -137,7 +137,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
     <main class="ava-main">
         <div class="ava-right">
-            <div class="ava-form-box">
+            <div class="ava-form-box unlit" id="avaFormBox">
                 <div class="ava-fb-title">Entrar no AVA</div>
 
                 <?php if ($erro): ?>
@@ -146,7 +146,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
                 <div class="ava-form-split">
                     <div class="ava-form-left">
-                        <div class="scene-wrapper unlit" id="candleScene">
+                        <div class="scene-wrapper" id="candleScene">
                             <div class="candles">
                                 <div class="light__wave"></div>
                                 <div class="candle1">
@@ -213,8 +213,8 @@ $senhaValue = $prefillEmail ? 'admin' : '';
     (function() {
         const toggleBtn = document.getElementById('tcToggleBtn');
         const passInput = document.getElementById('senhaAva');
-        const scene     = document.getElementById('candleScene');
-        if (!toggleBtn || !passInput || !scene) return;
+        const formBox   = document.getElementById('avaFormBox');
+        if (!toggleBtn || !passInput || !formBox) return;
 
         let isLit = false;
 
@@ -226,25 +226,25 @@ $senhaValue = $prefillEmail ? 'admin' : '';
                 toggleBtn.innerHTML = '<i data-lucide="eye" style="width:18px;height:18px;"></i>';
                 if (window.lucide) window.lucide.createIcons();
 
-                scene.classList.remove('unlit', 'blowing');
-                scene.classList.add('lit');
+                formBox.classList.remove('unlit', 'blowing');
+                formBox.classList.add('lit');
             } else {
                 passInput.type = 'password';
                 toggleBtn.innerHTML = '<i data-lucide="eye-off" style="width:18px;height:18px;"></i>';
                 if (window.lucide) window.lucide.createIcons();
 
-                scene.classList.add('blowing');
+                formBox.classList.remove('lit');
+                formBox.classList.add('blowing');
 
                 setTimeout(() => {
                     if (!isLit) {
-                        scene.classList.remove('lit');
-                        scene.classList.add('unlit');
+                        formBox.classList.add('unlit');
                     }
                 }, 250);
 
                 setTimeout(() => {
                     if (!isLit) {
-                        scene.classList.remove('blowing');
+                        formBox.classList.remove('blowing');
                     }
                 }, 800);
             }
