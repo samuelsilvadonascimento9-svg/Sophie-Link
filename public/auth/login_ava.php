@@ -137,7 +137,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
     <main class="ava-main">
         <div class="ava-right">
-            <div class="ava-form-box is-unlit is-dark" id="avaFormBox">
+            <div class="ava-form-box state-unlit is-dark" id="avaFormBox">
                 <div class="ava-fb-title">Entrar no AVA</div>
 
                 <?php if ($erro): ?>
@@ -216,28 +216,45 @@ $senhaValue = $prefillEmail ? 'admin' : '';
         const formBox   = document.getElementById('avaFormBox');
         if (!toggleBtn || !passInput || !formBox) return;
 
-        // A página inicia com a vela acesa e a senha visível (estado padrão)
-        // MAS como é uma tela de login, iniciamos apagada com senha oculta.
-        let isLit = false;
+        let state = 'UNLIT';
 
         toggleBtn.addEventListener('click', () => {
-            isLit = !isLit;
 
-            if (isLit) {
-                // Ação: Mostrar Senha (ACENDER)
-                formBox.className = 'ava-form-box is-lit';
+            if (state === 'UNLIT' || state === 'BLOWING') {
+                // AÇÃO: MOSTRAR SENHA (Acender)
+                state = 'REIGNITING';
+                formBox.className = 'ava-form-box state-reigniting';
                 passInput.type = 'text';
                 toggleBtn.innerHTML = '<i data-lucide="eye" style="width:18px;height:18px;"></i>';
                 if (window.lucide) window.lucide.createIcons();
-            } else {
-                // Ação: Ocultar Senha (APAGAR)
-                formBox.className = 'ava-form-box is-unlit is-dark';
+
+                // Animação do susto/reacender dura 1s
+                setTimeout(() => {
+                    if (state === 'REIGNITING') {
+                        state = 'LIT';
+                        formBox.className = 'ava-form-box state-lit';
+                    }
+                }, 1000);
+
+            } else if (state === 'LIT' || state === 'REIGNITING') {
+                // AÇÃO: OCULTAR SENHA (Soprar / Apagar)
+                state = 'BLOWING';
+                formBox.className = 'ava-form-box state-blowing is-dark';
                 passInput.type = 'password';
                 toggleBtn.innerHTML = '<i data-lucide="eye-off" style="width:18px;height:18px;"></i>';
                 if (window.lucide) window.lucide.createIcons();
+
+                // Animação de sopro e fumaça dura 1.2s
+                setTimeout(() => {
+                    if (state === 'BLOWING') {
+                        state = 'UNLIT';
+                        formBox.className = 'ava-form-box state-unlit is-dark';
+                    }
+                }, 1200);
             }
         });
     })();
     </script>
+
 </body>
 </html>

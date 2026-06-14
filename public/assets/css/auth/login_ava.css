@@ -61,6 +61,7 @@ a { text-decoration: none; color: inherit; }
     background: #000;
     border-color: #333;
     color: #F9FAFB;
+    transition: background 0.8s ease, border-color 0.8s ease;
 }
 
 .ava-form-box.is-dark .ava-fb-title,
@@ -83,6 +84,9 @@ a { text-decoration: none; color: inherit; }
 .ava-form-box.is-dark .lb-error {
     background: rgba(239, 68, 68, 0.1);
 }
+
+.ava-form-box.is-dark .tc-toggle-btn { color: #555; }
+.ava-form-box.is-dark .tc-toggle-btn:hover { color: #FF9800; }
 
 .ava-form-split {
     display: flex;
@@ -141,10 +145,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ================================================================
-   TWO CANDLES PASSWORD TOGGLE — AVA Login
-   ================================================================ */
-/* ================================================================
-   TWO CANDLES PASSWORD TOGGLE — AVA Login
+   TWO CANDLES PASSWORD TOGGLE — AVA Login (100% FIEL)
    ================================================================ */
 
 /* ----- Cena das Velinhas ----- */
@@ -152,152 +153,83 @@ a { text-decoration: none; color: inherit; }
     position: relative;
     width: 350px;
     height: 250px;
-    transform: scale(1.2); /* Adjust scale to fit the left column */
+    transform: scale(1.2); 
     z-index: 10;
 }
 
 .floor {
-    position: absolute;
-    left: 45%; /* Centered under the candles */
-    top: 72%; /* Just below the candles */
-    width: 140px;
-    height: 8px;
-    background: rgba(0,0,0,0.06); /* Elegant soft shadow */
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 4px rgba(0,0,0,0.02);
-    z-index: 2;
-    filter: blur(1px);
+    position: absolute; left: 45%; top: 72%; width: 140px; height: 8px;
+    background: rgba(0,0,0,0.06); border-radius: 50%;
+    transform: translate(-50%, -50%); box-shadow: 0 0 4px rgba(0,0,0,0.02);
+    z-index: 2; filter: blur(1px);
 }
 
 .candles {
-    position: absolute;
-    left: 50%;
-    top: 70%;
-    width: 250px;
-    height: 150px;
-    transform: translate(-50%, -100%);
-    z-index: 1;
+    position: absolute; left: 50%; top: 70%; width: 250px; height: 150px;
+    transform: translate(-50%, -100%); z-index: 1;
 }
 
-/* Velinha 1 (Maior) */
+/* --- Velinha 1 (Maior) --- */
 .candle1 {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 35px;
-    height: 100px;
-    background: #fff;
-    border: 3px solid #673C63;
-    border-bottom: 0px;
-    border-radius: 3px;
-    transform-origin: center right;
-    transform: translate(60%, -25%);
+    position: absolute; left: 50%; top: 50%; width: 35px; height: 100px;
+    background: #fff; border: 3px solid #673C63; border-bottom: 0px; border-radius: 3px;
+    transform-origin: center right; transform: translate(60%, -25%);
     box-shadow: -2px 0px 0px #95c6f2 inset;
-    transition: transform 0.3s ease;
 }
 
 .candle1__stick, .candle2__stick {
-    position: absolute;
-    left: 50%;
-    top: 0%;
-    width: 3px;
-    height: 15px;
-    background: #673C63;
-    border-radius: 8px;
-    transform: translate(-50%, -100%);
+    position: absolute; left: 50%; top: 0%; width: 3px; height: 15px;
+    background: #673C63; border-radius: 8px; transform: translate(-50%, -100%);
 }
 
 .candle1__eyes, .candle2__eyes {
-    position: absolute;
-    left: 50%;
-    top: 0%;
-    width: 35px;
-    height: 30px;
+    position: absolute; left: 50%; top: 0%; width: 35px; height: 30px;
     transform: translate(-50%, 0%);
 }
 
 .candle1__eyes-one, .candle1__eyes-two {
-    position: absolute;
-    top: 20%;
-    width: 5px;
-    height: 5px;
-    border-radius: 100%;
-    background: #673C63;
-    transform: translate(-70%, 0%);
+    position: absolute; top: 20%; width: 5px; height: 5px; border-radius: 100%;
+    background: #673C63; transform: translate(-70%, 0%);
     animation: tc-blink-eyes 3s infinite linear;
 }
 .candle1__eyes-one { left: 30%; }
 .candle1__eyes-two { left: 70%; }
 
 .candle1__mouth {
-    position: absolute;
-    left: 40%;
-    top: 20%;
-    width: 0px;
-    height: 0px;
-    border-radius: 20px;
-    background: #673C63;
-    transform: translate(-50%, -50%);
-    transition: all 0.2s ease;
+    position: absolute; left: 40%; top: 20%; width: 0px; height: 0px;
+    border-radius: 20px; background: #673C63; transform: translate(-50%, -50%);
 }
 
-/* Velinha 2 (Menor) */
+/* --- Velinha 2 (Menor) --- */
 .candle2 {
-    position: absolute;
-    left: 20%;
-    top: 65%;
-    width: 42px;
-    height: 60px;
-    background: #fff;
-    border: 3px solid #673C63;
-    border-bottom: 0px;
-    border-radius: 3px;
-    transform: translate(60%, -15%);
-    transform-origin: center right;
+    position: absolute; left: 20%; top: 65%; width: 42px; height: 60px;
+    background: #fff; border: 3px solid #673C63; border-bottom: 0px; border-radius: 3px;
+    transform: translate(60%, -15%); transform-origin: center right;
     box-shadow: -2px 0px 0px #95c6f2 inset;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.candle2__stick {
-    height: 12px;
-    transform-origin: bottom center;
-}
+.candle2__stick { height: 12px; transform-origin: bottom center; }
 
-/* Olhinhos da Velinha 2 */
+/* Olhinhos Padrão da Velinha 2 (São APENAS PONTOS quando desligada) */
 .candle2__eyes-one, .candle2__eyes-two {
-    position: absolute;
-    top: 50%;
-    width: 5px;
-    height: 5px;
-    display: inline-block;
-    border: 0px solid #673C63;
-    border-radius: 100%;
-    background: #673C63;
+    position: absolute; top: 50%; width: 5px; height: 5px; display: inline-block;
+    border: 0px solid #673C63; border-radius: 100%; background: #673C63;
     transform: translate(-80%, 0%);
 }
-
 .candle2__eyes-one { left: 30%; }
 .candle2__eyes-two { left: 70%; }
 
-/* Fogo e Luz — base sem animação idle (só aplica quando is-lit) */
+/* --- Fogo e Luz --- */
 .light__wave {
-    position: absolute;
-    top: 35%; left: 35%;
-    width: 75px; height: 75px;
-    border-radius: 100%; z-index: 0;
-    transform: translate(-25%, -50%) scale(2.5);
+    position: absolute; top: 35%; left: 35%; width: 75px; height: 75px;
+    border-radius: 100%; z-index: 0; transform: translate(-25%, -50%) scale(2.5);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .candle2__fire {
-    position: absolute;
-    top: 50%; left: 40%;
-    display: block; width: 16px; height: 20px;
-    background: #FF9800;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    position: absolute; top: 51%; left: 38.5%; display: block; width: 16px; height: 20px;
+    background: #FF9800; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     transform: translate(-50%, -50%);
-    opacity: 0; /* Começa invisível — só fica visível no estado is-lit */
 }
 
 /* Fumaça */
@@ -308,67 +240,60 @@ a { text-decoration: none; color: inherit; }
 .candle__smoke-two { left: 30%; top: 40%; width: 0px; height: 0px; border-radius: 10px; }
 
 
-/* ========================================================================= */
-/* ESTADO 1: APAGAR (Soprando a Vela)                                        */
-/* ========================================================================= */
-.ava-form-box.is-unlit .candle1 { animation: blow-body 1.5s forwards; }
-.ava-form-box.is-unlit .candle1__mouth { animation: blow-mouth 1.5s forwards; }
-.ava-form-box.is-unlit .candle__smoke-one { animation: blow-smoke-1 1.5s forwards; }
-.ava-form-box.is-unlit .candle__smoke-two { animation: blow-smoke-2 1.5s forwards; }
-.ava-form-box.is-unlit .candle2 { animation: push-candle2 1.5s forwards; }
-.ava-form-box.is-unlit .candle2__eyes-one { animation: dead-eyes-1 1.5s forwards; }
-.ava-form-box.is-unlit .candle2__eyes-two { animation: dead-eyes-2 1.5s forwards; }
-.ava-form-box.is-unlit .candle2__fire { animation: die-fire 1s forwards; }
-.ava-form-box.is-unlit .light__wave { animation: die-light 1s forwards; }
+/* ========================================================= */
+/* 1. LIGADO E IDLE (Senha Visível)                          */
+/* ========================================================= */
+.ava-form-box.state-lit .candle2__fire { opacity: 1; animation: dance-fire-idle 0.5s infinite alternate; }
+.ava-form-box.state-lit .light__wave { animation: pulse-light-idle 3s infinite alternate linear; }
 
-/* ========================================================================= */
-/* ESTADO 2: ACENDER (Susto, fica Vermelha e Acende)                         */
-/* ========================================================================= */
-.ava-form-box.is-lit .candle2 { animation: reignite-candle2 1s forwards; }
-.ava-form-box.is-lit .candle2__stick { animation: reignite-stick 1s forwards; }
-.ava-form-box.is-lit .candle2__eyes-one { animation: alive-eyes-1 1s forwards; }
-.ava-form-box.is-lit .candle2__eyes-two { animation: alive-eyes-2 1s forwards; }
-.ava-form-box.is-lit .candle2__fire { animation: reignite-fire 1s forwards, dance-fire-idle 0.5s infinite alternate 1s; }
-.ava-form-box.is-lit .light__wave { animation: reignite-light 1s forwards, pulse-light-idle 3s infinite alternate 1s; }
+/* ========================================================= */
+/* 2. SOPRANDO / APAGANDO (1.2 Segundos)                     */
+/* ========================================================= */
+.ava-form-box.state-blowing .candle1 { animation: blow-body 1.2s forwards; }
+.ava-form-box.state-blowing .candle1__mouth { animation: blow-mouth 1.2s forwards; }
+.ava-form-box.state-blowing .candle__smoke-one { animation: blow-smoke-1 1.2s forwards; }
+.ava-form-box.state-blowing .candle__smoke-two { animation: blow-smoke-2 1.2s forwards; }
+.ava-form-box.state-blowing .candle2__fire { animation: blow-fire 1.2s forwards; }
+.ava-form-box.state-blowing .light__wave { animation: blow-fire 1.2s forwards; }
+/* Removidos os olhos "mortos" daqui. Ela fica com olho redondo normal! */
+
+/* ========================================================= */
+/* 3. APAGADO E IDLE (Senha Oculta)                          */
+/* ========================================================= */
+.ava-form-box.state-unlit .candle2__fire,
+.ava-form-box.state-unlit .light__wave { opacity: 0; }
+/* Vela apagada é só uma vela sem fogo. Os olhos continuam normais! */
+
+/* ========================================================= */
+/* 4. REACENDENDO / SUSTO VERMELHO E > < (1 Segundo)         */
+/* ========================================================= */
+.ava-form-box.state-reigniting .candle2 { animation: reignite-candle2 1s forwards; }
+.ava-form-box.state-reigniting .candle2__stick { animation: reignite-stick 1s forwards; }
+.ava-form-box.state-reigniting .candle2__fire { animation: reignite-fire 1s forwards; }
+.ava-form-box.state-reigniting .light__wave { animation: reignite-light 1s forwards; }
+/* Olhos de esforço (> <) acontecem SÓ AQUI */
+.ava-form-box.state-reigniting .candle2__eyes-one { animation: reignite-eyes-1 1s forwards; }
+.ava-form-box.state-reigniting .candle2__eyes-two { animation: reignite-eyes-2 1s forwards; }
 
 
-/* ========================================= */
-/* O FORMULÁRIO DE SENHA */
-/* ========================================= */
-.tc-input-row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-}
-
-.tc-pass-input {
-    padding-right: 48px !important;
-}
-
+/* ========================================================= */
+/* FORMULÁRIO DE SENHA                                       */
+/* ========================================================= */
+.tc-input-row { position: relative; display: flex; align-items: center; width: 100%; }
+.tc-pass-input { padding-right: 48px !important; }
 .tc-toggle-btn {
-    position: absolute;
-    right: 14px;
-    background: transparent;
-    border: none;
-    color: #9ca3af;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 0;
-    transition: color 0.3s ease;
-    outline: none;
+    position: absolute; right: 14px; background: transparent; border: none;
+    color: #9ca3af; cursor: pointer; display: flex; align-items: center;
+    padding: 0; transition: color 0.3s ease; outline: none;
 }
 .tc-toggle-btn:hover { color: #FF6B00; }
-.ava-form-box.is-dark .tc-toggle-btn { color: #555; }
-.ava-form-box.is-dark .tc-toggle-btn:hover { color: #FF9800; }
 
-/* ========================================================================= */
-/* KEYFRAMES                                                                  */
-/* ========================================================================= */
+/* ========================================================= */
+/* KEYFRAMES                                                 */
+/* ========================================================= */
 
-/* --- Animações Idle (Contínuas) --- */
-@keyframes blink-eyes {
+/* --- IDLE --- */
+@keyframes tc-blink-eyes {
   0%,35% { opacity: 1; transform: translate(-70%, 0%); }
   36%,39% { opacity: 0; transform: translate(-70%, 0%); }
   40% { opacity: 1; transform: translate(-70%, 0%); }
@@ -376,93 +301,75 @@ a { text-decoration: none; color: inherit; }
   66%,100% { transform: translate(-70%, 0%); }
 }
 @keyframes dance-fire-idle {
-  0% { left: 40.8%; background: #FFC107; }
-  100% { left: 41.2%; background: #FF9800; }
+  0% { left: 38.5%; background: #FFC107; }
+  100% { left: 39%; background: #FF9800; }
 }
 @keyframes pulse-light-idle {
   0% { transform: translate(-25%, -50%) scale(2.5); border-color: rgba(255, 255, 255, 0.2); }
   100% { transform: translate(-25%, -50%) scale(2.8); border-color: rgba(255, 255, 255, 0.4); }
 }
 
-/* --- Apagando (1.5s) --- */
+/* --- SOPRANDO (Fogo some EXATAMENTE quando a boca fecha) --- */
 @keyframes blow-body {
   0%, 100% { transform: scale(1, 1) translate(60%, -25%); }
-  25% { transform: scale(1.1, 1.1) translate(60%, -28%); }
-  50% { transform: scale(0.89, 0.89) translate(60%, -25%); }
-  75% { transform: scale(0.95, 0.95) translate(60%, -25%); }
+  30% { transform: scale(1.1, 1.1) translate(60%, -28%); }
+  60% { transform: scale(0.89, 0.89) translate(60%, -25%); }
+  80% { transform: scale(0.95, 0.95) translate(60%, -25%); }
 }
 @keyframes blow-mouth {
-  0%, 100% { width: 0px; height: 0px; left: 40%; }
-  20% { width: 15px; height: 15px; left: 30%; }
-  40% { width: 5px; height: 5px; left: 20%; }
-  60% { width: 2px; height: 2px; left: 20%; }
+  0%, 30% { width: 0px; height: 0px; left: 40%; }
+  40%, 50% { width: 15px; height: 15px; left: 30%; } /* Faz o "O" grande */
+  58% { width: 5px; height: 5px; left: 20%; } /* Boca encolhe = Sai o ar! */
+  65% { width: 2px; height: 2px; left: 20%; }
+  75%, 100% { width: 0px; height: 0px; left: 30%; }
+}
+@keyframes blow-fire {
+  0%, 57% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  58%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0); } /* Apaga no exato 58% do ar saindo */
 }
 @keyframes blow-smoke-1 {
-  0% { width: 0px; left: 40%; opacity: 0; }
-  10% { width: 30px; left: 30%; opacity: 1; }
-  80%, 100% { width: 0px; left: 20%; opacity: 0; }
+  0%, 57% { width: 0px; left: 40%; opacity: 0; }
+  65% { width: 30px; left: 30%; opacity: 1; } /* Fumaça só sai depois de apagar */
+  100% { width: 0px; left: 20%; opacity: 0; }
 }
 @keyframes blow-smoke-2 {
-  0%, 20% { width: 0px; height: 0px; top: 50%; opacity: 0; }
-  30% { width: 10px; height: 10px; top: 40%; left: 40%; opacity: 1; }
-  80%, 100% { width: 0px; height: 0px; top: 20%; opacity: 0; }
-}
-@keyframes push-candle2 {
-  0%, 100% { left: 20%; transform: translate(60%, -15%); }
-  30% { left: 18%; transform: translate(60%, -15%); }
-  50% { left: 21%; transform: translate(60%, -15%); }
-}
-@keyframes die-fire {
-  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  20%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-}
-@keyframes die-light {
-  0% { transform: translate(-25%, -50%) scale(2.5); opacity: 1; }
-  20%, 100% { transform: translate(-25%, -50%) scale(0); opacity: 0; }
-}
-@keyframes dead-eyes-1 {
-  0%, 70% { padding: 0px; display: inline-block; border-radius: 100%; background: #673C63; border-width: 0; transform: translate(-80%, 0%); }
-  71%, 100% { background: transparent; border: solid #673C63; border-radius: 0px; border-width: 0 2px 2px 0; display: inline-block; padding: 1px; transform: rotate(-45deg) translate(-50%, -65%); }
-}
-@keyframes dead-eyes-2 {
-  0%, 70% { top: 50%; padding: 0px; display: inline-block; border-radius: 100%; background: #673C63; border-width: 0; transform: translate(-80%, 0%); }
-  71%, 100% { top: 30%; background: transparent; border: solid #673C63; border-radius: 0px; border-width: 0 2px 2px 0; display: inline-block; padding: 1px; transform: rotate(135deg) translate(-80%, 20%); }
+  0%, 57% { width: 0px; height: 0px; top: 50%; opacity: 0; }
+  65% { width: 10px; height: 10px; top: 40%; left: 40%; opacity: 1; }
+  100% { width: 0px; height: 0px; top: 20%; opacity: 0; }
 }
 
-/* --- Reacendendo e ficando VERMELHA (1s) --- */
+/* --- REACENDENDO (Esforço Vermelho e Rosto > <) --- */
 @keyframes reignite-candle2 {
-  0%, 20% { left: 20%; transform: translate(60%, -15%); background: #fff; border-color: #673C63; box-shadow: -2px 0px 0px #95c6f2 inset; }
-  40% { left: 20%; transform: scale(1.15, 0.85) translate(60%, -15%); background: #fff; border-color: #673C63; }
-  60% { left: 20%; transform: scale(1.18, 0.82) translate(60%, -10%); background: #F44336; border-color: #F44336; box-shadow: -2px 0px 0px #F44336 inset; }
-  75% { left: 20%; transform: scale(0.85, 1.15) translate(60%, -15%); background: #fff; border-color: #673C63; box-shadow: -2px 0px 0px #95c6f2 inset; }
-  85% { left: 20%; transform: scale(1.05, 0.95) translate(60%, -15%); }
-  100% { left: 20%; transform: scale(1, 1) translate(60%, -15%); background: #fff; border-color: #673C63; box-shadow: -2px 0px 0px #95c6f2 inset; }
+  0%, 10% { transform: scale(1, 1) translate(60%, -15%); background: #fff; border-color: #673C63; }
+  30% { transform: scale(1.15, 0.85) translate(60%, -15%); background: #fff; border-color: #673C63; }
+  60% { transform: scale(1.18, 0.82) translate(60%, -10%); background: #F44336; border-color: #F44336; box-shadow: -2px 0px 0px #F44336 inset; } /* Susto/Esforço máximo */
+  70% { transform: scale(0.85, 1.15) translate(60%, -15%); background: #fff; border-color: #673C63; box-shadow: -2px 0px 0px #95c6f2 inset; }
+  85% { transform: scale(1.05, 0.95) translate(60%, -15%); }
+  100% { transform: scale(1, 1) translate(60%, -15%); background: #fff; border-color: #673C63; box-shadow: -2px 0px 0px #95c6f2 inset; }
+}
+/* Olho Esquerdo '>' na hora da força */
+@keyframes reignite-eyes-1 {
+  0%, 15% { padding: 0px; background: #673C63; border-width: 0; transform: translate(-80%, 0%); border-radius: 100%; }
+  20%, 60% { background: transparent; border: solid #673C63; border-width: 0 2px 2px 0; padding: 1px; transform: rotate(-45deg) translate(-50%, -65%); border-radius: 0px; }
+  65%, 100% { padding: 0px; background: #673C63; border-width: 0; transform: translate(-80%, 0%); border-radius: 100%; }
+}
+/* Olho Direito '<' na hora da força */
+@keyframes reignite-eyes-2 {
+  0%, 15% { top: 50%; padding: 0px; background: #673C63; border-width: 0; transform: translate(-80%, 0%); border-radius: 100%; }
+  20%, 60% { top: 50%; background: transparent; border: solid #673C63; border-width: 0 2px 2px 0; padding: 1px; transform: rotate(135deg) translate(-50%, -65%); border-radius: 0px; }
+  65%, 100% { top: 50%; padding: 0px; background: #673C63; border-width: 0; transform: translate(-80%, 0%); border-radius: 100%; }
 }
 @keyframes reignite-stick {
-  0%, 30% { left: 50%; top: 0%; transform: translate(-50%, -100%); }
-  60% { transform: rotateZ(180deg) translate(0%, 120%); }
-  100% { left: 50%; top: 0%; transform: translate(-50%, -100%); }
+  0%, 10% { transform: rotateZ(0deg) translate(-50%, -100%); left: 50%; top: 0%; }
+  40%, 60% { transform: rotateZ(180deg) translate(0%, 120%); left: 50%; top: 0%; } /* Pavio dobra no esforço */
+  65%, 100% { transform: rotateZ(0deg) translate(-50%, -100%); left: 50%; top: 0%; } /* Fica ereto quando acende */
 }
 @keyframes reignite-fire {
-  0%, 50% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-  70% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  0%, 60% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  65% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } /* Acende pop! */
   100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 @keyframes reignite-light {
-  0%, 50% { transform: translate(-25%, -50%) scale(0); opacity: 0; }
-  70% { transform: translate(-25%, -50%) scale(3); opacity: 1; }
-  100% { transform: translate(-25%, -50%) scale(2.5); opacity: 1; }
+  0%, 60% { opacity: 0; transform: translate(-25%, -50%) scale(0); }
+  65%, 100% { opacity: 1; transform: translate(-25%, -50%) scale(2.5); }
 }
-@keyframes alive-eyes-1 {
-  /* Mantém olhos mortos/assustados durante a fase de susto (vela fica vermelha) */
-  0%, 65% { background: transparent; border: solid #673C63; border-radius: 0px; border-width: 0 2px 2px 0; display: inline-block; padding: 1px; transform: rotate(-45deg) translate(-50%, -65%); }
-  /* Só vira redondo DEPOIS que ela se acalma */
-  85%, 100% { padding: 0px; display: inline-block; border-radius: 100%; background: #673C63; border-width: 0; transform: translate(-80%, 0%); }
-}
-@keyframes alive-eyes-2 {
-  /* Mantém olhos mortos/assustados durante a fase de susto */
-  0%, 65% { top: 30%; background: transparent; border: solid #673C63; border-radius: 0px; border-width: 0 2px 2px 0; display: inline-block; padding: 1px; transform: rotate(135deg) translate(-80%, 20%); }
-  /* Só vira redondo DEPOIS que ela se acalma */
-  85%, 100% { top: 50%; padding: 0px; display: inline-block; border-radius: 100%; background: #673C63; border-width: 0; transform: translate(-80%, 0%); }
-}
-

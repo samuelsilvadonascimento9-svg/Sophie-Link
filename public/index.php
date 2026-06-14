@@ -909,11 +909,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                     });
                 }
             });
-        </script>
-
-        <!-- Re-render lucide icons after injecting HTML -->
-        <script>
+            
             lucide.createIcons();
+            (function() {
+        const toggleBtn = document.getElementById('tcToggleBtn');
+        const passInput = document.getElementById('senhaAva');
+        const formBox   = document.getElementById('avaFormBox');
+        if (!toggleBtn || !passInput || !formBox) return;
+
+        let state = 'UNLIT';
+
+        toggleBtn.addEventListener('click', () => {
+
+            if (state === 'UNLIT' || state === 'BLOWING') {
+                // AÇÃO: MOSTRAR SENHA (Faz força, fica vermelho, > < e acende)
+                state = 'REIGNITING';
+                formBox.className = 'ava-form-box state-reigniting';
+                passInput.type = 'text';
+                toggleBtn.innerHTML = '<i data-lucide="eye" style="width:18px;height:18px;"></i>';
+                if (window.lucide) window.lucide.createIcons();
+
+                // Animação de esforço dura 1.0s (1000ms)
+                setTimeout(() => {
+                    if (state === 'REIGNITING') {
+                        state = 'LIT';
+                        formBox.className = 'ava-form-box state-lit';
+                    }
+                }, 1000);
+
+            } else if (state === 'LIT' || state === 'REIGNITING') {
+                // AÇÃO: OCULTAR SENHA (Soprar. Boca abre, e o fogo MORRE exato quando assopra)
+                state = 'BLOWING';
+                formBox.className = 'ava-form-box state-blowing is-dark';
+                passInput.type = 'password';
+                toggleBtn.innerHTML = '<i data-lucide="eye-off" style="width:18px;height:18px;"></i>';
+                if (window.lucide) window.lucide.createIcons();
+
+                // Animação de sopro dura 1.2s (1200ms)
+                setTimeout(() => {
+                    if (state === 'BLOWING') {
+                        state = 'UNLIT';
+                        formBox.className = 'ava-form-box state-unlit is-dark';
+                    }
+                }, 1200);
+            }
+        });
+    })();
         </script>
 </body>
 
