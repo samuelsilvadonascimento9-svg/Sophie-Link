@@ -137,7 +137,7 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
     <main class="ava-main">
         <div class="ava-right">
-            <div class="ava-form-box unlit" id="avaFormBox">
+            <div class="ava-form-box is-unlit is-dark" id="avaFormBox">
                 <div class="ava-fb-title">Entrar no AVA</div>
 
                 <?php if ($erro): ?>
@@ -216,37 +216,25 @@ $senhaValue = $prefillEmail ? 'admin' : '';
         const formBox   = document.getElementById('avaFormBox');
         if (!toggleBtn || !passInput || !formBox) return;
 
+        // A página inicia com a vela acesa e a senha visível (estado padrão)
+        // MAS como é uma tela de login, iniciamos apagada com senha oculta.
         let isLit = false;
 
         toggleBtn.addEventListener('click', () => {
             isLit = !isLit;
-            
+
             if (isLit) {
+                // Ação: Mostrar Senha (ACENDER)
+                formBox.className = 'ava-form-box is-lit';
                 passInput.type = 'text';
                 toggleBtn.innerHTML = '<i data-lucide="eye" style="width:18px;height:18px;"></i>';
                 if (window.lucide) window.lucide.createIcons();
-
-                formBox.classList.remove('unlit', 'blowing');
-                formBox.classList.add('lit');
             } else {
+                // Ação: Ocultar Senha (APAGAR)
+                formBox.className = 'ava-form-box is-unlit is-dark';
                 passInput.type = 'password';
                 toggleBtn.innerHTML = '<i data-lucide="eye-off" style="width:18px;height:18px;"></i>';
                 if (window.lucide) window.lucide.createIcons();
-
-                formBox.classList.remove('lit');
-                formBox.classList.add('blowing');
-
-                setTimeout(() => {
-                    if (!isLit) {
-                        formBox.classList.add('unlit');
-                    }
-                }, 250);
-
-                setTimeout(() => {
-                    if (!isLit) {
-                        formBox.classList.remove('blowing');
-                    }
-                }, 800);
             }
         });
     })();
