@@ -175,8 +175,25 @@ $senhaValue = $prefillEmail ? 'admin' : '';
                     </div>
 
                     <div class="av-field">
-                        <label class="av-label" for="senha">Senha</label>
-                        <input type="password" id="senha" name="senha" class="av-input <?= $erro ? 'err' : '' ?>" placeholder="••••••••" value="<?= $senhaValue ?>" required>
+                        <label class="av-label" for="senhaAva">Senha</label>
+                        <div class="sub-login-wrapper hidden-pass" id="subLoginWrapper">
+                            <div class="submarine-container">
+                                <div class="submarine">
+                                    <div class="periscope"></div>
+                                    <div class="sub-body">
+                                        <div class="window"></div>
+                                        <div class="light-beam"></div>
+                                    </div>
+                                    <div class="propeller"></div>
+                                </div>
+                            </div>
+                            <div class="sub-input-row">
+                                <input type="password" id="senhaAva" name="senha" class="av-input sub-pass-input <?= $erro ? 'err' : '' ?>" placeholder="Sua senha secreta..." value="<?= $senhaValue ?>" required autocomplete="current-password">
+                                <button type="button" id="subToggleBtn" class="sub-toggle-btn" title="Mostrar/ocultar senha">
+                                    <i data-lucide="eye" id="subEyeIcon" style="width:18px;height:18px;"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="av-row">
@@ -192,5 +209,26 @@ $senhaValue = $prefillEmail ? 'admin' : '';
 
     <script src="../assets/js/toast.js"></script>
     <script src="../assets/js/login.js"></script>
+    <script>
+    (function() {
+        const toggleBtn = document.getElementById('subToggleBtn');
+        const passInput  = document.getElementById('senhaAva');
+        const wrapper    = document.getElementById('subLoginWrapper');
+        const eyeIcon    = document.getElementById('subEyeIcon');
+        if (!toggleBtn || !passInput || !wrapper) return;
+
+        toggleBtn.addEventListener('click', () => {
+            const isHidden = passInput.type === 'password';
+            passInput.type = isHidden ? 'text' : 'password';
+
+            // If it was hidden, it's now visible, so show eye-off. If it was visible, it's now hidden, so show eye.
+            eyeIcon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
+            if (window.lucide) window.lucide.createIcons();
+
+            wrapper.classList.toggle('hidden-pass', !isHidden);
+            wrapper.classList.toggle('show-pass', isHidden);
+        });
+    })();
+    </script>
 </body>
 </html>
